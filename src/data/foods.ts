@@ -49,7 +49,7 @@ export const foods: Food[] = [
       prepTime: "30min",
       costEstimate: 8,
     },
-    delivery: { available: true, estimatedTime: "30-45min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=arroz+feijao" },
+    delivery: { available: true, estimatedTime: "30-45min", platform: "Restaurante Parceiro", url: "", whatsapp: "5511999999001" },
   },
   {
     id: "macarrao",
