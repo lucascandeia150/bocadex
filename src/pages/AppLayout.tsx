@@ -6,6 +6,7 @@ import HomePage from "./HomePage";
 import EconomicoPage from "./EconomicoPage";
 import SugestoesPage from "./SugestoesPage";
 import HistoricoPage from "./HistoricoPage";
+import ContatoPage from "./ContatoPage";
 import NotFound from "./NotFound";
 
 export default function AppLayout() {
@@ -20,6 +21,7 @@ export default function AppLayout() {
         <Route path="/economico" element={<EconomicoPage />} />
         <Route path="/sugestoes" element={<SugestoesPage onChoose={handleChoose} />} />
         <Route path="/historico" element={<HistoricoPage history={history} onClear={clearHistory} />} />
+        <Route path="/contato" element={<ContatoPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BottomTabs />
