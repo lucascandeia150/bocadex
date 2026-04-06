@@ -184,7 +184,7 @@ export const foods: Food[] = [
       prepTime: "40min",
       costEstimate: 10,
     },
-    delivery: { available: true, estimatedTime: "20-30min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=marmita" },
+    delivery: { available: true, estimatedTime: "20-30min", platform: "Marmitaria Parceira", url: "", whatsapp: "5511999999008" },
   },
   {
     id: "pastel",
