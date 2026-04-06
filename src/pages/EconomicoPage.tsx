@@ -82,7 +82,7 @@ export default function EconomicoPage() {
                   className="w-full mt-2 gradient-secondary text-secondary-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-md"
                 >
                   <ExternalLink size={16} />
-                  Pedir pelo {food.delivery.platform}
+                  Pedir direto com o restaurante
                 </button>
               )}
             </div>
