@@ -5,9 +5,12 @@ export interface Food {
   priceMin: number;
   priceMax: number;
   speed: "rapido" | "medio" | "demorado";
-  filling: boolean; // mata muita fome
+  filling: boolean;
   cheap: boolean;
   reason: string;
+  recommended?: boolean;
+  bestValue?: boolean;
+  savingsAmount?: number;
 }
 
 export const foods: Food[] = [
@@ -21,6 +24,8 @@ export const foods: Food[] = [
     filling: true,
     cheap: true,
     reason: "Completo, nutritivo e econômico",
+    bestValue: true,
+    savingsAmount: 15,
   },
   {
     id: "macarrao",
@@ -32,6 +37,7 @@ export const foods: Food[] = [
     filling: true,
     cheap: true,
     reason: "Sustenta bem e cabe no bolso",
+    savingsAmount: 10,
   },
   {
     id: "pizza",
@@ -43,6 +49,7 @@ export const foods: Food[] = [
     filling: true,
     cheap: false,
     reason: "Perfeita para dividir e satisfazer",
+    recommended: true,
   },
   {
     id: "hamburguer",
@@ -54,6 +61,7 @@ export const foods: Food[] = [
     filling: true,
     cheap: false,
     reason: "Rápido e delicioso",
+    recommended: true,
   },
   {
     id: "salada",
@@ -65,6 +73,7 @@ export const foods: Food[] = [
     filling: false,
     cheap: true,
     reason: "Leve, saudável e acessível",
+    savingsAmount: 8,
   },
   {
     id: "omelete",
@@ -76,6 +85,8 @@ export const foods: Food[] = [
     filling: false,
     cheap: true,
     reason: "Rápido, fácil e muito barato",
+    bestValue: true,
+    savingsAmount: 20,
   },
   {
     id: "sanduiche",
@@ -87,6 +98,7 @@ export const foods: Food[] = [
     filling: false,
     cheap: true,
     reason: "Prático e econômico",
+    savingsAmount: 12,
   },
   {
     id: "marmita",
@@ -98,6 +110,8 @@ export const foods: Food[] = [
     filling: true,
     cheap: true,
     reason: "Economia em relação a fast food",
+    bestValue: true,
+    savingsAmount: 18,
   },
   {
     id: "pastel",
@@ -109,6 +123,7 @@ export const foods: Food[] = [
     filling: false,
     cheap: true,
     reason: "Rápido e barato",
+    savingsAmount: 15,
   },
   {
     id: "acai",
@@ -120,6 +135,7 @@ export const foods: Food[] = [
     filling: false,
     cheap: false,
     reason: "Refrescante e energético",
+    recommended: true,
   },
   {
     id: "coxinha",
@@ -131,6 +147,8 @@ export const foods: Food[] = [
     filling: false,
     cheap: true,
     reason: "Clássico brasileiro, rápido e barato",
+    bestValue: true,
+    savingsAmount: 20,
   },
   {
     id: "pf",
@@ -142,6 +160,9 @@ export const foods: Food[] = [
     filling: true,
     cheap: true,
     reason: "Completo e com ótimo custo-benefício",
+    bestValue: true,
+    recommended: true,
+    savingsAmount: 12,
   },
 ];
 
@@ -150,6 +171,44 @@ export const speedLabels: Record<Food["speed"], string> = {
   medio: "⏱️ Médio",
   demorado: "🕐 Demorado",
 };
+
+export type BudgetLevel = "baixo" | "medio" | "alto";
+
+export function getPersonalizedSuggestion(
+  hungry: boolean,
+  budget: BudgetLevel,
+  speed: "rapido" | "tanto-faz"
+): { food: Food; message: string } {
+  let filtered = foods.filter((f) => {
+    let score = 0;
+    if (hungry && f.filling) score++;
+    if (!hungry && !f.filling) score++;
+    if (budget === "baixo" && f.cheap) score++;
+    if (budget === "medio") score++;
+    if (budget === "alto") score++;
+    if (speed === "rapido" && f.speed === "rapido") score++;
+    if (speed === "tanto-faz") score++;
+    return score >= 2;
+  });
+
+  if (filtered.length === 0) filtered = foods;
+
+  const food = filtered[Math.floor(Math.random() * filtered.length)];
+
+  const parts: string[] = [];
+  if (hungry) parts.push("você está com muita fome");
+  if (budget === "baixo") parts.push("quer gastar pouco");
+  if (speed === "rapido") parts.push("está com pressa");
+
+  let message: string;
+  if (parts.length > 0) {
+    message = `Como ${parts.join(" e ")}, essa é a melhor opção pra você:`;
+  } else {
+    message = "Boa escolha pra hoje! 🎯";
+  }
+
+  return { food, message };
+}
 
 export function getSuggestion(hungryLevel: boolean, wantCheap: boolean, wantFast: boolean): Food {
   let filtered = foods.filter((f) => {
@@ -160,10 +219,7 @@ export function getSuggestion(hungryLevel: boolean, wantCheap: boolean, wantFast
     return score >= 2;
   });
 
-  if (filtered.length === 0) {
-    filtered = foods;
-  }
-
+  if (filtered.length === 0) filtered = foods;
   return filtered[Math.floor(Math.random() * filtered.length)];
 }
 
@@ -174,4 +230,12 @@ export function getRandomFood(exclude?: string): Food {
 
 export function getCheapFoods(): Food[] {
   return foods.filter((f) => f.cheap).sort((a, b) => a.priceMin - b.priceMin);
+}
+
+export function getBestValueFoods(): Food[] {
+  return foods.filter((f) => f.bestValue);
+}
+
+export function getRecommendedFoods(): Food[] {
+  return foods.filter((f) => f.recommended);
 }
