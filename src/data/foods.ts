@@ -68,7 +68,7 @@ export const foods: Food[] = [
       prepTime: "20min",
       costEstimate: 7,
     },
-    delivery: { available: true, estimatedTime: "25-40min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=macarrao" },
+    delivery: { available: true, estimatedTime: "25-40min", platform: "Restaurante Parceiro", url: "", whatsapp: "5511999999002" },
   },
   {
     id: "pizza",
