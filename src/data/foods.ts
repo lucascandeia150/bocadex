@@ -10,6 +10,7 @@ export interface DeliveryInfo {
   estimatedTime: string;
   platform: string;
   url: string;
+  whatsapp?: string;
 }
 
 export interface Food {
