@@ -9,6 +9,7 @@ export interface DeliveryInfo {
   available: boolean;
   estimatedTime: string;
   platform: string;
+  url: string;
 }
 
 export interface Food {
@@ -47,7 +48,7 @@ export const foods: Food[] = [
       prepTime: "30min",
       costEstimate: 8,
     },
-    delivery: { available: true, estimatedTime: "30-45min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "30-45min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=arroz+feijao" },
   },
   {
     id: "macarrao",
@@ -66,7 +67,7 @@ export const foods: Food[] = [
       prepTime: "20min",
       costEstimate: 7,
     },
-    delivery: { available: true, estimatedTime: "25-40min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "25-40min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=macarrao" },
   },
   {
     id: "pizza",
@@ -85,7 +86,7 @@ export const foods: Food[] = [
       prepTime: "35min",
       costEstimate: 15,
     },
-    delivery: { available: true, estimatedTime: "35-50min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "35-50min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=pizza" },
   },
   {
     id: "hamburguer",
@@ -104,7 +105,7 @@ export const foods: Food[] = [
       prepTime: "15min",
       costEstimate: 12,
     },
-    delivery: { available: true, estimatedTime: "20-35min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "20-35min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=hamburguer" },
   },
   {
     id: "salada",
@@ -123,7 +124,7 @@ export const foods: Food[] = [
       prepTime: "10min",
       costEstimate: 6,
     },
-    delivery: { available: true, estimatedTime: "20-30min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "20-30min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=salada" },
   },
   {
     id: "omelete",
@@ -143,7 +144,7 @@ export const foods: Food[] = [
       prepTime: "8min",
       costEstimate: 4,
     },
-    delivery: { available: false, estimatedTime: "", platform: "" },
+    delivery: { available: false, estimatedTime: "", platform: "", url: "" },
   },
   {
     id: "sanduiche",
@@ -162,7 +163,7 @@ export const foods: Food[] = [
       prepTime: "5min",
       costEstimate: 5,
     },
-    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=sanduiche" },
   },
   {
     id: "marmita",
@@ -182,7 +183,7 @@ export const foods: Food[] = [
       prepTime: "40min",
       costEstimate: 10,
     },
-    delivery: { available: true, estimatedTime: "20-30min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "20-30min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=marmita" },
   },
   {
     id: "pastel",
@@ -201,7 +202,7 @@ export const foods: Food[] = [
       prepTime: "15min",
       costEstimate: 5,
     },
-    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=pastel" },
   },
   {
     id: "acai",
@@ -220,7 +221,7 @@ export const foods: Food[] = [
       prepTime: "5min",
       costEstimate: 10,
     },
-    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=acai" },
   },
   {
     id: "coxinha",
@@ -240,7 +241,7 @@ export const foods: Food[] = [
       prepTime: "45min",
       costEstimate: 8,
     },
-    delivery: { available: true, estimatedTime: "15-20min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "15-20min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=coxinha" },
   },
   {
     id: "pf",
@@ -261,7 +262,7 @@ export const foods: Food[] = [
       prepTime: "35min",
       costEstimate: 12,
     },
-    delivery: { available: true, estimatedTime: "25-40min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "25-40min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=prato+feito" },
   },
 ];
 

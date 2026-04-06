@@ -1,4 +1,4 @@
-import { Home, DollarSign, Lightbulb, Clock } from "lucide-react";
+import { Home, DollarSign, Lightbulb, Clock, MessageCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const tabs = [
@@ -6,6 +6,7 @@ const tabs = [
   { path: "/economico", label: "Econômico", icon: DollarSign },
   { path: "/sugestoes", label: "Sugestões", icon: Lightbulb },
   { path: "/historico", label: "Histórico", icon: Clock },
+  { path: "/contato", label: "Contato", icon: MessageCircle },
 ];
 
 export function BottomTabs() {
@@ -26,8 +27,8 @@ export function BottomTabs() {
                 active ? "text-primary" : "text-muted-foreground"
               }`}
             >
-              <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-              <span className="text-xs font-semibold">{tab.label}</span>
+              <Icon size={20} strokeWidth={active ? 2.5 : 2} />
+              <span className="text-[10px] font-semibold">{tab.label}</span>
             </button>
           );
         })}

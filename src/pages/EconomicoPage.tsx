@@ -1,6 +1,8 @@
 import { getCheapFoods, getBestValueFoods, getRecommendedFoods } from "@/data/foods";
 import { FoodCard } from "@/components/FoodCard";
-import { Wallet, Star, TrendingUp } from "lucide-react";
+import { Wallet, Star, TrendingUp, ExternalLink } from "lucide-react";
+import { toast } from "sonner";
+import type { Food } from "@/data/foods";
 
 const economyMessages: Record<string, string> = {
   "arroz-feijao": "Mais barato que fast food e muito mais nutritivo",
@@ -14,6 +16,17 @@ const economyMessages: Record<string, string> = {
   pf: "Refeição completa por um preço justo",
 };
 
+function handleOpenPartner(food: Food) {
+  if (food.delivery.available && food.delivery.url) {
+    toast.success(`Abrindo ${food.delivery.platform}...`, {
+      description: `Melhor opção econômica disponível perto de você`,
+    });
+    window.open(food.delivery.url, "_blank", "noopener,noreferrer");
+  } else {
+    toast.info("Essa opção é melhor fazer em casa! 🏠");
+  }
+}
+
 export default function EconomicoPage() {
   const cheapFoods = getCheapFoods();
   const bestValue = getBestValueFoods();
@@ -25,6 +38,13 @@ export default function EconomicoPage() {
         <Wallet className="mx-auto text-primary mb-2" size={32} />
         <h1 className="text-2xl font-black text-foreground">Modo Econômico</h1>
         <p className="text-muted-foreground text-sm mt-1">As melhores opções pro seu bolso 💪</p>
+      </div>
+
+      {/* Banner */}
+      <div className="max-w-sm mx-auto mb-6 bg-primary/10 rounded-2xl p-4 text-center animate-slide-up">
+        <p className="text-sm font-bold text-primary">
+          🎯 Melhor opção econômica disponível perto de você
+        </p>
       </div>
 
       {/* Mais vantajoso hoje */}
@@ -46,6 +66,15 @@ export default function EconomicoPage() {
                 animate={false}
                 highlight
               />
+              {food.delivery.available && (
+                <button
+                  onClick={() => handleOpenPartner(food)}
+                  className="w-full mt-2 gradient-secondary text-secondary-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-md"
+                >
+                  <ExternalLink size={16} />
+                  Pedir pelo {food.delivery.platform}
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -66,6 +95,15 @@ export default function EconomicoPage() {
                 animate={false}
                 recommended
               />
+              {food.delivery.available && (
+                <button
+                  onClick={() => handleOpenPartner(food)}
+                  className="w-full mt-2 bg-secondary/10 text-secondary font-semibold py-2.5 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm"
+                >
+                  <ExternalLink size={14} />
+                  Ver opção no restaurante
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -86,6 +124,15 @@ export default function EconomicoPage() {
                 economyMessage={economyMessages[food.id] || food.reason}
                 animate={false}
               />
+              {food.delivery.available && (
+                <button
+                  onClick={() => handleOpenPartner(food)}
+                  className="w-full mt-2 bg-muted text-foreground font-semibold py-2.5 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm"
+                >
+                  <ExternalLink size={14} />
+                  Ver opção no restaurante
+                </button>
+              )}
             </div>
           ))}
         </div>

@@ -19,9 +19,12 @@ export function OrderModal({ food, open, onOpenChange }: OrderModalProps) {
   const { delivery } = food;
 
   const handleOrder = () => {
-    toast.success(`Redirecionando para o ${delivery.platform}...`, {
+    toast.success(`Abrindo ${delivery.platform}...`, {
       description: `Pedido de ${food.name} — entrega estimada: ${delivery.estimatedTime}`,
     });
+    if (delivery.url) {
+      window.open(delivery.url, "_blank", "noopener,noreferrer");
+    }
     onOpenChange(false);
   };
 
@@ -79,8 +82,12 @@ export function OrderModal({ food, open, onOpenChange }: OrderModalProps) {
           className="w-full gradient-secondary text-secondary-foreground font-bold text-lg py-4 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
         >
           <ExternalLink size={20} />
-          Abrir {delivery.platform}
+          Pedir pelo {delivery.platform}
         </button>
+
+        <p className="text-xs text-center text-muted-foreground">
+          Você será redirecionado para o site do {delivery.platform}
+        </p>
       </DialogContent>
     </Dialog>
   );
