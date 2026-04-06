@@ -273,11 +273,14 @@ export const speedLabels: Record<Food["speed"], string> = {
 
 export type BudgetLevel = "baixo" | "medio" | "alto";
 
+export type PreferenceMode = "cozinhar" | "pedir" | "tanto-faz";
+
 export function getPersonalizedSuggestion(
   hungry: boolean,
   budget: BudgetLevel,
-  speed: "rapido" | "tanto-faz"
-): { food: Food; message: string } {
+  speed: "rapido" | "tanto-faz",
+  preference?: PreferenceMode
+): { food: Food; message: string; smartTip: string } {
   let filtered = foods.filter((f) => {
     let score = 0;
     if (hungry && f.filling) score++;
@@ -306,7 +309,18 @@ export function getPersonalizedSuggestion(
     message = "Boa escolha pra hoje! 🎯";
   }
 
-  return { food, message };
+  let smartTip: string;
+  if (budget === "baixo" && preference !== "pedir") {
+    smartTip = "💡 Hoje vale mais cozinhar, você economiza!";
+  } else if (speed === "rapido" && preference !== "cozinhar") {
+    smartTip = "💡 Se estiver com pressa, melhor pedir!";
+  } else if (preference === "cozinhar") {
+    smartTip = `💡 Fazendo em casa sai por ~R$${food.recipe.costEstimate} — economia de R$${food.priceMin - food.recipe.costEstimate}!`;
+  } else {
+    smartTip = "💡 Essa opção equilibra custo e tempo!";
+  }
+
+  return { food, message, smartTip };
 }
 
 export function getSuggestion(hungryLevel: boolean, wantCheap: boolean, wantFast: boolean): Food {
