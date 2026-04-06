@@ -262,7 +262,7 @@ export const foods: Food[] = [
       prepTime: "35min",
       costEstimate: 12,
     },
-    delivery: { available: true, estimatedTime: "25-40min", platform: "iFood" },
+    delivery: { available: true, estimatedTime: "25-40min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=prato+feito" },
   },
 ];
 
