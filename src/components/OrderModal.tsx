@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Truck, Clock, ExternalLink } from "lucide-react";
+import { Truck, Clock, MessageCircle, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 interface OrderModalProps {
@@ -15,14 +15,24 @@ interface OrderModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+function getWhatsAppUrl(whatsapp: string, foodName: string) {
+  const message = encodeURIComponent(`Olá! Gostaria de pedir ${foodName}. Vi no EscolheAí! 🍽️`);
+  return `https://wa.me/${whatsapp}?text=${message}`;
+}
+
 export function OrderModal({ food, open, onOpenChange }: OrderModalProps) {
   const { delivery } = food;
 
   const handleOrder = () => {
-    toast.success(`Abrindo ${delivery.platform}...`, {
-      description: `Pedido de ${food.name} — entrega estimada: ${delivery.estimatedTime}`,
-    });
-    if (delivery.url) {
+    if (delivery.whatsapp) {
+      toast.success(`Abrindo WhatsApp do ${delivery.platform}...`, {
+        description: `Pedido de ${food.name} — entrega estimada: ${delivery.estimatedTime}`,
+      });
+      window.open(getWhatsAppUrl(delivery.whatsapp, food.name), "_blank", "noopener,noreferrer");
+    } else if (delivery.url) {
+      toast.success(`Abrindo ${delivery.platform}...`, {
+        description: `Pedido de ${food.name} — entrega estimada: ${delivery.estimatedTime}`,
+      });
       window.open(delivery.url, "_blank", "noopener,noreferrer");
     }
     onOpenChange(false);
@@ -61,7 +71,7 @@ export function OrderModal({ food, open, onOpenChange }: OrderModalProps) {
             <Truck size={22} className="text-secondary" />
             Pedir {food.emoji} {food.name}
           </DialogTitle>
-          <DialogDescription>Peça agora pelo {delivery.platform}</DialogDescription>
+          <DialogDescription>Peça direto com o restaurante</DialogDescription>
         </DialogHeader>
 
         <div className="bg-secondary/10 rounded-xl p-4 text-center">
@@ -81,12 +91,14 @@ export function OrderModal({ food, open, onOpenChange }: OrderModalProps) {
           onClick={handleOrder}
           className="w-full gradient-secondary text-secondary-foreground font-bold text-lg py-4 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
         >
-          <ExternalLink size={20} />
-          Pedir pelo {delivery.platform}
+          {delivery.whatsapp ? <MessageCircle size={20} /> : <ExternalLink size={20} />}
+          {delivery.whatsapp ? "Pedir pelo WhatsApp" : "Pedir direto com o restaurante"}
         </button>
 
         <p className="text-xs text-center text-muted-foreground">
-          Você será redirecionado para o site do {delivery.platform}
+          {delivery.whatsapp
+            ? "Você será redirecionado para o WhatsApp do restaurante"
+            : `Você será redirecionado para o site do ${delivery.platform}`}
         </p>
       </DialogContent>
     </Dialog>
