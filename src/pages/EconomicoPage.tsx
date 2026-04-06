@@ -16,8 +16,18 @@ const economyMessages: Record<string, string> = {
   pf: "Refeição completa por um preço justo",
 };
 
+function getWhatsAppUrl(whatsapp: string, foodName: string) {
+  const message = encodeURIComponent(`Olá! Gostaria de pedir ${foodName}. Vi no EscolheAí! 🍽️`);
+  return `https://wa.me/${whatsapp}?text=${message}`;
+}
+
 function handleOpenPartner(food: Food) {
-  if (food.delivery.available && food.delivery.url) {
+  if (food.delivery.available && food.delivery.whatsapp) {
+    toast.success(`Abrindo WhatsApp do ${food.delivery.platform}...`, {
+      description: `Melhor opção econômica disponível perto de você`,
+    });
+    window.open(getWhatsAppUrl(food.delivery.whatsapp, food.name), "_blank", "noopener,noreferrer");
+  } else if (food.delivery.available && food.delivery.url) {
     toast.success(`Abrindo ${food.delivery.platform}...`, {
       description: `Melhor opção econômica disponível perto de você`,
     });
