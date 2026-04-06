@@ -1,0 +1,37 @@
+import { Home, DollarSign, Lightbulb, Clock } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+
+const tabs = [
+  { path: "/", label: "Início", icon: Home },
+  { path: "/economico", label: "Econômico", icon: DollarSign },
+  { path: "/sugestoes", label: "Sugestões", icon: Lightbulb },
+  { path: "/historico", label: "Histórico", icon: Clock },
+];
+
+export function BottomTabs() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
+      <div className="max-w-lg mx-auto flex">
+        {tabs.map((tab) => {
+          const active = location.pathname === tab.path;
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.path}
+              onClick={() => navigate(tab.path)}
+              className={`flex-1 flex flex-col items-center py-3 gap-1 transition-colors ${
+                active ? "text-primary" : "text-muted-foreground"
+              }`}
+            >
+              <Icon size={22} strokeWidth={active ? 2.5 : 2} />
+              <span className="text-xs font-semibold">{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
