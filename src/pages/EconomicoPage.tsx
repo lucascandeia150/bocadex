@@ -111,7 +111,7 @@ export default function EconomicoPage() {
                   className="w-full mt-2 bg-secondary/10 text-secondary font-semibold py-2.5 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm"
                 >
                   <ExternalLink size={14} />
-                  Ver opção no restaurante
+                   Pedir direto
                 </button>
               )}
             </div>
