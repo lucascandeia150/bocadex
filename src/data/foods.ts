@@ -9,6 +9,7 @@ export interface DeliveryInfo {
   available: boolean;
   estimatedTime: string;
   platform: string;
+  url: string;
 }
 
 export interface Food {
