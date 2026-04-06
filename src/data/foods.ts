@@ -125,7 +125,7 @@ export const foods: Food[] = [
       prepTime: "10min",
       costEstimate: 6,
     },
-    delivery: { available: true, estimatedTime: "20-30min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=salada" },
+    delivery: { available: true, estimatedTime: "20-30min", platform: "Restaurante Parceiro", url: "", whatsapp: "5511999999005" },
   },
   {
     id: "omelete",
