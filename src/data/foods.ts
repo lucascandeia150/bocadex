@@ -242,7 +242,7 @@ export const foods: Food[] = [
       prepTime: "45min",
       costEstimate: 8,
     },
-    delivery: { available: true, estimatedTime: "15-20min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=coxinha" },
+    delivery: { available: true, estimatedTime: "15-20min", platform: "Lanchonete Parceira", url: "", whatsapp: "5511999999011" },
   },
   {
     id: "pf",
