@@ -144,7 +144,7 @@ export const foods: Food[] = [
       prepTime: "8min",
       costEstimate: 4,
     },
-    delivery: { available: false, estimatedTime: "", platform: "" },
+    delivery: { available: false, estimatedTime: "", platform: "", url: "" },
   },
   {
     id: "sanduiche",
