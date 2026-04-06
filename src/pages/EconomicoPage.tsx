@@ -16,8 +16,18 @@ const economyMessages: Record<string, string> = {
   pf: "Refeição completa por um preço justo",
 };
 
+function getWhatsAppUrl(whatsapp: string, foodName: string) {
+  const message = encodeURIComponent(`Olá! Gostaria de pedir ${foodName}. Vi no EscolheAí! 🍽️`);
+  return `https://wa.me/${whatsapp}?text=${message}`;
+}
+
 function handleOpenPartner(food: Food) {
-  if (food.delivery.available && food.delivery.url) {
+  if (food.delivery.available && food.delivery.whatsapp) {
+    toast.success(`Abrindo WhatsApp do ${food.delivery.platform}...`, {
+      description: `Melhor opção econômica disponível perto de você`,
+    });
+    window.open(getWhatsAppUrl(food.delivery.whatsapp, food.name), "_blank", "noopener,noreferrer");
+  } else if (food.delivery.available && food.delivery.url) {
     toast.success(`Abrindo ${food.delivery.platform}...`, {
       description: `Melhor opção econômica disponível perto de você`,
     });
@@ -72,7 +82,7 @@ export default function EconomicoPage() {
                   className="w-full mt-2 gradient-secondary text-secondary-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-md"
                 >
                   <ExternalLink size={16} />
-                  Pedir pelo {food.delivery.platform}
+                  Pedir direto com o restaurante
                 </button>
               )}
             </div>
@@ -101,7 +111,7 @@ export default function EconomicoPage() {
                   className="w-full mt-2 bg-secondary/10 text-secondary font-semibold py-2.5 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm"
                 >
                   <ExternalLink size={14} />
-                  Ver opção no restaurante
+                   Pedir direto
                 </button>
               )}
             </div>
@@ -130,7 +140,7 @@ export default function EconomicoPage() {
                   className="w-full mt-2 bg-muted text-foreground font-semibold py-2.5 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm"
                 >
                   <ExternalLink size={14} />
-                  Ver opção no restaurante
+                  Pedir direto
                 </button>
               )}
             </div>

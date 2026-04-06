@@ -10,6 +10,7 @@ export interface DeliveryInfo {
   estimatedTime: string;
   platform: string;
   url: string;
+  whatsapp?: string;
 }
 
 export interface Food {
@@ -48,7 +49,7 @@ export const foods: Food[] = [
       prepTime: "30min",
       costEstimate: 8,
     },
-    delivery: { available: true, estimatedTime: "30-45min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=arroz+feijao" },
+    delivery: { available: true, estimatedTime: "30-45min", platform: "Restaurante Parceiro", url: "", whatsapp: "5511999999001" },
   },
   {
     id: "macarrao",
@@ -67,7 +68,7 @@ export const foods: Food[] = [
       prepTime: "20min",
       costEstimate: 7,
     },
-    delivery: { available: true, estimatedTime: "25-40min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=macarrao" },
+    delivery: { available: true, estimatedTime: "25-40min", platform: "Restaurante Parceiro", url: "", whatsapp: "5511999999002" },
   },
   {
     id: "pizza",
@@ -86,7 +87,7 @@ export const foods: Food[] = [
       prepTime: "35min",
       costEstimate: 15,
     },
-    delivery: { available: true, estimatedTime: "35-50min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=pizza" },
+    delivery: { available: true, estimatedTime: "35-50min", platform: "Pizzaria Parceira", url: "", whatsapp: "5511999999003" },
   },
   {
     id: "hamburguer",
@@ -105,7 +106,7 @@ export const foods: Food[] = [
       prepTime: "15min",
       costEstimate: 12,
     },
-    delivery: { available: true, estimatedTime: "20-35min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=hamburguer" },
+    delivery: { available: true, estimatedTime: "20-35min", platform: "Hamburgueria Parceira", url: "", whatsapp: "5511999999004" },
   },
   {
     id: "salada",
@@ -124,7 +125,7 @@ export const foods: Food[] = [
       prepTime: "10min",
       costEstimate: 6,
     },
-    delivery: { available: true, estimatedTime: "20-30min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=salada" },
+    delivery: { available: true, estimatedTime: "20-30min", platform: "Restaurante Parceiro", url: "", whatsapp: "5511999999005" },
   },
   {
     id: "omelete",
@@ -163,7 +164,7 @@ export const foods: Food[] = [
       prepTime: "5min",
       costEstimate: 5,
     },
-    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=sanduiche" },
+    delivery: { available: true, estimatedTime: "15-25min", platform: "Lanchonete Parceira", url: "", whatsapp: "5511999999007" },
   },
   {
     id: "marmita",
@@ -183,7 +184,7 @@ export const foods: Food[] = [
       prepTime: "40min",
       costEstimate: 10,
     },
-    delivery: { available: true, estimatedTime: "20-30min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=marmita" },
+    delivery: { available: true, estimatedTime: "20-30min", platform: "Marmitaria Parceira", url: "", whatsapp: "5511999999008" },
   },
   {
     id: "pastel",
@@ -202,7 +203,7 @@ export const foods: Food[] = [
       prepTime: "15min",
       costEstimate: 5,
     },
-    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=pastel" },
+    delivery: { available: true, estimatedTime: "15-25min", platform: "Pastelaria Parceira", url: "", whatsapp: "5511999999009" },
   },
   {
     id: "acai",
@@ -221,7 +222,7 @@ export const foods: Food[] = [
       prepTime: "5min",
       costEstimate: 10,
     },
-    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=acai" },
+    delivery: { available: true, estimatedTime: "15-25min", platform: "Açaiteria Parceira", url: "", whatsapp: "5511999999010" },
   },
   {
     id: "coxinha",
@@ -241,7 +242,7 @@ export const foods: Food[] = [
       prepTime: "45min",
       costEstimate: 8,
     },
-    delivery: { available: true, estimatedTime: "15-20min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=coxinha" },
+    delivery: { available: true, estimatedTime: "15-20min", platform: "Lanchonete Parceira", url: "", whatsapp: "5511999999011" },
   },
   {
     id: "pf",
@@ -262,7 +263,7 @@ export const foods: Food[] = [
       prepTime: "35min",
       costEstimate: 12,
     },
-    delivery: { available: true, estimatedTime: "25-40min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=prato+feito" },
+    delivery: { available: true, estimatedTime: "25-40min", platform: "Restaurante Parceiro", url: "", whatsapp: "5511999999012" },
   },
 ];
 
