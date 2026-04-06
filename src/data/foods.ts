@@ -222,7 +222,7 @@ export const foods: Food[] = [
       prepTime: "5min",
       costEstimate: 10,
     },
-    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=acai" },
+    delivery: { available: true, estimatedTime: "15-25min", platform: "Açaiteria Parceira", url: "", whatsapp: "5511999999010" },
   },
   {
     id: "coxinha",
