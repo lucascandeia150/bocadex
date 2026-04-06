@@ -1,3 +1,16 @@
+export interface Recipe {
+  ingredients: string[];
+  steps: string[];
+  prepTime: string;
+  costEstimate: number;
+}
+
+export interface DeliveryInfo {
+  available: boolean;
+  estimatedTime: string;
+  platform: string;
+}
+
 export interface Food {
   id: string;
   name: string;
@@ -11,6 +24,8 @@ export interface Food {
   recommended?: boolean;
   bestValue?: boolean;
   savingsAmount?: number;
+  recipe: Recipe;
+  delivery: DeliveryInfo;
 }
 
 export const foods: Food[] = [
