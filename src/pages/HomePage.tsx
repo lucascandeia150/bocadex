@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { getPersonalizedSuggestion, getRandomFood } from "@/data/foods";
-import type { Food, BudgetLevel } from "@/data/foods";
+import type { Food, BudgetLevel, PreferenceMode } from "@/data/foods";
 import { FoodCard } from "@/components/FoodCard";
-import { UtensilsCrossed, Shuffle, RotateCcw, Zap, Sparkles } from "lucide-react";
+import { FoodActions } from "@/components/FoodActions";
+import { UtensilsCrossed, Shuffle, RotateCcw, Sparkles } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 interface HomePageProps {
   onChoose: (food: Food) => void;
 }
 
-type Step = "home" | "q1" | "q2" | "q3" | "result";
+type Step = "home" | "q1" | "q2" | "q3" | "q4" | "result";
 
 const assistantPhrases = [
   "Boa escolha pra hoje! 🎯",
@@ -22,13 +23,17 @@ export default function HomePage({ onChoose }: HomePageProps) {
   const [step, setStep] = useState<Step>("home");
   const [hungry, setHungry] = useState(false);
   const [budget, setBudget] = useState<BudgetLevel>("medio");
+  const [speed, setSpeed] = useState<"rapido" | "tanto-faz">("tanto-faz");
+  const [preference, setPreference] = useState<PreferenceMode>("tanto-faz");
   const [result, setResult] = useState<Food | null>(null);
   const [personalMessage, setPersonalMessage] = useState("");
+  const [smartTip, setSmartTip] = useState("");
 
   const reset = () => {
     setStep("home");
     setResult(null);
     setPersonalMessage("");
+    setSmartTip("");
   };
 
   const handleQ1 = (isHungry: boolean) => {
@@ -41,10 +46,17 @@ export default function HomePage({ onChoose }: HomePageProps) {
     setStep("q3");
   };
 
-  const handleQ3 = (speed: "rapido" | "tanto-faz") => {
-    const { food, message } = getPersonalizedSuggestion(hungry, budget, speed);
+  const handleQ3 = (s: "rapido" | "tanto-faz") => {
+    setSpeed(s);
+    setStep("q4");
+  };
+
+  const handleQ4 = (pref: PreferenceMode) => {
+    setPreference(pref);
+    const { food, message, smartTip: tip } = getPersonalizedSuggestion(hungry, budget, speed, pref);
     setResult(food);
     setPersonalMessage(message);
+    setSmartTip(tip);
     onChoose(food);
     setStep("result");
   };
@@ -53,6 +65,7 @@ export default function HomePage({ onChoose }: HomePageProps) {
     const food = getRandomFood();
     setResult(food);
     setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
+    setSmartTip("💡 Essa opção equilibra custo e tempo!");
     onChoose(food);
     setStep("result");
   };
@@ -61,6 +74,7 @@ export default function HomePage({ onChoose }: HomePageProps) {
     const food = getRandomFood(result?.id);
     setResult(food);
     setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
+    setSmartTip("💡 Essa opção equilibra custo e tempo!");
     onChoose(food);
   };
 
@@ -96,7 +110,7 @@ export default function HomePage({ onChoose }: HomePageProps) {
 
   if (step === "result" && result) {
     return (
-      <div className="flex flex-col items-center px-6 pt-8 pb-24 gap-5">
+      <div className="flex flex-col items-center px-6 pt-8 pb-24 gap-4">
         <div className="text-center animate-bounce-in">
           <Sparkles className="mx-auto text-secondary mb-2" size={28} />
           <h2 className="text-xl font-black text-foreground">Sua escolha perfeita!</h2>
@@ -117,6 +131,10 @@ export default function HomePage({ onChoose }: HomePageProps) {
             </p>
           </div>
         )}
+
+        <div className="w-full max-w-sm animate-slide-up">
+          <FoodActions food={result} smartTip={smartTip} />
+        </div>
 
         <div className="flex gap-3 w-full max-w-sm">
           <button
@@ -141,12 +159,12 @@ export default function HomePage({ onChoose }: HomePageProps) {
   // Questions
   if (step === "q1") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 gap-8">
-        <div className="text-center animate-bounce-in">
-          <span className="text-6xl block mb-4">🤤</span>
-          <h2 className="text-2xl font-black text-foreground">Está com muita fome?</h2>
-          <p className="text-muted-foreground text-sm mt-2">Isso me ajuda a escolher melhor pra você</p>
-        </div>
+      <QuestionScreen
+        emoji="🤤"
+        title="Está com muita fome?"
+        subtitle="Isso me ajuda a escolher melhor pra você"
+        onReset={reset}
+      >
         <div className="flex gap-4 w-full max-w-xs animate-slide-up">
           <button onClick={() => handleQ1(true)} className="flex-1 gradient-primary text-primary-foreground font-bold text-xl py-5 rounded-2xl shadow-lg active:scale-95 transition-transform">
             Sim! 🍽️
@@ -155,19 +173,18 @@ export default function HomePage({ onChoose }: HomePageProps) {
             Não muito
           </button>
         </div>
-        <button onClick={reset} className="text-muted-foreground text-sm underline mt-4">Voltar ao início</button>
-      </div>
+      </QuestionScreen>
     );
   }
 
   if (step === "q2") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 gap-8">
-        <div className="text-center animate-bounce-in">
-          <span className="text-6xl block mb-4">💰</span>
-          <h2 className="text-2xl font-black text-foreground">Quanto quer gastar?</h2>
-          <p className="text-muted-foreground text-sm mt-2">Sem julgamento, é só pra te ajudar 😉</p>
-        </div>
+      <QuestionScreen
+        emoji="💰"
+        title="Quanto quer gastar?"
+        subtitle="Sem julgamento, é só pra te ajudar 😉"
+        onReset={reset}
+      >
         <div className="flex flex-col gap-3 w-full max-w-xs animate-slide-up">
           <button onClick={() => handleQ2("baixo")} className="gradient-primary text-primary-foreground font-bold text-lg py-4 rounded-2xl shadow-lg active:scale-95 transition-transform">
             💚 Gastar pouco (até R$15)
@@ -179,19 +196,18 @@ export default function HomePage({ onChoose }: HomePageProps) {
             💎 Posso gastar mais
           </button>
         </div>
-        <button onClick={reset} className="text-muted-foreground text-sm underline mt-4">Voltar ao início</button>
-      </div>
+      </QuestionScreen>
     );
   }
 
   if (step === "q3") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 gap-8">
-        <div className="text-center animate-bounce-in">
-          <span className="text-6xl block mb-4">⚡</span>
-          <h2 className="text-2xl font-black text-foreground">Quer algo rápido?</h2>
-          <p className="text-muted-foreground text-sm mt-2">Quase lá! Última pergunta 🎯</p>
-        </div>
+      <QuestionScreen
+        emoji="⚡"
+        title="Quer algo rápido?"
+        subtitle="Quase lá! Mais uma pergunta 🎯"
+        onReset={reset}
+      >
         <div className="flex gap-4 w-full max-w-xs animate-slide-up">
           <button onClick={() => handleQ3("rapido")} className="flex-1 gradient-secondary text-secondary-foreground font-bold text-xl py-5 rounded-2xl shadow-lg active:scale-95 transition-transform">
             Rápido! ⚡
@@ -200,10 +216,58 @@ export default function HomePage({ onChoose }: HomePageProps) {
             Tanto faz 🤷
           </button>
         </div>
-        <button onClick={reset} className="text-muted-foreground text-sm underline mt-4">Voltar ao início</button>
-      </div>
+      </QuestionScreen>
+    );
+  }
+
+  if (step === "q4") {
+    return (
+      <QuestionScreen
+        emoji="🍳"
+        title="Prefere cozinhar ou pedir?"
+        subtitle="Última pergunta! Isso muda a sugestão ✨"
+        onReset={reset}
+      >
+        <div className="flex flex-col gap-3 w-full max-w-xs animate-slide-up">
+          <button onClick={() => handleQ4("cozinhar")} className="gradient-primary text-primary-foreground font-bold text-lg py-4 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
+            👨‍🍳 Fazer em casa
+          </button>
+          <button onClick={() => handleQ4("pedir")} className="gradient-secondary text-secondary-foreground font-bold text-lg py-4 rounded-2xl shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">
+            🛵 Pedir delivery
+          </button>
+          <button onClick={() => handleQ4("tanto-faz")} className="bg-muted text-foreground font-bold text-lg py-4 rounded-2xl shadow-md active:scale-95 transition-transform">
+            🤷 Tanto faz
+          </button>
+        </div>
+      </QuestionScreen>
     );
   }
 
   return null;
+}
+
+function QuestionScreen({
+  emoji,
+  title,
+  subtitle,
+  onReset,
+  children,
+}: {
+  emoji: string;
+  title: string;
+  subtitle: string;
+  onReset: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 gap-8">
+      <div className="text-center animate-bounce-in">
+        <span className="text-6xl block mb-4">{emoji}</span>
+        <h2 className="text-2xl font-black text-foreground">{title}</h2>
+        <p className="text-muted-foreground text-sm mt-2">{subtitle}</p>
+      </div>
+      {children}
+      <button onClick={onReset} className="text-muted-foreground text-sm underline mt-4">Voltar ao início</button>
+    </div>
+  );
 }

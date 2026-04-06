@@ -2,6 +2,7 @@ import { useState } from "react";
 import { getRandomFood } from "@/data/foods";
 import type { Food } from "@/data/foods";
 import { FoodCard } from "@/components/FoodCard";
+import { FoodActions } from "@/components/FoodActions";
 import { Lightbulb, Shuffle } from "lucide-react";
 
 interface SugestoesPageProps {
@@ -31,9 +32,13 @@ export default function SugestoesPage({ onChoose }: SugestoesPageProps) {
         <FoodCard food={suggestion} />
       </div>
 
+      <div className="w-full max-w-sm" key={`actions-${key}`}>
+        <FoodActions food={suggestion} />
+      </div>
+
       <button
         onClick={newSuggestion}
-        className="gradient-secondary text-secondary-foreground font-bold text-lg py-4 px-8 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center gap-2"
+        className="bg-muted text-foreground font-bold text-lg py-4 px-8 rounded-2xl shadow-md active:scale-95 transition-transform flex items-center gap-2"
       >
         <Shuffle size={22} />
         Outra sugestão
