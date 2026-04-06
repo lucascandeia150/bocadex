@@ -87,7 +87,7 @@ export const foods: Food[] = [
       prepTime: "35min",
       costEstimate: 15,
     },
-    delivery: { available: true, estimatedTime: "35-50min", platform: "iFood", url: "https://www.ifood.com.br/busca?q=pizza" },
+    delivery: { available: true, estimatedTime: "35-50min", platform: "Pizzaria Parceira", url: "", whatsapp: "5511999999003" },
   },
   {
     id: "hamburguer",
