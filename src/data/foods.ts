@@ -41,6 +41,13 @@ export const foods: Food[] = [
     reason: "Completo, nutritivo e econômico",
     bestValue: true,
     savingsAmount: 15,
+    recipe: {
+      ingredients: ["2 xícaras de arroz", "1 xícara de feijão cozido", "Alho, cebola, sal", "Óleo"],
+      steps: ["Refogue alho e cebola no óleo", "Adicione o arroz e refogue", "Cubra com água e cozinhe", "Aqueça o feijão separadamente"],
+      prepTime: "30min",
+      costEstimate: 8,
+    },
+    delivery: { available: true, estimatedTime: "30-45min", platform: "iFood" },
   },
   {
     id: "macarrao",
@@ -53,6 +60,13 @@ export const foods: Food[] = [
     cheap: true,
     reason: "Sustenta bem e cabe no bolso",
     savingsAmount: 10,
+    recipe: {
+      ingredients: ["500g de macarrão", "Molho de tomate", "Sal", "Queijo ralado"],
+      steps: ["Cozinhe o macarrão em água com sal", "Escorra e misture o molho", "Finalize com queijo ralado"],
+      prepTime: "20min",
+      costEstimate: 7,
+    },
+    delivery: { available: true, estimatedTime: "25-40min", platform: "iFood" },
   },
   {
     id: "pizza",
@@ -65,6 +79,13 @@ export const foods: Food[] = [
     cheap: false,
     reason: "Perfeita para dividir e satisfazer",
     recommended: true,
+    recipe: {
+      ingredients: ["Massa de pizza pronta", "Molho de tomate", "Mussarela", "Orégano"],
+      steps: ["Abra a massa numa assadeira", "Espalhe o molho e cubra com queijo", "Leve ao forno por 20min a 200°C"],
+      prepTime: "35min",
+      costEstimate: 15,
+    },
+    delivery: { available: true, estimatedTime: "35-50min", platform: "iFood" },
   },
   {
     id: "hamburguer",
@@ -77,6 +98,13 @@ export const foods: Food[] = [
     cheap: false,
     reason: "Rápido e delicioso",
     recommended: true,
+    recipe: {
+      ingredients: ["Pão de hambúrguer", "Carne moída (blend)", "Queijo", "Alface, tomate"],
+      steps: ["Tempere e modele a carne", "Grelhe por 3min de cada lado", "Monte com queijo e salada no pão"],
+      prepTime: "15min",
+      costEstimate: 12,
+    },
+    delivery: { available: true, estimatedTime: "20-35min", platform: "iFood" },
   },
   {
     id: "salada",
@@ -89,6 +117,13 @@ export const foods: Food[] = [
     cheap: true,
     reason: "Leve, saudável e acessível",
     savingsAmount: 8,
+    recipe: {
+      ingredients: ["Alface, rúcula", "Tomate, pepino", "Azeite, limão, sal"],
+      steps: ["Lave e pique os vegetais", "Misture tudo numa tigela", "Tempere com azeite e limão"],
+      prepTime: "10min",
+      costEstimate: 6,
+    },
+    delivery: { available: true, estimatedTime: "20-30min", platform: "iFood" },
   },
   {
     id: "omelete",
@@ -102,6 +137,13 @@ export const foods: Food[] = [
     reason: "Rápido, fácil e muito barato",
     bestValue: true,
     savingsAmount: 20,
+    recipe: {
+      ingredients: ["3 ovos", "Sal, pimenta", "Queijo, presunto (opcional)", "Manteiga"],
+      steps: ["Bata os ovos com sal", "Derreta manteiga na frigideira", "Despeje os ovos e adicione recheio", "Dobre e sirva"],
+      prepTime: "8min",
+      costEstimate: 4,
+    },
+    delivery: { available: false, estimatedTime: "", platform: "" },
   },
   {
     id: "sanduiche",
@@ -114,6 +156,13 @@ export const foods: Food[] = [
     cheap: true,
     reason: "Prático e econômico",
     savingsAmount: 12,
+    recipe: {
+      ingredients: ["Pão de forma", "Presunto, queijo", "Alface, tomate", "Maionese"],
+      steps: ["Monte as camadas no pão", "Corte ao meio e sirva"],
+      prepTime: "5min",
+      costEstimate: 5,
+    },
+    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood" },
   },
   {
     id: "marmita",
@@ -127,6 +176,13 @@ export const foods: Food[] = [
     reason: "Economia em relação a fast food",
     bestValue: true,
     savingsAmount: 18,
+    recipe: {
+      ingredients: ["Arroz, feijão", "Carne ou frango", "Salada", "Farofa"],
+      steps: ["Cozinhe arroz e feijão", "Prepare a proteína", "Monte a marmita com todos os itens"],
+      prepTime: "40min",
+      costEstimate: 10,
+    },
+    delivery: { available: true, estimatedTime: "20-30min", platform: "iFood" },
   },
   {
     id: "pastel",
@@ -139,6 +195,13 @@ export const foods: Food[] = [
     cheap: true,
     reason: "Rápido e barato",
     savingsAmount: 15,
+    recipe: {
+      ingredients: ["Massa de pastel", "Carne moída ou queijo", "Óleo para fritar"],
+      steps: ["Recheie a massa e feche bem", "Frite em óleo quente até dourar", "Escorra em papel toalha"],
+      prepTime: "15min",
+      costEstimate: 5,
+    },
+    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood" },
   },
   {
     id: "acai",
@@ -151,6 +214,13 @@ export const foods: Food[] = [
     cheap: false,
     reason: "Refrescante e energético",
     recommended: true,
+    recipe: {
+      ingredients: ["Polpa de açaí congelada", "Banana", "Granola", "Mel ou leite condensado"],
+      steps: ["Bata a polpa com banana no liquidificador", "Sirva numa tigela", "Cubra com granola e mel"],
+      prepTime: "5min",
+      costEstimate: 10,
+    },
+    delivery: { available: true, estimatedTime: "15-25min", platform: "iFood" },
   },
   {
     id: "coxinha",
@@ -164,6 +234,13 @@ export const foods: Food[] = [
     reason: "Clássico brasileiro, rápido e barato",
     bestValue: true,
     savingsAmount: 20,
+    recipe: {
+      ingredients: ["Frango desfiado", "Massa de coxinha (farinha, caldo)", "Farinha de rosca", "Óleo para fritar"],
+      steps: ["Prepare a massa com caldo de frango", "Modele com o recheio de frango", "Empane e frite até dourar"],
+      prepTime: "45min",
+      costEstimate: 8,
+    },
+    delivery: { available: true, estimatedTime: "15-20min", platform: "iFood" },
   },
   {
     id: "pf",
@@ -178,6 +255,13 @@ export const foods: Food[] = [
     bestValue: true,
     recommended: true,
     savingsAmount: 12,
+    recipe: {
+      ingredients: ["Arroz, feijão", "Bife ou frango", "Ovo frito", "Salada e farofa"],
+      steps: ["Cozinhe arroz e feijão", "Frite o bife e o ovo", "Monte o prato com todos os acompanhamentos"],
+      prepTime: "35min",
+      costEstimate: 12,
+    },
+    delivery: { available: true, estimatedTime: "25-40min", platform: "iFood" },
   },
 ];
 
