@@ -6,15 +6,28 @@ interface FoodCardProps {
   showReason?: boolean;
   economyMessage?: string;
   animate?: boolean;
+  highlight?: boolean;
+  recommended?: boolean;
 }
 
-export function FoodCard({ food, showReason = true, economyMessage, animate = true }: FoodCardProps) {
+export function FoodCard({ food, showReason = true, economyMessage, animate = true, highlight, recommended }: FoodCardProps) {
   return (
-    <div className={`rounded-2xl bg-card p-5 shadow-lg border border-border ${animate ? "animate-bounce-in" : ""}`}>
+    <div
+      className={`rounded-2xl p-5 shadow-lg border ${animate ? "animate-bounce-in" : ""} ${
+        highlight
+          ? "bg-primary/5 border-primary/30 ring-2 ring-primary/20"
+          : recommended
+          ? "bg-secondary/5 border-secondary/30 ring-2 ring-secondary/20"
+          : "bg-card border-border"
+      }`}
+    >
       <div className="flex items-start gap-4">
         <span className="text-5xl">{food.emoji}</span>
         <div className="flex-1 min-w-0">
-          <h3 className="text-xl font-bold text-foreground">{food.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-xl font-bold text-foreground">{food.name}</h3>
+            {recommended && <span className="text-xs bg-secondary/20 text-secondary font-bold px-2 py-0.5 rounded-full">⭐ Top</span>}
+          </div>
           <p className="text-lg font-semibold text-primary mt-1">
             R${food.priceMin} - R${food.priceMax}
           </p>

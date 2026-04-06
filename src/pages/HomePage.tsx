@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { getSuggestion, getRandomFood } from "@/data/foods";
-import type { Food } from "@/data/foods";
+import { getPersonalizedSuggestion, getRandomFood } from "@/data/foods";
+import type { Food, BudgetLevel } from "@/data/foods";
 import { FoodCard } from "@/components/FoodCard";
-import { UtensilsCrossed, Shuffle, RotateCcw, Zap } from "lucide-react";
+import { UtensilsCrossed, Shuffle, RotateCcw, Zap, Sparkles } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 interface HomePageProps {
   onChoose: (food: Food) => void;
@@ -10,37 +11,48 @@ interface HomePageProps {
 
 type Step = "home" | "q1" | "q2" | "q3" | "result";
 
+const assistantPhrases = [
+  "Boa escolha pra hoje! 🎯",
+  "Rápido, barato e resolve! 💪",
+  "Hoje você pode economizar com isso 👇",
+  "Perfeito pra esse momento! ✨",
+];
+
 export default function HomePage({ onChoose }: HomePageProps) {
   const [step, setStep] = useState<Step>("home");
   const [hungry, setHungry] = useState(false);
-  const [cheap, setCheap] = useState(false);
-  const [fast, setFast] = useState(false);
+  const [budget, setBudget] = useState<BudgetLevel>("medio");
   const [result, setResult] = useState<Food | null>(null);
+  const [personalMessage, setPersonalMessage] = useState("");
 
   const reset = () => {
     setStep("home");
     setResult(null);
+    setPersonalMessage("");
   };
 
-  const handleAnswer = (question: Step, answer: boolean) => {
-    if (question === "q1") {
-      setHungry(answer);
-      setStep("q2");
-    } else if (question === "q2") {
-      setCheap(answer);
-      setStep("q3");
-    } else if (question === "q3") {
-      setFast(answer);
-      const food = getSuggestion(hungry, cheap, answer);
-      setResult(food);
-      onChoose(food);
-      setStep("result");
-    }
+  const handleQ1 = (isHungry: boolean) => {
+    setHungry(isHungry);
+    setStep("q2");
+  };
+
+  const handleQ2 = (b: BudgetLevel) => {
+    setBudget(b);
+    setStep("q3");
+  };
+
+  const handleQ3 = (speed: "rapido" | "tanto-faz") => {
+    const { food, message } = getPersonalizedSuggestion(hungry, budget, speed);
+    setResult(food);
+    setPersonalMessage(message);
+    onChoose(food);
+    setStep("result");
   };
 
   const decidirPorMim = () => {
     const food = getRandomFood();
     setResult(food);
+    setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
     onChoose(food);
     setStep("result");
   };
@@ -48,6 +60,7 @@ export default function HomePage({ onChoose }: HomePageProps) {
   const outraOpcao = () => {
     const food = getRandomFood(result?.id);
     setResult(food);
+    setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
     onChoose(food);
   };
 
@@ -55,9 +68,9 @@ export default function HomePage({ onChoose }: HomePageProps) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 gap-6">
         <div className="text-center animate-bounce-in">
-          <span className="text-6xl mb-4 block">🍽️</span>
+          <img src={logo} alt="EscolheAí" className="w-40 h-40 mx-auto mb-2 object-contain" />
           <h1 className="text-4xl font-black text-foreground">EscolheAí</h1>
-          <p className="text-muted-foreground mt-2 text-lg">Sem indecisão, só decisão!</p>
+          <p className="text-muted-foreground mt-2 text-lg">Seu assistente de comida! 🤖</p>
         </div>
 
         <div className="w-full max-w-xs flex flex-col gap-3 animate-slide-up">
@@ -83,16 +96,27 @@ export default function HomePage({ onChoose }: HomePageProps) {
 
   if (step === "result" && result) {
     return (
-      <div className="flex flex-col items-center px-6 pt-10 gap-6">
+      <div className="flex flex-col items-center px-6 pt-8 pb-24 gap-5">
         <div className="text-center animate-bounce-in">
-          <Zap className="mx-auto text-secondary mb-2" size={32} />
-          <h2 className="text-2xl font-black text-foreground">Sua escolha!</h2>
-          <p className="text-muted-foreground text-sm mt-1">O assistente escolheu pra você 🤖</p>
+          <Sparkles className="mx-auto text-secondary mb-2" size={28} />
+          <h2 className="text-xl font-black text-foreground">Sua escolha perfeita!</h2>
+        </div>
+
+        <div className="w-full max-w-sm bg-accent/50 rounded-2xl p-4 text-center animate-slide-up">
+          <p className="text-sm font-semibold text-accent-foreground">{personalMessage}</p>
         </div>
 
         <div className="w-full max-w-sm">
           <FoodCard food={result} />
         </div>
+
+        {result.savingsAmount && (
+          <div className="w-full max-w-sm bg-primary/10 rounded-xl p-3 text-center animate-slide-up">
+            <p className="text-sm font-bold text-primary">
+              💰 Economize até R${result.savingsAmount} comparado a outras opções!
+            </p>
+          </div>
+        )}
 
         <div className="flex gap-3 w-full max-w-sm">
           <button
@@ -114,40 +138,72 @@ export default function HomePage({ onChoose }: HomePageProps) {
     );
   }
 
-  // Question steps
-  const questions: Record<string, { text: string; emoji: string }> = {
-    q1: { text: "Está com muita fome?", emoji: "🤤" },
-    q2: { text: "Quer gastar pouco?", emoji: "💰" },
-    q3: { text: "Quer algo rápido?", emoji: "⚡" },
-  };
-
-  const q = questions[step];
-
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 gap-8">
-      <div className="text-center animate-bounce-in">
-        <span className="text-6xl block mb-4">{q.emoji}</span>
-        <h2 className="text-2xl font-black text-foreground">{q.text}</h2>
+  // Questions
+  if (step === "q1") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 gap-8">
+        <div className="text-center animate-bounce-in">
+          <span className="text-6xl block mb-4">🤤</span>
+          <h2 className="text-2xl font-black text-foreground">Está com muita fome?</h2>
+          <p className="text-muted-foreground text-sm mt-2">Isso me ajuda a escolher melhor pra você</p>
+        </div>
+        <div className="flex gap-4 w-full max-w-xs animate-slide-up">
+          <button onClick={() => handleQ1(true)} className="flex-1 gradient-primary text-primary-foreground font-bold text-xl py-5 rounded-2xl shadow-lg active:scale-95 transition-transform">
+            Sim! 🍽️
+          </button>
+          <button onClick={() => handleQ1(false)} className="flex-1 bg-muted text-foreground font-bold text-xl py-5 rounded-2xl shadow-md active:scale-95 transition-transform">
+            Não muito
+          </button>
+        </div>
+        <button onClick={reset} className="text-muted-foreground text-sm underline mt-4">Voltar ao início</button>
       </div>
+    );
+  }
 
-      <div className="flex gap-4 w-full max-w-xs animate-slide-up">
-        <button
-          onClick={() => handleAnswer(step, true)}
-          className="flex-1 gradient-primary text-primary-foreground font-bold text-xl py-5 rounded-2xl shadow-lg active:scale-95 transition-transform"
-        >
-          Sim
-        </button>
-        <button
-          onClick={() => handleAnswer(step, false)}
-          className="flex-1 bg-muted text-foreground font-bold text-xl py-5 rounded-2xl shadow-md active:scale-95 transition-transform"
-        >
-          Não
-        </button>
+  if (step === "q2") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 gap-8">
+        <div className="text-center animate-bounce-in">
+          <span className="text-6xl block mb-4">💰</span>
+          <h2 className="text-2xl font-black text-foreground">Quanto quer gastar?</h2>
+          <p className="text-muted-foreground text-sm mt-2">Sem julgamento, é só pra te ajudar 😉</p>
+        </div>
+        <div className="flex flex-col gap-3 w-full max-w-xs animate-slide-up">
+          <button onClick={() => handleQ2("baixo")} className="gradient-primary text-primary-foreground font-bold text-lg py-4 rounded-2xl shadow-lg active:scale-95 transition-transform">
+            💚 Gastar pouco (até R$15)
+          </button>
+          <button onClick={() => handleQ2("medio")} className="gradient-secondary text-secondary-foreground font-bold text-lg py-4 rounded-2xl shadow-md active:scale-95 transition-transform">
+            🧡 Normal (R$15-30)
+          </button>
+          <button onClick={() => handleQ2("alto")} className="bg-muted text-foreground font-bold text-lg py-4 rounded-2xl shadow-md active:scale-95 transition-transform">
+            💎 Posso gastar mais
+          </button>
+        </div>
+        <button onClick={reset} className="text-muted-foreground text-sm underline mt-4">Voltar ao início</button>
       </div>
+    );
+  }
 
-      <button onClick={reset} className="text-muted-foreground text-sm underline mt-4">
-        Voltar ao início
-      </button>
-    </div>
-  );
+  if (step === "q3") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 gap-8">
+        <div className="text-center animate-bounce-in">
+          <span className="text-6xl block mb-4">⚡</span>
+          <h2 className="text-2xl font-black text-foreground">Quer algo rápido?</h2>
+          <p className="text-muted-foreground text-sm mt-2">Quase lá! Última pergunta 🎯</p>
+        </div>
+        <div className="flex gap-4 w-full max-w-xs animate-slide-up">
+          <button onClick={() => handleQ3("rapido")} className="flex-1 gradient-secondary text-secondary-foreground font-bold text-xl py-5 rounded-2xl shadow-lg active:scale-95 transition-transform">
+            Rápido! ⚡
+          </button>
+          <button onClick={() => handleQ3("tanto-faz")} className="flex-1 bg-muted text-foreground font-bold text-xl py-5 rounded-2xl shadow-md active:scale-95 transition-transform">
+            Tanto faz 🤷
+          </button>
+        </div>
+        <button onClick={reset} className="text-muted-foreground text-sm underline mt-4">Voltar ao início</button>
+      </div>
+    );
+  }
+
+  return null;
 }
