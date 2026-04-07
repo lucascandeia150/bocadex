@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat } from "lucide-react";
+import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine } from "lucide-react";
 import { getPersonalizedSuggestion, getRandomFood, allItems } from "@/data/foods";
 import type { Food, BudgetLevel, PreferenceMode } from "@/data/foods";
 import { FoodCard } from "@/components/FoodCard";
 import { FoodActions } from "@/components/FoodActions";
 import { PartnerBanner } from "@/components/PartnerBanner";
 import { RecipeModal } from "@/components/RecipeModal";
-import { stores, categoryLabels, getAllCategories, type StoreCategory } from "@/data/stores";
 import logo from "@/assets/logo.png";
 import { RotateCcw } from "lucide-react";
 
@@ -25,8 +24,6 @@ const assistantPhrases = [
   "Prático e delicioso! 😋",
 ];
 
-const categories = getAllCategories();
-
 export default function HomePage({ onChoose }: HomePageProps) {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>("home");
@@ -38,7 +35,6 @@ export default function HomePage({ onChoose }: HomePageProps) {
   const [personalMessage, setPersonalMessage] = useState("");
   const [smartTip, setSmartTip] = useState("");
 
-  // Search
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [selectedFood, setSelectedFood] = useState<Food | null>(null);
@@ -52,12 +48,7 @@ export default function HomePage({ onChoose }: HomePageProps) {
       }).slice(0, 5)
     : [];
 
-  const reset = () => {
-    setStep("home");
-    setResult(null);
-    setPersonalMessage("");
-    setSmartTip("");
-  };
+  const reset = () => { setStep("home"); setResult(null); setPersonalMessage(""); setSmartTip(""); };
 
   const handleQ1 = (isHungry: boolean) => { setHungry(isHungry); setStep("q2"); };
   const handleQ2 = (b: BudgetLevel) => { setBudget(b); setStep("q3"); };
@@ -65,31 +56,21 @@ export default function HomePage({ onChoose }: HomePageProps) {
   const handleQ4 = (pref: PreferenceMode) => {
     setPreference(pref);
     const { food, message, smartTip: tip } = getPersonalizedSuggestion(hungry, budget, speed, pref);
-    setResult(food);
-    setPersonalMessage(message);
-    setSmartTip(tip);
-    onChoose(food);
-    setStep("result");
+    setResult(food); setPersonalMessage(message); setSmartTip(tip); onChoose(food); setStep("result");
   };
 
   const decidirPorMim = () => {
     const food = getRandomFood();
-    setResult(food);
-    setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
-    setSmartTip("💡 Essa opção equilibra custo e tempo!");
-    onChoose(food);
-    setStep("result");
+    setResult(food); setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
+    setSmartTip("💡 Essa opção equilibra custo e tempo!"); onChoose(food); setStep("result");
   };
 
   const outraOpcao = () => {
     const food = getRandomFood(result?.id);
-    setResult(food);
-    setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
-    setSmartTip("💡 Essa opção equilibra custo e tempo!");
-    onChoose(food);
+    setResult(food); setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
+    setSmartTip("💡 Essa opção equilibra custo e tempo!"); onChoose(food);
   };
 
-  // Question flow screens
   if (step === "q1") return <QuestionScreen step={1} emoji="🤤" title="Está com muita fome?" subtitle="Isso ajuda a escolher o tamanho ideal" onReset={reset}><div className="flex gap-4 w-full max-w-xs animate-slide-up"><button onClick={() => handleQ1(true)} className="flex-1 gradient-primary text-primary-foreground font-bold text-lg py-5 rounded-2xl shadow-lg active:scale-95 transition-transform">Sim! 🍽️</button><button onClick={() => handleQ1(false)} className="flex-1 bg-muted text-foreground font-bold text-lg py-5 rounded-2xl shadow-md active:scale-95 transition-transform">Não muito 😊</button></div></QuestionScreen>;
   if (step === "q2") return <QuestionScreen step={2} emoji="💰" title="Quanto quer gastar?" subtitle="Sem julgamento, é só pra te ajudar 😉" onReset={reset}><div className="flex flex-col gap-3 w-full max-w-xs animate-slide-up"><button onClick={() => handleQ2("baixo")} className="gradient-primary text-primary-foreground font-bold text-lg py-4 rounded-2xl shadow-lg active:scale-95 transition-transform">💚 Gastar pouco (até R$15)</button><button onClick={() => handleQ2("medio")} className="gradient-secondary text-secondary-foreground font-bold text-lg py-4 rounded-2xl shadow-md active:scale-95 transition-transform">🧡 Normal (R$15–30)</button><button onClick={() => handleQ2("alto")} className="bg-muted text-foreground font-bold text-lg py-4 rounded-2xl shadow-md active:scale-95 transition-transform">💎 Posso gastar mais</button></div></QuestionScreen>;
   if (step === "q3") return <QuestionScreen step={3} emoji="⚡" title="Quer algo rápido?" subtitle="Quase lá! Mais uma pergunta 🎯" onReset={reset}><div className="flex gap-4 w-full max-w-xs animate-slide-up"><button onClick={() => handleQ3("rapido")} className="flex-1 gradient-secondary text-secondary-foreground font-bold text-lg py-5 rounded-2xl shadow-lg active:scale-95 transition-transform">Rápido! ⚡</button><button onClick={() => handleQ3("tanto-faz")} className="flex-1 bg-muted text-foreground font-bold text-lg py-5 rounded-2xl shadow-md active:scale-95 transition-transform">Tanto faz 🤷</button></div></QuestionScreen>;
@@ -99,18 +80,21 @@ export default function HomePage({ onChoose }: HomePageProps) {
     return <ResultScreen result={result} personalMessage={personalMessage} smartTip={smartTip} onOutraOpcao={outraOpcao} onReset={reset} />;
   }
 
-  // Main home hub
   return (
-    <div className="px-4 pt-6 pb-10">
+    <div className="px-4 pt-8 pb-10">
       {/* Header */}
-      <div className="text-center mb-5 animate-bounce-in">
-        <img src={logo} alt="EscolheAí" className="w-20 h-20 mx-auto mb-2 object-contain drop-shadow-lg" />
-        <h1 className="text-2xl font-black text-foreground">Sem ideia do que comer? 🤔</h1>
-        <p className="text-muted-foreground text-sm mt-1">A gente resolve pra você 🤖</p>
+      <div className="text-center mb-6 animate-bounce-in">
+        <img src={logo} alt="EscolheAí" className="w-24 h-24 mx-auto mb-3 object-contain drop-shadow-lg" />
+        <h1 className="text-2xl font-black text-foreground leading-tight">
+          Sem ideia do que comer<br />ou beber? 🤔
+        </h1>
+        <p className="text-muted-foreground text-sm mt-2 font-medium">
+          A gente escolhe por você 🍽️
+        </p>
       </div>
 
-      {/* Search bar */}
-      <div className="max-w-sm mx-auto mb-5 animate-slide-up relative">
+      {/* Search */}
+      <div className="max-w-sm mx-auto mb-6 animate-slide-up relative">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
           <input
@@ -123,21 +107,14 @@ export default function HomePage({ onChoose }: HomePageProps) {
             className="w-full bg-card border border-border rounded-2xl py-3.5 pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all"
           />
           {searchQuery && (
-            <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-              <X size={18} />
-            </button>
+            <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"><X size={18} /></button>
           )}
         </div>
-
-        {/* Search results dropdown */}
         {searchFocused && searchResults.length > 0 && (
           <div className="absolute z-20 top-full mt-1 w-full bg-card border border-border rounded-2xl shadow-lg overflow-hidden">
             {searchResults.map((item) => (
-              <button
-                key={item.id}
-                onMouseDown={() => { setSelectedFood(item); setRecipeOpen(true); setSearchQuery(""); }}
-                className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-accent/50 transition-colors border-b border-border/50 last:border-0"
-              >
+              <button key={item.id} onMouseDown={() => { setSelectedFood(item); setRecipeOpen(true); setSearchQuery(""); }}
+                className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-accent/50 transition-colors border-b border-border/50 last:border-0">
                 <span className="text-2xl">{item.emoji}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-foreground truncate">{item.name}</p>
@@ -149,83 +126,50 @@ export default function HomePage({ onChoose }: HomePageProps) {
                 <ChefHat size={14} className="text-primary shrink-0" />
               </button>
             ))}
-            <button
-              onMouseDown={() => { navigate("/buscar"); }}
-              className="w-full text-center px-4 py-2.5 text-xs font-bold text-primary hover:bg-accent/50 transition-colors"
-            >
+            <button onMouseDown={() => navigate("/buscar")} className="w-full text-center px-4 py-2.5 text-xs font-bold text-primary hover:bg-accent/50 transition-colors">
               Ver todos os resultados →
             </button>
           </div>
         )}
-
         {searchFocused && searchQuery.trim() && searchResults.length === 0 && (
           <div className="absolute z-20 top-full mt-1 w-full bg-card border border-border rounded-2xl shadow-lg p-4 text-center">
             <p className="text-sm text-muted-foreground">Nada encontrado 😕</p>
-            <button
-              onMouseDown={() => navigate("/buscar")}
-              className="mt-2 text-xs font-bold text-primary"
-            >
-              Buscar com IA na aba Buscar →
-            </button>
+            <button onMouseDown={() => navigate("/buscar")} className="mt-2 text-xs font-bold text-primary">Buscar com IA na aba Buscar →</button>
           </div>
         )}
       </div>
 
       {/* CTA buttons */}
-      <div className="max-w-sm mx-auto flex flex-col gap-3 mb-6 animate-slide-up">
-        <button
-          onClick={() => setStep("q1")}
-          className="gradient-primary text-primary-foreground font-black text-lg py-5 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
-        >
-          <Zap size={22} />
-          Decidir agora
-          <ArrowRight size={18} />
+      <div className="max-w-sm mx-auto flex flex-col gap-3 mb-8 animate-slide-up">
+        <button onClick={() => setStep("q1")}
+          className="gradient-primary text-primary-foreground font-black text-lg py-5 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
+          <Zap size={22} /> Decidir agora <ArrowRight size={18} />
         </button>
-        <button
-          onClick={decidirPorMim}
-          className="gradient-secondary text-secondary-foreground font-bold text-base py-4 rounded-2xl shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2"
-        >
-          <Shuffle size={20} />
-          Surpresa! Escolhe pra mim
+        <button onClick={decidirPorMim}
+          className="gradient-secondary text-secondary-foreground font-bold text-base py-4 rounded-2xl shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">
+          <Shuffle size={20} /> Surpresa! Escolhe pra mim
         </button>
       </div>
 
-      {/* Destaques do dia */}
-      <div className="max-w-sm mx-auto mb-6 animate-slide-up" style={{ animationDelay: "50ms" }}>
+      {/* Destaques */}
+      <div className="max-w-sm mx-auto mb-8 animate-slide-up" style={{ animationDelay: "50ms" }}>
         <h2 className="text-lg font-black text-foreground mb-3 flex items-center gap-2">
-          <Sparkles size={20} className="text-secondary" />
-          Destaques do dia 🔥
+          <Sparkles size={20} className="text-secondary" /> Destaques do dia 🔥
         </h2>
         <PartnerBanner />
       </div>
 
-      {/* Categorias */}
-      <div className="max-w-sm mx-auto mb-6 animate-slide-up" style={{ animationDelay: "100ms" }}>
-        <h2 className="text-lg font-black text-foreground mb-3">Categorias</h2>
-        <div className="grid grid-cols-3 gap-2.5">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => navigate("/lojas")}
-              className="bg-card border border-border rounded-2xl p-4 flex flex-col items-center gap-1.5 shadow-sm active:scale-95 transition-transform hover:border-primary/30"
-            >
-              <span className="text-3xl">{categoryLabels[cat].emoji}</span>
-              <span className="text-xs font-bold text-foreground">{categoryLabels[cat].label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Nav buttons */}
-      <div className="max-w-sm mx-auto flex flex-col gap-2.5 animate-slide-up" style={{ animationDelay: "150ms" }}>
-        <NavButton icon={<ShoppingBag size={20} />} label="Explorar lojas 🛍️" onClick={() => navigate("/lojas")} />
-        <NavButton icon={<Search size={20} />} label="Buscar receitas 🍽️" onClick={() => navigate("/buscar")} />
-        <NavButton icon={<Star size={20} />} label="Avaliar app ⭐" onClick={() => navigate("/avaliar")} />
-        <NavButton icon={<Mail size={20} />} label="Contato 📩" onClick={() => navigate("/contato")} />
+      {/* Navigation */}
+      <div className="max-w-sm mx-auto flex flex-col gap-3 animate-slide-up" style={{ animationDelay: "100ms" }}>
+        <NavButton icon={<ShoppingBag size={22} />} label="Explorar Lojas 🛍️" onClick={() => navigate("/lojas")} />
+        <NavButton icon={<Wine size={22} />} label="Bebidas & Drinks 🍹" onClick={() => navigate("/descobrir")} />
+        <NavButton icon={<Search size={22} />} label="Buscar Receitas 🔍" onClick={() => navigate("/buscar")} />
+        <NavButton icon={<Mail size={22} />} label="Contato 📩" onClick={() => navigate("/contato")} />
+        <NavButton icon={<Star size={22} />} label="Avaliar App ⭐" onClick={() => navigate("/avaliar")} />
       </div>
 
       {/* Footer */}
-      <p className="text-[10px] text-muted-foreground text-center mt-8">
+      <p className="text-[10px] text-muted-foreground text-center mt-10">
         © 2026 EscolheAí — Feito com ❤️
       </p>
 
@@ -234,21 +178,17 @@ export default function HomePage({ onChoose }: HomePageProps) {
   );
 }
 
-/* ── Nav Button ── */
 function NavButton({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      className="w-full bg-card border border-border rounded-2xl px-5 py-4 flex items-center gap-3 shadow-sm active:scale-[0.98] transition-transform hover:border-primary/30 text-left"
-    >
+    <button onClick={onClick}
+      className="w-full bg-card border border-border rounded-2xl px-5 py-4.5 flex items-center gap-3 shadow-sm active:scale-[0.97] transition-transform hover:border-primary/30 text-left">
       <span className="text-primary">{icon}</span>
-      <span className="text-sm font-bold text-foreground flex-1">{label}</span>
+      <span className="text-base font-bold text-foreground flex-1">{label}</span>
       <ArrowRight size={16} className="text-muted-foreground" />
     </button>
   );
 }
 
-/* ── Sub-components ── */
 function QuestionScreen({ step, emoji, title, subtitle, onReset, children }: { step: number; emoji: string; title: string; subtitle: string; onReset: () => void; children: React.ReactNode }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 gap-8">
