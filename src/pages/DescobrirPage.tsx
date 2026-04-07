@@ -72,7 +72,7 @@ export default function DescobrirPage() {
                   </span>
                 </div>
                 <p className="text-lg font-semibold text-primary mt-1">
-                  R${item.priceMin} - R${item.priceMax}
+                  R${item.priceMin} - R${item.priceMax} <span className="text-xs font-normal text-muted-foreground">(estimado)</span>
                 </p>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <span className="text-xs bg-muted text-muted-foreground rounded-lg px-2.5 py-1 flex items-center gap-1">
