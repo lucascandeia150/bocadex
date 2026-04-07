@@ -81,22 +81,24 @@ export default function HomePage({ onChoose }: HomePageProps) {
   }
 
   return (
-    <div className="px-4 pt-8 pb-10">
-      {/* Header */}
-      <div className="text-center mb-6 animate-bounce-in">
-        <img src={logo} alt="EscolheAí" className="w-24 h-24 mx-auto mb-3 object-contain drop-shadow-lg" />
-        <h1 className="text-2xl font-black text-foreground leading-tight">
+    <div className="px-4 pt-10 pb-12">
+      {/* Hero */}
+      <div className="text-center mb-8 animate-bounce-in">
+        <div className="w-28 h-28 mx-auto mb-4 rounded-3xl bg-card shadow-xl border border-border/50 flex items-center justify-center p-2">
+          <img src={logo} alt="EscolheAí" className="w-full h-full object-contain" />
+        </div>
+        <h1 className="text-[1.6rem] font-black text-foreground leading-snug tracking-tight">
           Sem ideia do que comer<br />ou beber? 🤔
         </h1>
-        <p className="text-muted-foreground text-sm mt-2 font-medium">
+        <p className="text-secondary font-extrabold text-base mt-2">
           A gente escolhe por você 🍽️
         </p>
       </div>
 
       {/* Search */}
-      <div className="max-w-sm mx-auto mb-6 animate-slide-up relative">
+      <div className="max-w-sm mx-auto mb-8 animate-slide-up relative">
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
           <input
             type="text"
             value={searchQuery}
@@ -104,7 +106,7 @@ export default function HomePage({ onChoose }: HomePageProps) {
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
             placeholder="Buscar comida ou receita... 🔍"
-            className="w-full bg-card border border-border rounded-2xl py-3.5 pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all"
+            className="w-full bg-card border border-border rounded-2xl py-4 pl-11 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 shadow-sm transition-all"
           />
           {searchQuery && (
             <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"><X size={18} /></button>
@@ -139,8 +141,8 @@ export default function HomePage({ onChoose }: HomePageProps) {
         )}
       </div>
 
-      {/* CTA buttons */}
-      <div className="max-w-sm mx-auto flex flex-col gap-3 mb-8 animate-slide-up">
+      {/* CTA principal */}
+      <div className="max-w-sm mx-auto flex flex-col gap-3 mb-10 animate-slide-up" style={{ animationDelay: "50ms" }}>
         <button onClick={() => setStep("q1")}
           className="gradient-primary text-primary-foreground font-black text-lg py-5 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
           <Zap size={22} /> Decidir agora <ArrowRight size={18} />
@@ -152,24 +154,38 @@ export default function HomePage({ onChoose }: HomePageProps) {
       </div>
 
       {/* Destaques */}
-      <div className="max-w-sm mx-auto mb-8 animate-slide-up" style={{ animationDelay: "50ms" }}>
+      <div className="max-w-sm mx-auto mb-10 animate-slide-up" style={{ animationDelay: "100ms" }}>
         <h2 className="text-lg font-black text-foreground mb-3 flex items-center gap-2">
           <Sparkles size={20} className="text-secondary" /> Destaques do dia 🔥
         </h2>
         <PartnerBanner />
       </div>
 
-      {/* Navigation */}
-      <div className="max-w-sm mx-auto flex flex-col gap-3 animate-slide-up" style={{ animationDelay: "100ms" }}>
-        <NavButton icon={<ShoppingBag size={22} />} label="Explorar Lojas 🛍️" onClick={() => navigate("/lojas")} />
-        <NavButton icon={<Wine size={22} />} label="Bebidas & Drinks 🍹" onClick={() => navigate("/descobrir")} />
-        <NavButton icon={<Search size={22} />} label="Buscar Receitas 🔍" onClick={() => navigate("/buscar")} />
-        <NavButton icon={<Mail size={22} />} label="Contato 📩" onClick={() => navigate("/contato")} />
-        <NavButton icon={<Star size={22} />} label="Avaliar App ⭐" onClick={() => navigate("/avaliar")} />
+      {/* Navegação */}
+      <div className="max-w-sm mx-auto animate-slide-up" style={{ animationDelay: "150ms" }}>
+        <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">Explorar</h2>
+        <div className="flex flex-col gap-3">
+          <NavButton icon={<ShoppingBag size={22} />} label="Explorar Lojas" emoji="🛍️" onClick={() => navigate("/lojas")} />
+          <NavButton icon={<Wine size={22} />} label="Bebidas & Drinks" emoji="🍹" onClick={() => navigate("/bebidas")} />
+          <NavButton icon={<Search size={22} />} label="Buscar Receitas" emoji="🔍" onClick={() => navigate("/buscar")} />
+        </div>
+
+        <div className="flex gap-3 mt-3">
+          <button onClick={() => navigate("/contato")}
+            className="flex-1 bg-card border border-border rounded-2xl px-4 py-4 flex flex-col items-center gap-1 shadow-sm active:scale-[0.97] transition-transform hover:border-primary/30">
+            <Mail size={20} className="text-primary" />
+            <span className="text-xs font-bold text-foreground">Contato 📩</span>
+          </button>
+          <button onClick={() => navigate("/avaliar")}
+            className="flex-1 bg-card border border-border rounded-2xl px-4 py-4 flex flex-col items-center gap-1 shadow-sm active:scale-[0.97] transition-transform hover:border-secondary/30">
+            <Star size={20} className="text-secondary" />
+            <span className="text-xs font-bold text-foreground">Avaliar ⭐</span>
+          </button>
+        </div>
       </div>
 
       {/* Footer */}
-      <p className="text-[10px] text-muted-foreground text-center mt-10">
+      <p className="text-[10px] text-muted-foreground text-center mt-12">
         © 2026 EscolheAí — Feito com ❤️
       </p>
 
@@ -178,13 +194,13 @@ export default function HomePage({ onChoose }: HomePageProps) {
   );
 }
 
-function NavButton({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+function NavButton({ icon, label, emoji, onClick }: { icon: React.ReactNode; label: string; emoji: string; onClick: () => void }) {
   return (
     <button onClick={onClick}
-      className="w-full bg-card border border-border rounded-2xl px-5 py-4.5 flex items-center gap-3 shadow-sm active:scale-[0.97] transition-transform hover:border-primary/30 text-left">
-      <span className="text-primary">{icon}</span>
-      <span className="text-base font-bold text-foreground flex-1">{label}</span>
-      <ArrowRight size={16} className="text-muted-foreground" />
+      className="w-full bg-card border border-border rounded-2xl px-5 py-4 flex items-center gap-3 shadow-sm active:scale-[0.97] transition-transform hover:border-primary/30 text-left group">
+      <span className="text-primary group-hover:scale-110 transition-transform">{icon}</span>
+      <span className="text-base font-bold text-foreground flex-1">{label} {emoji}</span>
+      <ArrowRight size={16} className="text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
     </button>
   );
 }
