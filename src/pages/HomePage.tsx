@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine } from "lucide-react";
-import { getPersonalizedSuggestion, getRandomFood, allItems } from "@/data/foods";
+import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine, Plus } from "lucide-react";
+import { getPersonalizedSuggestion, getRandomFood, getPairedDrink, getComboPhrase, getDrinkContextPhrase, allItems } from "@/data/foods";
 import type { Food, BudgetLevel, PreferenceMode } from "@/data/foods";
 import { FoodCard } from "@/components/FoodCard";
 import { FoodActions } from "@/components/FoodActions";
@@ -32,6 +32,8 @@ export default function HomePage({ onChoose }: HomePageProps) {
   const [speed, setSpeed] = useState<"rapido" | "tanto-faz">("tanto-faz");
   const [preference, setPreference] = useState<PreferenceMode>("tanto-faz");
   const [result, setResult] = useState<Food | null>(null);
+  const [pairedDrink, setPairedDrink] = useState<Food | null>(null);
+  const [drinkPhrase, setDrinkPhrase] = useState("");
   const [personalMessage, setPersonalMessage] = useState("");
   const [smartTip, setSmartTip] = useState("");
 
@@ -39,6 +41,7 @@ export default function HomePage({ onChoose }: HomePageProps) {
   const [searchFocused, setSearchFocused] = useState(false);
   const [selectedFood, setSelectedFood] = useState<Food | null>(null);
   const [recipeOpen, setRecipeOpen] = useState(false);
+  const [drinkRecipeOpen, setDrinkRecipeOpen] = useState(false);
 
   const searchResults = searchQuery.trim()
     ? allItems.filter((item) => {
@@ -48,27 +51,29 @@ export default function HomePage({ onChoose }: HomePageProps) {
       }).slice(0, 5)
     : [];
 
-  const reset = () => { setStep("home"); setResult(null); setPersonalMessage(""); setSmartTip(""); };
+  const reset = () => { setStep("home"); setResult(null); setPairedDrink(null); setPersonalMessage(""); setSmartTip(""); setDrinkPhrase(""); };
 
   const handleQ1 = (isHungry: boolean) => { setHungry(isHungry); setStep("q2"); };
   const handleQ2 = (b: BudgetLevel) => { setBudget(b); setStep("q3"); };
   const handleQ3 = (s: "rapido" | "tanto-faz") => { setSpeed(s); setStep("q4"); };
   const handleQ4 = (pref: PreferenceMode) => {
     setPreference(pref);
-    const { food, message, smartTip: tip } = getPersonalizedSuggestion(hungry, budget, speed, pref);
-    setResult(food); setPersonalMessage(message); setSmartTip(tip); onChoose(food); setStep("result");
+    const { food, drink, message, smartTip: tip, drinkPhrase: dp } = getPersonalizedSuggestion(hungry, budget, speed, pref);
+    setResult(food); setPairedDrink(drink); setDrinkPhrase(dp); setPersonalMessage(message); setSmartTip(tip); onChoose(food); setStep("result");
   };
 
   const decidirPorMim = () => {
     const food = getRandomFood();
-    setResult(food); setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
-    setSmartTip("💡 Essa opção equilibra custo e tempo!"); onChoose(food); setStep("result");
+    const drink = getPairedDrink(food);
+    setResult(food); setPairedDrink(drink); setDrinkPhrase(getDrinkContextPhrase());
+    setPersonalMessage(getComboPhrase()); setSmartTip("💡 Essa opção equilibra custo e tempo!"); onChoose(food); setStep("result");
   };
 
   const outraOpcao = () => {
     const food = getRandomFood(result?.id);
-    setResult(food); setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
-    setSmartTip("💡 Essa opção equilibra custo e tempo!"); onChoose(food);
+    const drink = getPairedDrink(food);
+    setResult(food); setPairedDrink(drink); setDrinkPhrase(getDrinkContextPhrase());
+    setPersonalMessage(getComboPhrase()); setSmartTip("💡 Essa opção equilibra custo e tempo!"); onChoose(food);
   };
 
   if (step === "q1") return <QuestionScreen step={1} emoji="🤤" title="Está com muita fome?" subtitle="Isso ajuda a escolher o tamanho ideal" onReset={reset}><div className="flex gap-4 w-full max-w-xs animate-slide-up"><button onClick={() => handleQ1(true)} className="flex-1 gradient-primary text-primary-foreground font-bold text-lg py-5 rounded-2xl shadow-lg active:scale-95 transition-transform">Sim! 🍽️</button><button onClick={() => handleQ1(false)} className="flex-1 bg-muted text-foreground font-bold text-lg py-5 rounded-2xl shadow-md active:scale-95 transition-transform">Não muito 😊</button></div></QuestionScreen>;
@@ -77,7 +82,7 @@ export default function HomePage({ onChoose }: HomePageProps) {
   if (step === "q4") return <QuestionScreen step={4} emoji="🍳" title="Cozinhar ou pedir?" subtitle="Última! Isso muda tudo ✨" onReset={reset}><div className="flex flex-col gap-3 w-full max-w-xs animate-slide-up"><button onClick={() => handleQ4("cozinhar")} className="gradient-primary text-primary-foreground font-bold text-lg py-4 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">👨‍🍳 Fazer em casa</button><button onClick={() => handleQ4("pedir")} className="gradient-secondary text-secondary-foreground font-bold text-lg py-4 rounded-2xl shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">🛵 Pedir delivery</button><button onClick={() => handleQ4("tanto-faz")} className="bg-muted text-foreground font-bold text-lg py-4 rounded-2xl shadow-md active:scale-95 transition-transform">🤷 Tanto faz</button></div></QuestionScreen>;
 
   if (step === "result" && result) {
-    return <ResultScreen result={result} personalMessage={personalMessage} smartTip={smartTip} onOutraOpcao={outraOpcao} onReset={reset} />;
+    return <ResultScreen result={result} pairedDrink={pairedDrink} drinkPhrase={drinkPhrase} personalMessage={personalMessage} smartTip={smartTip} onOutraOpcao={outraOpcao} onReset={reset} />;
   }
 
   return (
@@ -224,7 +229,8 @@ function QuestionScreen({ step, emoji, title, subtitle, onReset, children }: { s
   );
 }
 
-function ResultScreen({ result, personalMessage, smartTip, onOutraOpcao, onReset }: { result: Food; personalMessage: string; smartTip: string; onOutraOpcao: () => void; onReset: () => void }) {
+function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smartTip, onOutraOpcao, onReset }: { result: Food; pairedDrink: Food | null; drinkPhrase: string; personalMessage: string; smartTip: string; onOutraOpcao: () => void; onReset: () => void }) {
+  const [drinkRecipeOpen, setDrinkRecipeOpen] = useState(false);
   return (
     <div className="flex flex-col items-center px-6 pt-6 pb-10 gap-4">
       <div className="text-center animate-bounce-in">
@@ -234,7 +240,55 @@ function ResultScreen({ result, personalMessage, smartTip, onOutraOpcao, onReset
       <div className="w-full max-w-sm bg-accent/50 rounded-2xl p-4 text-center animate-slide-up">
         <p className="text-sm font-semibold text-accent-foreground">{personalMessage}</p>
       </div>
-      <div className="w-full max-w-sm"><FoodCard food={result} /></div>
+
+      {/* Combo visual */}
+      <div className="w-full max-w-sm animate-slide-up">
+        {/* Food */}
+        <div className="bg-card border border-border rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <span className="text-4xl">{result.emoji}</span>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-foreground">{result.name}</h3>
+              <p className="text-xs text-muted-foreground">R${result.priceMin}–R${result.priceMax} • {result.recipe.prepTime}</p>
+            </div>
+            <span className="text-[10px] font-bold bg-primary/15 text-primary px-2 py-0.5 rounded-full">🍽️ Comida</span>
+          </div>
+        </div>
+
+        {/* Connector */}
+        {pairedDrink && (
+          <>
+            <div className="flex items-center justify-center py-2">
+              <div className="w-px h-4 bg-border" />
+              <Plus size={16} className="text-secondary mx-1" />
+              <div className="w-px h-4 bg-border" />
+            </div>
+
+            {/* Drink */}
+            <div className="bg-card border border-secondary/30 rounded-2xl p-4 shadow-sm">
+              <p className="text-[10px] font-bold text-secondary mb-2">{drinkPhrase}</p>
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">{pairedDrink.emoji}</span>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-foreground">{pairedDrink.name}</h3>
+                  <p className="text-xs text-muted-foreground">R${pairedDrink.priceMin}–R${pairedDrink.priceMax} • {pairedDrink.recipe.prepTime}</p>
+                </div>
+                <button onClick={() => setDrinkRecipeOpen(true)} className="text-[10px] font-bold bg-secondary/15 text-secondary px-2 py-1 rounded-full">
+                  🥤 Ver receita
+                </button>
+              </div>
+            </div>
+
+            {/* Combo total */}
+            <div className="mt-3 bg-accent/60 rounded-xl p-3 text-center">
+              <p className="text-xs font-bold text-accent-foreground">
+                💰 Combo estimado: R${result.priceMin + pairedDrink.priceMin}–R${result.priceMax + pairedDrink.priceMax}
+              </p>
+            </div>
+          </>
+        )}
+      </div>
+
       {result.savingsAmount && (
         <div className="w-full max-w-sm bg-primary/10 rounded-xl p-3 text-center animate-slide-up">
           <p className="text-sm font-bold text-primary">💰 Economize até R${result.savingsAmount} comparado a outras opções!</p>
@@ -249,6 +303,8 @@ function ResultScreen({ result, personalMessage, smartTip, onOutraOpcao, onReset
           <RotateCcw size={18} />Recomeçar
         </button>
       </div>
+
+      {pairedDrink && <RecipeModal food={pairedDrink} open={drinkRecipeOpen} onOpenChange={setDrinkRecipeOpen} />}
     </div>
   );
 }
