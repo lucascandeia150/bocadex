@@ -1,21 +1,18 @@
 import { Routes, Route } from "react-router-dom";
-import { BottomTabs } from "@/components/BottomTabs";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { useHistory } from "@/hooks/useHistory";
 import type { Food } from "@/data/foods";
 import HomePage from "./HomePage";
 import LojasPage from "./LojasPage";
 import DescobrirPage from "./DescobrirPage";
-import RestaurantesPage from "./RestaurantesPage";
-import HistoricoPage from "./HistoricoPage";
 import BuscarPage from "./BuscarPage";
+import HistoricoPage from "./HistoricoPage";
 import ContatoPage from "./ContatoPage";
 import AvaliarPage from "./AvaliarPage";
 import NotFound from "./NotFound";
 
 export default function AppLayout() {
   const { history, addEntry, clearHistory } = useHistory();
-
   const handleChoose = (food: Food) => addEntry(food);
 
   return (
@@ -25,13 +22,11 @@ export default function AppLayout() {
         <Route path="/lojas" element={<LojasPage />} />
         <Route path="/descobrir" element={<DescobrirPage />} />
         <Route path="/buscar" element={<BuscarPage />} />
-        <Route path="/restaurantes" element={<RestaurantesPage />} />
         <Route path="/historico" element={<HistoricoPage history={history} onClear={clearHistory} />} />
         <Route path="/contato" element={<ContatoPage />} />
         <Route path="/avaliar" element={<AvaliarPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <BottomTabs />
       <InstallPrompt />
     </div>
   );
