@@ -30,6 +30,7 @@ export default function AppLayout() {
         <Route path="/avaliar" element={<AvaliarPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <WhatsAppFloat />
       <InstallPrompt />
     </div>
   );
