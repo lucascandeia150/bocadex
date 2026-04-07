@@ -1,23 +1,14 @@
-import { useState, useEffect, useRef } from "react";
-import { MapPin, Store, UtensilsCrossed, Coffee, Truck, Navigation, Locate } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { MapPin, Store, UtensilsCrossed, Coffee, Truck, LocateFixed } from "lucide-react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-// Fix default marker icons
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-});
 
 interface Restaurant {
   id: string;
@@ -57,248 +48,226 @@ const priceLabels: Record<Restaurant["priceRange"], string> = {
   caro: "💎 Caro",
 };
 
-const createEmojiIcon = (emoji: string) =>
-  L.divIcon({
-    html: `<div style="font-size:28px;text-align:center;line-height:1">${emoji}</div>`,
-    className: "",
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -28],
-  });
+const fallbackLocation = { lat: -23.5505, lng: -46.6333 };
 
-const userIcon = L.divIcon({
-  html: `<div style="width:16px;height:16px;background:hsl(142,71%,45%);border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>`,
-  className: "",
-  iconSize: [16, 16],
-  iconAnchor: [8, 8],
-});
+const baseRestaurants: Omit<Restaurant, "lat" | "lng">[] = [
+  { id: "1", name: "Cantina da Vó", type: "marmitaria", distance: "0.8 km", priceRange: "barato", emoji: "🍛", specialty: "Marmitas caseiras" },
+  { id: "2", name: "Burger House", type: "lanchonete", distance: "1.2 km", priceRange: "médio", emoji: "🍔", specialty: "Hambúrgueres artesanais" },
+  { id: "3", name: "Sabor & Arte", type: "restaurante", distance: "1.5 km", priceRange: "médio", emoji: "🍽️", specialty: "Comida brasileira" },
+  { id: "4", name: "Café Central", type: "cafeteria", distance: "0.5 km", priceRange: "barato", emoji: "☕", specialty: "Cafés e lanches rápidos" },
+  { id: "5", name: "Pizza do Bairro", type: "restaurante", distance: "2.0 km", priceRange: "médio", emoji: "🍕", specialty: "Pizzas e massas" },
+  { id: "6", name: "Marmitex Express", type: "marmitaria", distance: "0.3 km", priceRange: "barato", emoji: "🥡", specialty: "Marmitas a partir de R$12" },
+  { id: "7", name: "Açaí Tropical", type: "lanchonete", distance: "1.8 km", priceRange: "médio", emoji: "🫐", specialty: "Açaí e sucos naturais" },
+  { id: "8", name: "Gourmet Steak", type: "restaurante", distance: "3.2 km", priceRange: "caro", emoji: "🥩", specialty: "Carnes nobres e vinhos" },
+];
 
-// Generate simulated restaurants near user location
+const offsets = [
+  { dlat: 0.003, dlng: 0.002 },
+  { dlat: -0.005, dlng: 0.004 },
+  { dlat: 0.006, dlng: -0.003 },
+  { dlat: -0.002, dlng: -0.005 },
+  { dlat: 0.008, dlng: 0.001 },
+  { dlat: -0.001, dlng: 0.007 },
+  { dlat: 0.004, dlng: -0.006 },
+  { dlat: -0.007, dlng: -0.002 },
+];
+
 function generateNearbyRestaurants(lat: number, lng: number): Restaurant[] {
-  const offsets = [
-    { dlat: 0.003, dlng: 0.002 },
-    { dlat: -0.005, dlng: 0.004 },
-    { dlat: 0.006, dlng: -0.003 },
-    { dlat: -0.002, dlng: -0.005 },
-    { dlat: 0.008, dlng: 0.001 },
-    { dlat: -0.001, dlng: 0.007 },
-    { dlat: 0.004, dlng: -0.006 },
-    { dlat: -0.007, dlng: -0.002 },
-  ];
-
-  const base: Omit<Restaurant, "lat" | "lng">[] = [
-    { id: "1", name: "Cantina da Vó", type: "marmitaria", distance: "0.8 km", priceRange: "barato", emoji: "🍛", specialty: "Marmitas caseiras" },
-    { id: "2", name: "Burger House", type: "lanchonete", distance: "1.2 km", priceRange: "médio", emoji: "🍔", specialty: "Hambúrgueres artesanais" },
-    { id: "3", name: "Sabor & Arte", type: "restaurante", distance: "1.5 km", priceRange: "médio", emoji: "🍽️", specialty: "Comida brasileira" },
-    { id: "4", name: "Café Central", type: "cafeteria", distance: "0.5 km", priceRange: "barato", emoji: "☕", specialty: "Cafés e lanches rápidos" },
-    { id: "5", name: "Pizza do Bairro", type: "restaurante", distance: "2.0 km", priceRange: "médio", emoji: "🍕", specialty: "Pizzas e massas" },
-    { id: "6", name: "Marmitex Express", type: "marmitaria", distance: "0.3 km", priceRange: "barato", emoji: "🥡", specialty: "Marmitas a partir de R$12" },
-    { id: "7", name: "Açaí Tropical", type: "lanchonete", distance: "1.8 km", priceRange: "médio", emoji: "🫐", specialty: "Açaí e sucos naturais" },
-    { id: "8", name: "Gourmet Steak", type: "restaurante", distance: "3.2 km", priceRange: "caro", emoji: "🥩", specialty: "Carnes nobres e vinhos" },
-  ];
-
-  return base.map((r, i) => ({
-    ...r,
-    lat: lat + offsets[i].dlat,
-    lng: lng + offsets[i].dlng,
+  return baseRestaurants.map((restaurant, index) => ({
+    ...restaurant,
+    lat: lat + offsets[index].dlat,
+    lng: lng + offsets[index].dlng,
   }));
 }
 
-function FlyToLocation({ lat, lng }: { lat: number; lng: number }) {
-  const map = useMap();
-  useEffect(() => {
-    map.flyTo([lat, lng], 15, { duration: 1.5 });
-  }, [lat, lng, map]);
-  return null;
+function createEmojiIcon(emoji: string) {
+  return L.divIcon({
+    html: `<div style="font-size:26px;line-height:1;text-align:center;transform:translateY(-2px)">${emoji}</div>`,
+    className: "restaurant-emoji-marker",
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -24],
+  });
 }
 
-type ViewMode = "map" | "list";
+function createUserIcon() {
+  return L.divIcon({
+    html: '<div style="width:18px;height:18px;border-radius:9999px;background:#22c55e;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,.2)"></div>',
+    className: "user-location-marker",
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+  });
+}
 
 export default function RestaurantesPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selected, setSelected] = useState<Restaurant | null>(null);
-  const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null);
-  const [locError, setLocError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [view, setView] = useState<ViewMode>("map");
+  const [userLocation, setUserLocation] = useState(fallbackLocation);
+  const [loadingLocation, setLoadingLocation] = useState(true);
+  const [locationMessage, setLocationMessage] = useState("Para mostrar opções próximas, precisamos acessar sua localização 📍");
+
+  const mapElementRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const markerLayerRef = useRef<L.LayerGroup | null>(null);
+
+  const restaurants = useMemo(
+    () => generateNearbyRestaurants(userLocation.lat, userLocation.lng),
+    [userLocation],
+  );
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      setLocError("Seu navegador não suporta geolocalização");
-      setLoading(false);
-      // Fallback: São Paulo center
-      const fallback = { lat: -23.5505, lng: -46.6333 };
-      setUserPos(fallback);
-      setRestaurants(generateNearbyRestaurants(fallback.lat, fallback.lng));
+      setLocationMessage("Seu navegador não suporta localização. Mostrando opções próximas simuladas.");
+      setLoadingLocation(false);
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        setUserPos(coords);
-        setRestaurants(generateNearbyRestaurants(coords.lat, coords.lng));
-        setLoading(false);
+      (position) => {
+        setUserLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+        setLocationMessage("Mostrando opções simuladas perto de você 📍");
+        setLoadingLocation(false);
       },
       () => {
-        setLocError("Não foi possível acessar sua localização");
-        setLoading(false);
-        const fallback = { lat: -23.5505, lng: -46.6333 };
-        setUserPos(fallback);
-        setRestaurants(generateNearbyRestaurants(fallback.lat, fallback.lng));
+        setLocationMessage("Não conseguimos acessar sua localização. Mostrando opções próximas simuladas.");
+        setLoadingLocation(false);
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      {
+        enableHighAccuracy: true,
+        timeout: 8000,
+        maximumAge: 60000,
+      },
     );
   }, []);
 
-  const handleView = (r: Restaurant) => {
-    setSelected(r);
+  useEffect(() => {
+    if (!mapElementRef.current || mapRef.current) return;
+
+    const map = L.map(mapElementRef.current, {
+      zoomControl: false,
+      attributionControl: true,
+    }).setView([userLocation.lat, userLocation.lng], 14);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; OpenStreetMap contributors',
+    }).addTo(map);
+
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+
+    mapRef.current = map;
+    markerLayerRef.current = L.layerGroup().addTo(map);
+
+    return () => {
+      markerLayerRef.current?.clearLayers();
+      map.remove();
+      mapRef.current = null;
+      markerLayerRef.current = null;
+    };
+  }, [userLocation.lat, userLocation.lng]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const markerLayer = markerLayerRef.current;
+    if (!map || !markerLayer) return;
+
+    markerLayer.clearLayers();
+    map.setView([userLocation.lat, userLocation.lng], 14, { animate: true });
+
+    L.marker([userLocation.lat, userLocation.lng], { icon: createUserIcon() })
+      .bindPopup("Você está aqui 📍")
+      .addTo(markerLayer);
+
+    restaurants.forEach((restaurant) => {
+      const popupHtml = `
+        <div style="min-width:150px">
+          <div style="font-weight:700;margin-bottom:4px">${restaurant.emoji} ${restaurant.name}</div>
+          <div style="font-size:12px;opacity:.75;margin-bottom:6px">${restaurant.specialty}</div>
+          <div style="font-size:12px">${restaurant.distance} • ${priceLabels[restaurant.priceRange]}</div>
+        </div>
+      `;
+
+      L.marker([restaurant.lat, restaurant.lng], { icon: createEmojiIcon(restaurant.emoji) })
+        .bindPopup(popupHtml)
+        .on("click", () => setSelected(restaurant))
+        .addTo(markerLayer);
+    });
+  }, [restaurants, userLocation]);
+
+  const handleView = (restaurant: Restaurant) => {
+    setSelected(restaurant);
     setDialogOpen(true);
   };
 
+  useEffect(() => {
+    if (selected) {
+      setDialogOpen(true);
+    }
+  }, [selected]);
+
   return (
     <div className="px-4 pt-6 pb-24">
-      {/* Header */}
-      <div className="text-center mb-4 animate-bounce-in">
+      <div className="text-center mb-6 animate-bounce-in">
         <MapPin className="mx-auto text-secondary mb-2" size={32} />
         <h1 className="text-2xl font-black text-foreground">Restaurantes Próximos</h1>
         <p className="text-muted-foreground text-sm mt-1">Opções perto de você 📍</p>
       </div>
 
-      {/* Location status */}
-      {loading && (
-        <div className="max-w-sm mx-auto mb-4 bg-accent/60 rounded-xl p-4 text-center animate-pulse">
-          <Locate className="mx-auto text-primary mb-2 animate-spin" size={24} />
-          <p className="text-sm text-foreground font-semibold">Buscando sua localização...</p>
-          <p className="text-xs text-muted-foreground mt-1">Para mostrar opções próximas, precisamos acessar sua localização 📍</p>
+      <div className="max-w-sm mx-auto mb-4 bg-accent/60 rounded-xl p-4 text-center animate-slide-up">
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <LocateFixed className={loadingLocation ? "text-primary animate-pulse" : "text-primary"} size={16} />
+          <p className="text-sm font-semibold text-foreground">Localização</p>
         </div>
-      )}
+        <p className="text-xs text-muted-foreground">{locationMessage}</p>
+      </div>
 
-      {locError && (
-        <div className="max-w-sm mx-auto mb-4 bg-secondary/10 rounded-xl p-3 text-center">
-          <p className="text-xs text-muted-foreground">⚠️ {locError} — mostrando região padrão (São Paulo)</p>
-        </div>
-      )}
-
-      {/* View toggle */}
-      {!loading && (
-        <div className="max-w-sm mx-auto flex gap-2 mb-4 animate-slide-up">
-          <button
-            onClick={() => setView("map")}
-            className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all ${
-              view === "map"
-                ? "gradient-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground"
-            }`}
-          >
-            🗺️ Mapa
-          </button>
-          <button
-            onClick={() => setView("list")}
-            className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all ${
-              view === "list"
-                ? "gradient-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground"
-            }`}
-          >
-            📋 Lista
-          </button>
-        </div>
-      )}
-
-      {/* Disclaimer */}
       <div className="max-w-sm mx-auto mb-4 bg-accent/60 rounded-xl p-3 text-center animate-slide-up">
         <p className="text-xs text-muted-foreground">
           📌 Lista simulada — os valores e distâncias são estimativas e podem variar
         </p>
       </div>
 
-      {/* Map View */}
-      {!loading && userPos && view === "map" && (
-        <div className="max-w-sm mx-auto mb-4 rounded-2xl overflow-hidden shadow-lg border border-border animate-slide-up" style={{ height: 320 }}>
-          <MapContainer
-            center={[userPos.lat, userPos.lng]}
-            zoom={15}
-            scrollWheelZoom={true}
-            style={{ height: "100%", width: "100%" }}
-            zoomControl={false}
+      <div className="max-w-sm mx-auto mb-5 animate-slide-up">
+        <div ref={mapElementRef} className="h-72 w-full rounded-2xl border border-border shadow-md overflow-hidden" />
+      </div>
+
+      <div className="max-w-sm mx-auto flex flex-col gap-3">
+        {restaurants.map((restaurant, index) => (
+          <div
+            key={restaurant.id}
+            className="rounded-2xl bg-card border border-border shadow-md p-4 animate-slide-up"
+            style={{ animationDelay: `${index * 50}ms` }}
           >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <FlyToLocation lat={userPos.lat} lng={userPos.lng} />
-
-            {/* User marker */}
-            <Marker position={[userPos.lat, userPos.lng]} icon={userIcon}>
-              <Popup>
-                <span className="font-bold">Você está aqui 📍</span>
-              </Popup>
-            </Marker>
-
-            {/* Restaurant markers */}
-            {restaurants.map((r) => (
-              <Marker key={r.id} position={[r.lat, r.lng]} icon={createEmojiIcon(r.emoji)}>
-                <Popup>
-                  <div className="text-center min-w-[140px]">
-                    <p className="font-bold text-sm">{r.emoji} {r.name}</p>
-                    <p className="text-xs text-gray-500">{r.specialty}</p>
-                    <p className="text-xs mt-1">{r.distance} • {priceLabels[r.priceRange]}</p>
-                    <button
-                      onClick={() => handleView(r)}
-                      className="mt-2 text-xs font-bold px-3 py-1 rounded-lg"
-                      style={{ background: "hsl(142,71%,45%)", color: "white" }}
-                    >
-                      Ver opção
-                    </button>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
-          </MapContainer>
-        </div>
-      )}
-
-      {/* List View */}
-      {!loading && view === "list" && (
-        <div className="max-w-sm mx-auto flex flex-col gap-3">
-          {restaurants.map((r, i) => (
-            <div
-              key={r.id}
-              className="rounded-2xl bg-card border border-border shadow-md p-4 animate-slide-up"
-              style={{ animationDelay: `${i * 50}ms` }}
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-4xl">{r.emoji}</span>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-bold text-foreground">{r.name}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">{r.specialty}</p>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    <span className="text-[10px] bg-muted text-muted-foreground rounded-full px-2 py-0.5 flex items-center gap-1">
-                      {typeIcons[r.type]} {typeLabels[r.type]}
-                    </span>
-                    <span className="text-[10px] bg-muted text-muted-foreground rounded-full px-2 py-0.5 flex items-center gap-1">
-                      <MapPin size={10} /> {r.distance}
-                    </span>
-                    <span className={`text-[10px] font-bold rounded-full px-2 py-0.5 ${priceColors[r.priceRange]}`}>
-                      {priceLabels[r.priceRange]}
-                    </span>
-                  </div>
+            <div className="flex items-start gap-3">
+              <span className="text-4xl">{restaurant.emoji}</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-bold text-foreground">{restaurant.name}</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">{restaurant.specialty}</p>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  <span className="text-[10px] bg-muted text-muted-foreground rounded-full px-2 py-0.5 flex items-center gap-1">
+                    {typeIcons[restaurant.type]} {typeLabels[restaurant.type]}
+                  </span>
+                  <span className="text-[10px] bg-muted text-muted-foreground rounded-full px-2 py-0.5 flex items-center gap-1">
+                    <MapPin size={10} /> {restaurant.distance}
+                  </span>
+                  <span className={`text-[10px] font-bold rounded-full px-2 py-0.5 ${priceColors[restaurant.priceRange]}`}>
+                    {priceLabels[restaurant.priceRange]}
+                  </span>
                 </div>
-                <button
-                  onClick={() => handleView(r)}
-                  className="gradient-primary text-primary-foreground text-xs font-bold px-3 py-2 rounded-xl active:scale-95 transition-transform whitespace-nowrap"
-                >
-                  Ver opção
-                </button>
               </div>
+              <button
+                onClick={() => handleView(restaurant)}
+                className="gradient-primary text-primary-foreground text-xs font-bold px-3 py-2 rounded-xl active:scale-95 transition-transform whitespace-nowrap"
+              >
+                Ver opção
+              </button>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
 
-      {/* Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-sm mx-auto rounded-2xl">
           <DialogHeader>
