@@ -1,9 +1,11 @@
 import { Mail, Handshake, HelpCircle, Heart } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { BackButton } from "@/components/BackButton";
 
 export default function ContatoPage() {
   return (
-    <div className="flex flex-col items-center px-6 pt-8 pb-24 gap-6">
+    <div className="flex flex-col items-center px-6 pt-8 pb-10 gap-6">
+      <BackButton />
       <div className="text-center animate-bounce-in">
         <img src={logo} alt="EscolheAí" className="w-24 h-24 mx-auto mb-3 object-contain" />
         <h1 className="text-2xl font-black text-foreground">EscolheAí</h1>

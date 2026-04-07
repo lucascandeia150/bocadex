@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Star, Send, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
+import { BackButton } from "@/components/BackButton";
 
 const quickOptions = [
   { label: "Fácil de usar 👍", value: "facil" },
@@ -69,7 +70,8 @@ export default function AvaliarPage() {
   }
 
   return (
-    <div className="flex flex-col items-center px-6 pt-8 pb-24 gap-6">
+    <div className="flex flex-col items-center px-6 pt-8 pb-10 gap-6">
+      <div className="self-start"><BackButton /></div>
       <div className="text-center animate-bounce-in">
         <img src={logo} alt="EscolheAí" className="w-20 h-20 mx-auto mb-2 object-contain" />
         <h1 className="text-2xl font-black text-foreground">Avaliar app ⭐</h1>

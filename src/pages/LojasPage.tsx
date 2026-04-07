@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Store, StoreCategory, StoreProduct, stores, categoryLabels, getAllCategories } from "@/data/stores";
 import { ShoppingBag, MessageCircle, MapPin, ChevronRight, ArrowLeft } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { BackButton } from "@/components/BackButton";
 
 export default function LojasPage() {
   const [activeCategory, setActiveCategory] = useState<StoreCategory | "todas">("todas");
@@ -17,7 +18,8 @@ export default function LojasPage() {
   }
 
   return (
-    <div className="px-4 pt-6 pb-24">
+    <div className="px-4 pt-6 pb-10">
+      <BackButton />
       <div className="text-center mb-6 animate-bounce-in">
         <ShoppingBag className="mx-auto text-primary mb-2" size={32} />
         <h1 className="text-2xl font-black text-foreground">Explorar Lojas 🛍️</h1>
