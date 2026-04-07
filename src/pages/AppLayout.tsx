@@ -22,7 +22,6 @@ export default function AppLayout() {
         <Route path="/" element={<HomePage onChoose={handleChoose} />} />
         <Route path="/economico" element={<EconomicoPage />} />
         <Route path="/descobrir" element={<DescobrirPage />} />
-        <Route path="/buscar" element={<BuscarPage />} />
         <Route path="/restaurantes" element={<RestaurantesPage />} />
         <Route path="/historico" element={<HistoricoPage history={history} onClear={clearHistory} />} />
         <Route path="/contato" element={<ContatoPage />} />
