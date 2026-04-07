@@ -36,7 +36,7 @@ export const stores: Store[] = [
     emoji: "🧈",
     category: "doces",
     description: "Biscoitos artesanais fresquinhos, perfeitos para acompanhar café ☕",
-    whatsapp: "5527988330329",
+    whatsapp: "5533998669482",
     highlighted: true,
     products: [
       {

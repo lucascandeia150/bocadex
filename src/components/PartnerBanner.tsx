@@ -15,7 +15,7 @@ export function PartnerBanner() {
     const message = encodeURIComponent(
       "Olá! Vim pelo app EscolheAí e gostaria de mais informações 😄"
     );
-    window.open(`https://wa.me/5527988330329?text=${message}`, "_blank");
+    window.open(`https://wa.me/5533998669482?text=${message}`, "_blank");
   };
 
   return (

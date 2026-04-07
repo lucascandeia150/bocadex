@@ -56,7 +56,25 @@ export default function ContatoPage() {
           </p>
         </div>
 
-        {/* Canais */}
+        {/* WhatsApp */}
+        <div className="bg-card rounded-2xl p-5 border border-border shadow-sm">
+          <div className="flex items-center gap-2 mb-3">
+            <MessageSquare size={20} className="text-[hsl(142,70%,45%)]" />
+            <h2 className="text-lg font-bold text-foreground">WhatsApp</h2>
+          </div>
+          <a
+            href="https://wa.me/5533998669482?text=Ol%C3%A1!%20Entrei%20em%20contato%20pelo%20app%20EscolheA%C3%AD%20%F0%9F%98%84"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 shadow-md mb-3"
+          >
+            <MessageSquare size={18} />
+            Falar no WhatsApp 💬
+          </a>
+          <p className="text-sm text-muted-foreground text-center">📲 +55 33 99866-9482</p>
+        </div>
+
+        {/* Email */}
         <div className="bg-card rounded-2xl p-5 border border-border shadow-sm">
           <div className="flex items-center gap-2 mb-3">
             <Mail size={20} className="text-secondary" />
@@ -103,11 +121,13 @@ export default function ContatoPage() {
             É dono de restaurante ou quer ser parceiro? Entre em contato conosco!
           </p>
           <a
-            href="mailto:escolheai.app@gmail.com?subject=Parceria%20Comercial%20-%20EscolheAí"
-            className="w-full gradient-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-md"
+            href="https://wa.me/5533998669482?text=Ol%C3%A1!%20Tenho%20interesse%20em%20ser%20parceiro%20do%20EscolheA%C3%AD%20%F0%9F%A4%9D"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 shadow-md"
           >
             <Handshake size={18} />
-            Quero ser parceiro
+            Quero ser parceiro 🤝
           </a>
         </div>
 
