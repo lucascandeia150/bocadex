@@ -10,6 +10,7 @@ import RestaurantesPage from "./RestaurantesPage";
 import HistoricoPage from "./HistoricoPage";
 import BuscarPage from "./BuscarPage";
 import ContatoPage from "./ContatoPage";
+import AvaliarPage from "./AvaliarPage";
 import NotFound from "./NotFound";
 
 export default function AppLayout() {
@@ -27,6 +28,7 @@ export default function AppLayout() {
         <Route path="/restaurantes" element={<RestaurantesPage />} />
         <Route path="/historico" element={<HistoricoPage history={history} onClear={clearHistory} />} />
         <Route path="/contato" element={<ContatoPage />} />
+        <Route path="/avaliar" element={<AvaliarPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BottomTabs />

@@ -2,6 +2,7 @@ import { MessageCircle, ChefHat } from "lucide-react";
 import { useState } from "react";
 import { allItems } from "@/data/foods";
 import { RecipeModal } from "./RecipeModal";
+import { trackEvent } from "@/lib/analytics";
 
 const biscoito = allItems.find((f) => f.id === "biscoito-nata")!;
 
@@ -10,6 +11,7 @@ export function PartnerBanner() {
 
   const openWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
+    trackEvent("click_pedir_biscoito_nata", { item: "biscoito-nata", source: "partner_banner" });
     const message = encodeURIComponent(
       "Olá! Vim pelo app EscolheAí e quero pedir biscoitos de nata 😄"
     );

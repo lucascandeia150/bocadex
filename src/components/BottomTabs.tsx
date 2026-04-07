@@ -1,4 +1,4 @@
-import { Home, DollarSign, Dice5, Search, MessageCircle } from "lucide-react";
+import { Home, DollarSign, Dice5, Search, Star } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const tabs = [
@@ -6,7 +6,7 @@ const tabs = [
   { path: "/economico", label: "Econômico", icon: DollarSign },
   { path: "/descobrir", label: "Descobrir", icon: Dice5 },
   { path: "/buscar", label: "Buscar", icon: Search },
-  { path: "/contato", label: "Contato", icon: MessageCircle },
+  { path: "/avaliar", label: "Avaliar", icon: Star },
 ];
 
 export function BottomTabs() {
