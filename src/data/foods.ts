@@ -28,6 +28,8 @@ export interface Food {
   savingsAmount?: number;
   recipe: Recipe;
   delivery: DeliveryInfo;
+  type?: "comida" | "bebida";
+  tag?: string;
 }
 
 export const foods: Food[] = [
@@ -43,6 +45,8 @@ export const foods: Food[] = [
     reason: "Completo, nutritivo e econômico",
     bestValue: true,
     savingsAmount: 15,
+    type: "comida",
+    tag: "econômico",
     recipe: {
       ingredients: ["2 xícaras de arroz", "1 xícara de feijão cozido", "Alho, cebola, sal", "Óleo"],
       steps: ["Refogue alho e cebola no óleo", "Adicione o arroz e refogue", "Cubra com água e cozinhe", "Aqueça o feijão separadamente"],
@@ -62,6 +66,8 @@ export const foods: Food[] = [
     cheap: true,
     reason: "Sustenta bem e cabe no bolso",
     savingsAmount: 10,
+    type: "comida",
+    tag: "econômico",
     recipe: {
       ingredients: ["500g de macarrão", "Molho de tomate", "Sal", "Queijo ralado"],
       steps: ["Cozinhe o macarrão em água com sal", "Escorra e misture o molho", "Finalize com queijo ralado"],
@@ -81,6 +87,8 @@ export const foods: Food[] = [
     cheap: false,
     reason: "Perfeita para dividir e satisfazer",
     recommended: true,
+    type: "comida",
+    tag: "clássico",
     recipe: {
       ingredients: ["Massa de pizza pronta", "Molho de tomate", "Mussarela", "Orégano"],
       steps: ["Abra a massa numa assadeira", "Espalhe o molho e cubra com queijo", "Leve ao forno por 20min a 200°C"],
@@ -100,6 +108,8 @@ export const foods: Food[] = [
     cheap: false,
     reason: "Rápido e delicioso",
     recommended: true,
+    type: "comida",
+    tag: "rápido",
     recipe: {
       ingredients: ["Pão de hambúrguer", "Carne moída (blend)", "Queijo", "Alface, tomate"],
       steps: ["Tempere e modele a carne", "Grelhe por 3min de cada lado", "Monte com queijo e salada no pão"],
@@ -119,6 +129,8 @@ export const foods: Food[] = [
     cheap: true,
     reason: "Leve, saudável e acessível",
     savingsAmount: 8,
+    type: "comida",
+    tag: "leve",
     recipe: {
       ingredients: ["Alface, rúcula", "Tomate, pepino", "Azeite, limão, sal"],
       steps: ["Lave e pique os vegetais", "Misture tudo numa tigela", "Tempere com azeite e limão"],
@@ -139,6 +151,8 @@ export const foods: Food[] = [
     reason: "Rápido, fácil e muito barato",
     bestValue: true,
     savingsAmount: 20,
+    type: "comida",
+    tag: "econômico",
     recipe: {
       ingredients: ["3 ovos", "Sal, pimenta", "Queijo, presunto (opcional)", "Manteiga"],
       steps: ["Bata os ovos com sal", "Derreta manteiga na frigideira", "Despeje os ovos e adicione recheio", "Dobre e sirva"],
@@ -158,6 +172,8 @@ export const foods: Food[] = [
     cheap: true,
     reason: "Prático e econômico",
     savingsAmount: 12,
+    type: "comida",
+    tag: "rápido",
     recipe: {
       ingredients: ["Pão de forma", "Presunto, queijo", "Alface, tomate", "Maionese"],
       steps: ["Monte as camadas no pão", "Corte ao meio e sirva"],
@@ -178,6 +194,8 @@ export const foods: Food[] = [
     reason: "Economia em relação a fast food",
     bestValue: true,
     savingsAmount: 18,
+    type: "comida",
+    tag: "econômico",
     recipe: {
       ingredients: ["Arroz, feijão", "Carne ou frango", "Salada", "Farofa"],
       steps: ["Cozinhe arroz e feijão", "Prepare a proteína", "Monte a marmita com todos os itens"],
@@ -197,6 +215,8 @@ export const foods: Food[] = [
     cheap: true,
     reason: "Rápido e barato",
     savingsAmount: 15,
+    type: "comida",
+    tag: "rápido",
     recipe: {
       ingredients: ["Massa de pastel", "Carne moída ou queijo", "Óleo para fritar"],
       steps: ["Recheie a massa e feche bem", "Frite em óleo quente até dourar", "Escorra em papel toalha"],
@@ -216,6 +236,8 @@ export const foods: Food[] = [
     cheap: false,
     reason: "Refrescante e energético",
     recommended: true,
+    type: "comida",
+    tag: "leve",
     recipe: {
       ingredients: ["Polpa de açaí congelada", "Banana", "Granola", "Mel ou leite condensado"],
       steps: ["Bata a polpa com banana no liquidificador", "Sirva numa tigela", "Cubra com granola e mel"],
@@ -236,6 +258,8 @@ export const foods: Food[] = [
     reason: "Clássico brasileiro, rápido e barato",
     bestValue: true,
     savingsAmount: 20,
+    type: "comida",
+    tag: "rápido",
     recipe: {
       ingredients: ["Frango desfiado", "Massa de coxinha (farinha, caldo)", "Farinha de rosca", "Óleo para fritar"],
       steps: ["Prepare a massa com caldo de frango", "Modele com o recheio de frango", "Empane e frite até dourar"],
@@ -257,6 +281,8 @@ export const foods: Food[] = [
     bestValue: true,
     recommended: true,
     savingsAmount: 12,
+    type: "comida",
+    tag: "econômico",
     recipe: {
       ingredients: ["Arroz, feijão", "Bife ou frango", "Ovo frito", "Salada e farofa"],
       steps: ["Cozinhe arroz e feijão", "Frite o bife e o ovo", "Monte o prato com todos os acompanhamentos"],
@@ -266,6 +292,134 @@ export const foods: Food[] = [
     delivery: { available: true, estimatedTime: "25-40min", platform: "Restaurante Parceiro", url: "", whatsapp: "5511999999012" },
   },
 ];
+
+export const drinks: Food[] = [
+  {
+    id: "suco-natural",
+    name: "Suco Natural",
+    emoji: "🧃",
+    priceMin: 5,
+    priceMax: 12,
+    speed: "rapido",
+    filling: false,
+    cheap: true,
+    reason: "Refrescante e saudável",
+    type: "bebida",
+    tag: "leve",
+    recipe: {
+      ingredients: ["2 laranjas ou 1 manga", "Água", "Açúcar ou mel a gosto", "Gelo"],
+      steps: ["Descasque e pique a fruta", "Bata no liquidificador com água", "Coe se preferir e adicione gelo"],
+      prepTime: "5min",
+      costEstimate: 3,
+    },
+    delivery: { available: false, estimatedTime: "", platform: "", url: "" },
+  },
+  {
+    id: "cafe",
+    name: "Café",
+    emoji: "☕",
+    priceMin: 3,
+    priceMax: 10,
+    speed: "rapido",
+    filling: false,
+    cheap: true,
+    reason: "Energia rápida e econômica",
+    bestValue: true,
+    type: "bebida",
+    tag: "econômico",
+    recipe: {
+      ingredients: ["2 colheres de café em pó", "Água quente", "Açúcar a gosto", "Filtro de papel"],
+      steps: ["Ferva a água", "Coloque o filtro no coador", "Despeje a água sobre o pó lentamente", "Adoce a gosto"],
+      prepTime: "5min",
+      costEstimate: 1,
+    },
+    delivery: { available: false, estimatedTime: "", platform: "", url: "" },
+  },
+  {
+    id: "milkshake",
+    name: "Milkshake",
+    emoji: "🥤",
+    priceMin: 12,
+    priceMax: 22,
+    speed: "rapido",
+    filling: false,
+    cheap: false,
+    reason: "Cremoso e indulgente",
+    recommended: true,
+    type: "bebida",
+    tag: "especial",
+    recipe: {
+      ingredients: ["2 bolas de sorvete", "1 copo de leite", "Calda de chocolate", "Chantilly (opcional)"],
+      steps: ["Bata o sorvete com leite no liquidificador", "Despeje no copo", "Cubra com calda e chantilly"],
+      prepTime: "5min",
+      costEstimate: 8,
+    },
+    delivery: { available: false, estimatedTime: "", platform: "", url: "" },
+  },
+  {
+    id: "cha",
+    name: "Chá",
+    emoji: "🍵",
+    priceMin: 2,
+    priceMax: 8,
+    speed: "rapido",
+    filling: false,
+    cheap: true,
+    reason: "Relaxante e barato",
+    bestValue: true,
+    type: "bebida",
+    tag: "leve",
+    recipe: {
+      ingredients: ["1 sachê de chá (camomila, hortelã, etc.)", "Água quente", "Mel ou açúcar"],
+      steps: ["Ferva a água", "Coloque o sachê na xícara", "Despeje a água e aguarde 3-5min", "Adoce a gosto"],
+      prepTime: "5min",
+      costEstimate: 1,
+    },
+    delivery: { available: false, estimatedTime: "", platform: "", url: "" },
+  },
+  {
+    id: "agua-saborizada",
+    name: "Água Saborizada",
+    emoji: "💧",
+    priceMin: 3,
+    priceMax: 8,
+    speed: "rapido",
+    filling: false,
+    cheap: true,
+    reason: "Hidratante e refrescante",
+    type: "bebida",
+    tag: "leve",
+    recipe: {
+      ingredients: ["1 litro de água gelada", "Rodelas de limão ou pepino", "Folhas de hortelã", "Gelo"],
+      steps: ["Corte o limão ou pepino em rodelas", "Coloque na jarra com água e hortelã", "Adicione gelo e deixe gelar por 10min"],
+      prepTime: "5min",
+      costEstimate: 2,
+    },
+    delivery: { available: false, estimatedTime: "", platform: "", url: "" },
+  },
+  {
+    id: "refrigerante",
+    name: "Refrigerante",
+    emoji: "🥫",
+    priceMin: 4,
+    priceMax: 10,
+    speed: "rapido",
+    filling: false,
+    cheap: true,
+    reason: "Prático e refrescante",
+    type: "bebida",
+    tag: "rápido",
+    recipe: {
+      ingredients: ["Refrigerante gelado", "Gelo", "Copo grande"],
+      steps: ["Coloque gelo no copo", "Despeje o refrigerante", "Sirva imediatamente"],
+      prepTime: "1min",
+      costEstimate: 5,
+    },
+    delivery: { available: false, estimatedTime: "", platform: "", url: "" },
+  },
+];
+
+export const allItems: Food[] = [...foods, ...drinks];
 
 export const speedLabels: Record<Food["speed"], string> = {
   rapido: "⚡ Rápido",
@@ -340,6 +494,11 @@ export function getSuggestion(hungryLevel: boolean, wantCheap: boolean, wantFast
 
 export function getRandomFood(exclude?: string): Food {
   const available = exclude ? foods.filter((f) => f.id !== exclude) : foods;
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+export function getRandomItem(exclude?: string): Food {
+  const available = exclude ? allItems.filter((f) => f.id !== exclude) : allItems;
   return available[Math.floor(Math.random() * available.length)];
 }
 
