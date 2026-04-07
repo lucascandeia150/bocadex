@@ -157,7 +157,7 @@ function StoreDetail({ store, onBack }: { store: Store; onBack: () => void }) {
                 className="w-full mt-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
               >
                 <MessageCircle size={16} />
-                Pedir pelo WhatsApp 🍪
+                Falar com a loja 💬
               </button>
             </div>
           ))}
