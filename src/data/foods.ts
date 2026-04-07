@@ -695,6 +695,11 @@ export function getDrinkContextPhrase(): string {
   return drinkContextPhrases[Math.floor(Math.random() * drinkContextPhrases.length)];
 }
 
+export function getRandomDrink(exclude?: string): Food {
+  const available = exclude ? drinks.filter((d) => d.id !== exclude) : drinks;
+  return available[Math.floor(Math.random() * available.length)];
+}
+
 export function getPersonalizedSuggestion(
   hungry: boolean,
   budget: BudgetLevel,
