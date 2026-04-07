@@ -4,6 +4,7 @@ import type { Food } from "@/data/foods";
 import { speedLabels } from "@/data/foods";
 import { RecipeModal } from "@/components/RecipeModal";
 import { Dice5, Shuffle, ChefHat, Clock, DollarSign, Tag } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 
 const surprisePhrases = [
   "Que tal isso hoje? 🤔",
@@ -27,7 +28,8 @@ export default function DescobrirPage() {
   };
 
   return (
-    <div className="flex flex-col items-center px-4 pt-8 pb-24 gap-5">
+    <div className="flex flex-col items-center px-4 pt-8 pb-10 gap-5">
+      <div className="self-start"><BackButton /></div>
       <div className="text-center animate-bounce-in">
         <Dice5 className="mx-auto text-secondary mb-2" size={36} />
         <h1 className="text-2xl font-black text-foreground">Descoberta Aleatória</h1>
