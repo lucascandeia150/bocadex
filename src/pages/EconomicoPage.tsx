@@ -15,9 +15,15 @@ export default function EconomicoPage() {
         <p className="text-muted-foreground text-sm mt-1">Coma bem gastando pouco 💪</p>
       </div>
 
-      <div className="max-w-sm mx-auto mb-6 gradient-primary rounded-2xl p-4 text-center animate-slide-up shadow-lg">
+      <div className="max-w-sm mx-auto mb-4 gradient-primary rounded-2xl p-4 text-center animate-slide-up shadow-lg">
         <p className="text-sm font-bold text-primary-foreground">
           🎯 Economize até 60% fazendo em casa — veja as opções abaixo
+        </p>
+      </div>
+
+      <div className="max-w-sm mx-auto mb-6 bg-accent/60 rounded-xl p-2.5 text-center">
+        <p className="text-[11px] text-muted-foreground">
+          📌 Os valores são estimativas e podem variar por região e estabelecimento
         </p>
       </div>
 

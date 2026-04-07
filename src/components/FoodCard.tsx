@@ -29,7 +29,7 @@ export function FoodCard({ food, showReason = true, economyMessage, animate = tr
             {recommended && <span className="text-xs bg-secondary/20 text-secondary font-bold px-2 py-0.5 rounded-full">⭐ Top</span>}
           </div>
           <p className="text-lg font-semibold text-primary mt-1">
-            R${food.priceMin} - R${food.priceMax}
+            R${food.priceMin} - R${food.priceMax} <span className="text-xs font-normal text-muted-foreground">(estimado)</span>
           </p>
           <p className="text-sm text-muted-foreground mt-1">{speedLabels[food.speed]}</p>
           {showReason && (

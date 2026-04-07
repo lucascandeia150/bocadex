@@ -6,6 +6,7 @@ import type { Food } from "@/data/foods";
 import HomePage from "./HomePage";
 import EconomicoPage from "./EconomicoPage";
 import DescobrirPage from "./DescobrirPage";
+import RestaurantesPage from "./RestaurantesPage";
 import HistoricoPage from "./HistoricoPage";
 import ContatoPage from "./ContatoPage";
 import NotFound from "./NotFound";
@@ -21,6 +22,7 @@ export default function AppLayout() {
         <Route path="/" element={<HomePage onChoose={handleChoose} />} />
         <Route path="/economico" element={<EconomicoPage />} />
         <Route path="/descobrir" element={<DescobrirPage />} />
+        <Route path="/restaurantes" element={<RestaurantesPage />} />
         <Route path="/historico" element={<HistoricoPage history={history} onClear={clearHistory} />} />
         <Route path="/contato" element={<ContatoPage />} />
         <Route path="*" element={<NotFound />} />
