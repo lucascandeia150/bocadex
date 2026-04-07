@@ -459,12 +459,62 @@ export type BudgetLevel = "baixo" | "medio" | "alto";
 
 export type PreferenceMode = "cozinhar" | "pedir" | "tanto-faz";
 
+// Pairing rules: maps food tags/ids to preferred drink tags
+const drinkPairings: Record<string, string[]> = {
+  "arroz-feijao": ["refrigerante", "suco-natural"],
+  "macarrao": ["refrigerante", "suco-natural"],
+  "pizza": ["refrigerante", "milkshake"],
+  "hamburguer": ["refrigerante", "milkshake"],
+  "salada": ["suco-natural", "agua-saborizada", "cha"],
+  "omelete": ["cafe", "suco-natural"],
+  "sanduiche": ["suco-natural", "refrigerante"],
+  "marmita": ["refrigerante", "suco-natural"],
+  "pastel": ["cafe", "suco-natural", "refrigerante"],
+  "acai": ["agua-saborizada"],
+  "coxinha": ["refrigerante", "cafe"],
+  "pf": ["refrigerante", "suco-natural"],
+  "biscoito-nata": ["cafe", "cha"],
+};
+
+const comboPhrases = [
+  "Hoje vai bem:",
+  "Combo perfeito pra você:",
+  "Que tal esse combo?",
+  "A combinação ideal:",
+  "Sugestão completa pra hoje:",
+];
+
+const drinkContextPhrases = [
+  "Vai uma bebida pra acompanhar? 🍹",
+  "Tá calor? Que tal uma bebida gelada! ☀️",
+  "Completa com essa bebida! 🥤",
+  "Pra deixar a refeição completa:",
+];
+
+export function getPairedDrink(food: Food): Food {
+  const preferredIds = drinkPairings[food.id] || [];
+  const preferred = drinks.filter((d) => preferredIds.includes(d.id));
+  if (preferred.length > 0) {
+    return preferred[Math.floor(Math.random() * preferred.length)];
+  }
+  // Fallback: random drink
+  return drinks[Math.floor(Math.random() * drinks.length)];
+}
+
+export function getComboPhrase(): string {
+  return comboPhrases[Math.floor(Math.random() * comboPhrases.length)];
+}
+
+export function getDrinkContextPhrase(): string {
+  return drinkContextPhrases[Math.floor(Math.random() * drinkContextPhrases.length)];
+}
+
 export function getPersonalizedSuggestion(
   hungry: boolean,
   budget: BudgetLevel,
   speed: "rapido" | "tanto-faz",
   preference?: PreferenceMode
-): { food: Food; message: string; smartTip: string } {
+): { food: Food; drink: Food; message: string; smartTip: string; drinkPhrase: string } {
   let filtered = foods.filter((f) => {
     let score = 0;
     if (hungry && f.filling) score++;
@@ -480,6 +530,7 @@ export function getPersonalizedSuggestion(
   if (filtered.length === 0) filtered = foods;
 
   const food = filtered[Math.floor(Math.random() * filtered.length)];
+  const drink = getPairedDrink(food);
 
   const parts: string[] = [];
   if (hungry) parts.push("você está com muita fome");
@@ -490,7 +541,7 @@ export function getPersonalizedSuggestion(
   if (parts.length > 0) {
     message = `Como ${parts.join(" e ")}, essa é a melhor opção pra você:`;
   } else {
-    message = "Boa escolha pra hoje! 🎯";
+    message = getComboPhrase();
   }
 
   let smartTip: string;
@@ -499,12 +550,12 @@ export function getPersonalizedSuggestion(
   } else if (speed === "rapido" && preference !== "cozinhar") {
     smartTip = "💡 Se estiver com pressa, melhor pedir!";
   } else if (preference === "cozinhar") {
-    smartTip = `💡 Fazendo em casa sai por ~R$${food.recipe.costEstimate} — economia de R$${food.priceMin - food.recipe.costEstimate}!`;
+    smartTip = `💡 Fazendo em casa sai por ~R$${food.recipe.costEstimate + drink.recipe.costEstimate} — economia de R$${(food.priceMin + drink.priceMin) - (food.recipe.costEstimate + drink.recipe.costEstimate)}!`;
   } else {
     smartTip = "💡 Essa opção equilibra custo e tempo!";
   }
 
-  return { food, message, smartTip };
+  return { food, drink, message, smartTip, drinkPhrase: getDrinkContextPhrase() };
 }
 
 export function getSuggestion(hungryLevel: boolean, wantCheap: boolean, wantFast: boolean): Food {

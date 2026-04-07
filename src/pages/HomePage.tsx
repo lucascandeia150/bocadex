@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine } from "lucide-react";
-import { getPersonalizedSuggestion, getRandomFood, allItems } from "@/data/foods";
+import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine, Plus } from "lucide-react";
+import { getPersonalizedSuggestion, getRandomFood, getPairedDrink, getComboPhrase, getDrinkContextPhrase, allItems } from "@/data/foods";
 import type { Food, BudgetLevel, PreferenceMode } from "@/data/foods";
 import { FoodCard } from "@/components/FoodCard";
 import { FoodActions } from "@/components/FoodActions";
