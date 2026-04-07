@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { BottomTabs } from "@/components/BottomTabs";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { useHistory } from "@/hooks/useHistory";
 import type { Food } from "@/data/foods";
 import HomePage from "./HomePage";
