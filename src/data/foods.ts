@@ -647,19 +647,19 @@ export type PreferenceMode = "cozinhar" | "pedir" | "tanto-faz";
 
 // Pairing rules: maps food tags/ids to preferred drink tags
 const drinkPairings: Record<string, string[]> = {
-  "arroz-feijao": ["refrigerante", "suco-natural"],
-  "macarrao": ["refrigerante", "suco-natural"],
-  "pizza": ["refrigerante", "milkshake"],
-  "hamburguer": ["refrigerante", "milkshake"],
-  "salada": ["suco-natural", "agua-saborizada", "cha"],
-  "omelete": ["cafe", "suco-natural"],
-  "sanduiche": ["suco-natural", "refrigerante"],
-  "marmita": ["refrigerante", "suco-natural"],
-  "pastel": ["cafe", "suco-natural", "refrigerante"],
-  "acai": ["agua-saborizada"],
-  "coxinha": ["refrigerante", "cafe"],
-  "pf": ["refrigerante", "suco-natural"],
-  "biscoito-nata": ["cafe", "cha"],
+  "arroz-feijao": ["refrigerante", "suco-natural", "cerveja-lata"],
+  "macarrao": ["refrigerante", "suco-natural", "cerveja-lata"],
+  "pizza": ["refrigerante", "cerveja-artesanal", "cerveja-lata"],
+  "hamburguer": ["refrigerante", "milkshake", "cerveja-lata", "cerveja-artesanal"],
+  "salada": ["suco-natural", "agua-saborizada", "limonada"],
+  "omelete": ["cafe", "suco-natural", "chocolate-quente"],
+  "sanduiche": ["suco-natural", "refrigerante", "limonada"],
+  "marmita": ["refrigerante", "suco-natural", "cerveja-lata"],
+  "pastel": ["cafe", "suco-natural", "refrigerante", "cerveja-lata"],
+  "acai": ["agua-saborizada", "limonada"],
+  "coxinha": ["refrigerante", "cafe", "cerveja-lata"],
+  "pf": ["refrigerante", "suco-natural", "cerveja-lata"],
+  "biscoito-nata": ["cafe", "cha", "chocolate-quente"],
 };
 
 const comboPhrases = [
