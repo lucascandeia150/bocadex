@@ -291,6 +291,34 @@ export const foods: Food[] = [
     },
     delivery: { available: true, estimatedTime: "25-40min", platform: "Restaurante Parceiro", url: "", whatsapp: "5511999999012" },
   },
+  {
+    id: "biscoito-nata",
+    name: "Biscoito de Nata",
+    emoji: "🧈",
+    priceMin: 15,
+    priceMax: 25,
+    speed: "rapido",
+    filling: false,
+    cheap: true,
+    reason: "Biscoitos caseiros fresquinhos, perfeitos com café ☕",
+    recommended: true,
+    bestValue: false,
+    type: "comida",
+    tag: "parceiro",
+    recipe: {
+      ingredients: ["500g de farinha de trigo", "200g de nata", "100g de manteiga", "1 xícara de açúcar", "1 ovo", "1 colher de fermento"],
+      steps: ["Misture a nata com a manteiga e o açúcar", "Adicione o ovo e misture bem", "Acrescente a farinha e o fermento aos poucos", "Modele os biscoitos e coloque numa assadeira untada", "Asse a 180°C por 15-20min até dourar"],
+      prepTime: "30min",
+      costEstimate: 8,
+    },
+    delivery: {
+      available: true,
+      estimatedTime: "Combinar via WhatsApp",
+      platform: "Parceiro Local",
+      url: "",
+      whatsapp: "5527988330329",
+    },
+  },
 ];
 
 export const drinks: Food[] = [
