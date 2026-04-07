@@ -8,7 +8,6 @@ import EconomicoPage from "./EconomicoPage";
 import DescobrirPage from "./DescobrirPage";
 import RestaurantesPage from "./RestaurantesPage";
 import HistoricoPage from "./HistoricoPage";
-import BuscarPage from "./BuscarPage";
 import ContatoPage from "./ContatoPage";
 import NotFound from "./NotFound";
 
