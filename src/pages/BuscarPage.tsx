@@ -11,6 +11,7 @@ const tagColors: Record<string, string> = {
   leve: "bg-accent text-accent-foreground",
   clássico: "bg-muted text-muted-foreground",
   especial: "bg-destructive/15 text-destructive",
+  parceiro: "bg-secondary/20 text-secondary",
 };
 
 const popularSearches = ["pizza", "café", "hambúrguer", "suco", "salada", "açaí", "arroz à grega", "bolo de cenoura", "strogonoff"];
