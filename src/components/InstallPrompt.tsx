@@ -6,12 +6,21 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+const messages = [
+  { title: "Instale o EscolheAí e decida mais rápido 🚀", sub: "Acesse com 1 toque na tela inicial" },
+  { title: "Use como app e economize tempo ⚡", sub: "Sem precisar abrir o navegador" },
+  { title: "Acesse com 1 toque 📱", sub: "Instale grátis e use offline" },
+];
+
 export function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [show, setShow] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  const [msg] = useState(() => messages[Math.floor(Math.random() * messages.length)]);
 
   useEffect(() => {
+    // Only show once per session
+    if (sessionStorage.getItem("installPromptShown")) return;
+
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -21,10 +30,13 @@ export function InstallPrompt() {
   }, []);
 
   useEffect(() => {
-    if (!deferredPrompt || dismissed) return;
-    const timer = setTimeout(() => setShow(true), 2000);
+    if (!deferredPrompt) return;
+    const timer = setTimeout(() => {
+      setShow(true);
+      sessionStorage.setItem("installPromptShown", "true");
+    }, 3000);
     return () => clearTimeout(timer);
-  }, [deferredPrompt, dismissed]);
+  }, [deferredPrompt]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
@@ -38,7 +50,6 @@ export function InstallPrompt() {
 
   const handleDismiss = () => {
     setShow(false);
-    setDismissed(true);
   };
 
   if (!show) return null;
@@ -50,12 +61,8 @@ export function InstallPrompt() {
           <Download className="text-primary" size={22} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold text-foreground">
-            Instalar o EscolheAí? 🚀
-          </p>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Fica mais rápido de usar no celular
-          </p>
+          <p className="text-sm font-bold text-foreground">{msg.title}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{msg.sub}</p>
         </div>
         <button
           onClick={handleInstall}

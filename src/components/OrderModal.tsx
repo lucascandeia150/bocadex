@@ -6,8 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Truck, Clock, MessageCircle, ExternalLink } from "lucide-react";
-import { toast } from "sonner";
+import { Truck } from "lucide-react";
 
 interface OrderModalProps {
   food: Food;
@@ -15,54 +14,7 @@ interface OrderModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function getWhatsAppUrl(whatsapp: string, foodName: string) {
-  const message = encodeURIComponent(`Olá! Gostaria de pedir ${foodName}. Vi no EscolheAí! 🍽️`);
-  return `https://wa.me/${whatsapp}?text=${message}`;
-}
-
 export function OrderModal({ food, open, onOpenChange }: OrderModalProps) {
-  const { delivery } = food;
-
-  const handleOrder = () => {
-    if (delivery.whatsapp) {
-      toast.success(`Abrindo WhatsApp do ${delivery.platform}...`, {
-        description: `Pedido de ${food.name} — entrega estimada: ${delivery.estimatedTime}`,
-      });
-      window.open(getWhatsAppUrl(delivery.whatsapp, food.name), "_blank", "noopener,noreferrer");
-    } else if (delivery.url) {
-      toast.success(`Abrindo ${delivery.platform}...`, {
-        description: `Pedido de ${food.name} — entrega estimada: ${delivery.estimatedTime}`,
-      });
-      window.open(delivery.url, "_blank", "noopener,noreferrer");
-    }
-    onOpenChange(false);
-  };
-
-  if (!delivery.available) {
-    return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-sm mx-auto rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Truck size={22} className="text-secondary" />
-              Pedir {food.emoji} {food.name}
-            </DialogTitle>
-            <DialogDescription>Opção de entrega</DialogDescription>
-          </DialogHeader>
-          <div className="text-center py-4">
-            <span className="text-4xl block mb-3">😅</span>
-            <p className="text-muted-foreground font-medium">
-              Essa opção é melhor fazer em casa!
-            </p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Veja a receita — é rápido e fácil.
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm mx-auto rounded-2xl">
@@ -71,35 +23,23 @@ export function OrderModal({ food, open, onOpenChange }: OrderModalProps) {
             <Truck size={22} className="text-secondary" />
             Pedir {food.emoji} {food.name}
           </DialogTitle>
-          <DialogDescription>Peça direto com o restaurante</DialogDescription>
+          <DialogDescription>Opção de entrega</DialogDescription>
         </DialogHeader>
-
-        <div className="bg-secondary/10 rounded-xl p-4 text-center">
-          <p className="text-sm font-semibold text-secondary">
-            ✅ Disponível no {delivery.platform}
+        <div className="text-center py-4">
+          <span className="text-4xl block mb-3">😕</span>
+          <p className="text-foreground font-bold text-lg">
+            Ainda não temos restaurantes parceiros disponíveis
           </p>
-          <div className="flex items-center justify-center gap-1 mt-2 text-muted-foreground text-sm">
-            <Clock size={14} />
-            Entrega em {delivery.estimatedTime}
-          </div>
-          <p className="text-lg font-bold text-foreground mt-2">
-            R${food.priceMin} - R${food.priceMax}
+          <p className="text-sm text-muted-foreground mt-2">
+            Em breve você poderá pedir direto pelo app! 🚀
           </p>
         </div>
-
         <button
-          onClick={handleOrder}
-          className="w-full gradient-secondary text-secondary-foreground font-bold text-lg py-4 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
+          onClick={() => onOpenChange(false)}
+          className="w-full bg-muted text-foreground font-bold py-3 rounded-2xl active:scale-95 transition-transform"
         >
-          {delivery.whatsapp ? <MessageCircle size={20} /> : <ExternalLink size={20} />}
-          {delivery.whatsapp ? "Pedir pelo WhatsApp" : "Pedir direto com o restaurante"}
+          Entendi
         </button>
-
-        <p className="text-xs text-center text-muted-foreground">
-          {delivery.whatsapp
-            ? "Você será redirecionado para o WhatsApp do restaurante"
-            : `Você será redirecionado para o site do ${delivery.platform}`}
-        </p>
       </DialogContent>
     </Dialog>
   );

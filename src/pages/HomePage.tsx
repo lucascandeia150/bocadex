@@ -302,14 +302,6 @@ function ResultScreen({
         </div>
       )}
 
-      {/* Delivery badge */}
-      {result.delivery.available && (
-        <div className="w-full max-w-sm bg-secondary/10 rounded-xl p-2.5 text-center animate-slide-up">
-          <p className="text-xs font-bold text-secondary">
-            🚀 Entrega rápida disponível · {result.delivery.estimatedTime}
-          </p>
-        </div>
-      )}
 
       {/* Actions */}
       <div className="w-full max-w-sm animate-slide-up">
