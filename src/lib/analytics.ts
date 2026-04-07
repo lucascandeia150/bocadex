@@ -1,6 +1,6 @@
 // Google Analytics 4 helper
 // Set your GA4 Measurement ID here
-const GA_MEASUREMENT_ID = ""; // TODO: Add your G-XXXXXXXXXX ID
+const GA_MEASUREMENT_ID = "G-MJ0SLFEWST";
 
 declare global {
   interface Window {
