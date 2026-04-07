@@ -1,12 +1,12 @@
-import { Home, DollarSign, Dice5, Search, MapPin } from "lucide-react";
+import { Home, DollarSign, Dice5, MapPin, MessageCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const tabs = [
   { path: "/", label: "Início", icon: Home },
   { path: "/economico", label: "Econômico", icon: DollarSign },
-  { path: "/buscar", label: "Buscar", icon: Search },
   { path: "/descobrir", label: "Descobrir", icon: Dice5 },
   { path: "/restaurantes", label: "Próximos", icon: MapPin },
+  { path: "/contato", label: "Contato", icon: MessageCircle },
 ];
 
 export function BottomTabs() {
