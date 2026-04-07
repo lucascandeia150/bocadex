@@ -4,7 +4,7 @@ import { InstallPrompt } from "@/components/InstallPrompt";
 import { useHistory } from "@/hooks/useHistory";
 import type { Food } from "@/data/foods";
 import HomePage from "./HomePage";
-import EconomicoPage from "./EconomicoPage";
+import LojasPage from "./LojasPage";
 import DescobrirPage from "./DescobrirPage";
 import RestaurantesPage from "./RestaurantesPage";
 import HistoricoPage from "./HistoricoPage";
