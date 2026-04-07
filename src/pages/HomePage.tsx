@@ -32,6 +32,8 @@ export default function HomePage({ onChoose }: HomePageProps) {
   const [speed, setSpeed] = useState<"rapido" | "tanto-faz">("tanto-faz");
   const [preference, setPreference] = useState<PreferenceMode>("tanto-faz");
   const [result, setResult] = useState<Food | null>(null);
+  const [pairedDrink, setPairedDrink] = useState<Food | null>(null);
+  const [drinkPhrase, setDrinkPhrase] = useState("");
   const [personalMessage, setPersonalMessage] = useState("");
   const [smartTip, setSmartTip] = useState("");
 
@@ -39,6 +41,7 @@ export default function HomePage({ onChoose }: HomePageProps) {
   const [searchFocused, setSearchFocused] = useState(false);
   const [selectedFood, setSelectedFood] = useState<Food | null>(null);
   const [recipeOpen, setRecipeOpen] = useState(false);
+  const [drinkRecipeOpen, setDrinkRecipeOpen] = useState(false);
 
   const searchResults = searchQuery.trim()
     ? allItems.filter((item) => {
@@ -48,27 +51,29 @@ export default function HomePage({ onChoose }: HomePageProps) {
       }).slice(0, 5)
     : [];
 
-  const reset = () => { setStep("home"); setResult(null); setPersonalMessage(""); setSmartTip(""); };
+  const reset = () => { setStep("home"); setResult(null); setPairedDrink(null); setPersonalMessage(""); setSmartTip(""); setDrinkPhrase(""); };
 
   const handleQ1 = (isHungry: boolean) => { setHungry(isHungry); setStep("q2"); };
   const handleQ2 = (b: BudgetLevel) => { setBudget(b); setStep("q3"); };
   const handleQ3 = (s: "rapido" | "tanto-faz") => { setSpeed(s); setStep("q4"); };
   const handleQ4 = (pref: PreferenceMode) => {
     setPreference(pref);
-    const { food, message, smartTip: tip } = getPersonalizedSuggestion(hungry, budget, speed, pref);
-    setResult(food); setPersonalMessage(message); setSmartTip(tip); onChoose(food); setStep("result");
+    const { food, drink, message, smartTip: tip, drinkPhrase: dp } = getPersonalizedSuggestion(hungry, budget, speed, pref);
+    setResult(food); setPairedDrink(drink); setDrinkPhrase(dp); setPersonalMessage(message); setSmartTip(tip); onChoose(food); setStep("result");
   };
 
   const decidirPorMim = () => {
     const food = getRandomFood();
-    setResult(food); setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
-    setSmartTip("💡 Essa opção equilibra custo e tempo!"); onChoose(food); setStep("result");
+    const drink = getPairedDrink(food);
+    setResult(food); setPairedDrink(drink); setDrinkPhrase(getDrinkContextPhrase());
+    setPersonalMessage(getComboPhrase()); setSmartTip("💡 Essa opção equilibra custo e tempo!"); onChoose(food); setStep("result");
   };
 
   const outraOpcao = () => {
     const food = getRandomFood(result?.id);
-    setResult(food); setPersonalMessage(assistantPhrases[Math.floor(Math.random() * assistantPhrases.length)]);
-    setSmartTip("💡 Essa opção equilibra custo e tempo!"); onChoose(food);
+    const drink = getPairedDrink(food);
+    setResult(food); setPairedDrink(drink); setDrinkPhrase(getDrinkContextPhrase());
+    setPersonalMessage(getComboPhrase()); setSmartTip("💡 Essa opção equilibra custo e tempo!"); onChoose(food);
   };
 
   if (step === "q1") return <QuestionScreen step={1} emoji="🤤" title="Está com muita fome?" subtitle="Isso ajuda a escolher o tamanho ideal" onReset={reset}><div className="flex gap-4 w-full max-w-xs animate-slide-up"><button onClick={() => handleQ1(true)} className="flex-1 gradient-primary text-primary-foreground font-bold text-lg py-5 rounded-2xl shadow-lg active:scale-95 transition-transform">Sim! 🍽️</button><button onClick={() => handleQ1(false)} className="flex-1 bg-muted text-foreground font-bold text-lg py-5 rounded-2xl shadow-md active:scale-95 transition-transform">Não muito 😊</button></div></QuestionScreen>;
