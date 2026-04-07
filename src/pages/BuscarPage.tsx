@@ -4,6 +4,7 @@ import { allItems, type Food } from "@/data/foods";
 import { RecipeModal } from "@/components/RecipeModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { PartnerBanner } from "@/components/PartnerBanner";
 
 const tagColors: Record<string, string> = {
   econômico: "bg-primary/15 text-primary",
@@ -148,6 +149,10 @@ export default function BuscarPage() {
                 {s}
               </button>
             ))}
+          </div>
+
+          <div className="mt-5">
+            <PartnerBanner />
           </div>
         </div>
       )}
