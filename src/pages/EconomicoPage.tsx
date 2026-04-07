@@ -4,6 +4,7 @@ import type { Food } from "@/data/foods";
 import { FoodCard } from "@/components/FoodCard";
 import { RecipeModal } from "@/components/RecipeModal";
 import { Wallet, Star, TrendingUp, ChefHat } from "lucide-react";
+import { PartnerBanner } from "@/components/PartnerBanner";
 
 export default function EconomicoPage() {
   const cheapFoods = getCheapFoods();
@@ -29,6 +30,10 @@ export default function EconomicoPage() {
         <p className="text-[11px] text-muted-foreground">
           📌 Os valores são estimativas e podem variar por região e estabelecimento
         </p>
+      </div>
+
+      <div className="max-w-sm mx-auto mb-6">
+        <PartnerBanner />
       </div>
 
       <Section icon={<TrendingUp size={20} className="text-primary" />} title="🔥 Mais vantajoso hoje">

@@ -5,6 +5,7 @@ import { FoodCard } from "@/components/FoodCard";
 import { FoodActions } from "@/components/FoodActions";
 import { Sparkles, Shuffle, RotateCcw, Zap, ArrowRight } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { PartnerBanner } from "@/components/PartnerBanner";
 
 interface HomePageProps {
   onChoose: (food: Food) => void;
@@ -113,6 +114,10 @@ export default function HomePage({ onChoose }: HomePageProps) {
         <p className="text-xs text-muted-foreground mt-2 animate-slide-up">
           ⚡ Responda 4 perguntas e receba a sugestão perfeita
         </p>
+
+        <div className="w-full max-w-xs mt-4 animate-slide-up" style={{ animationDelay: "100ms" }}>
+          <PartnerBanner />
+        </div>
       </div>
     );
   }
