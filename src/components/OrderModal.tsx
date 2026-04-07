@@ -19,7 +19,7 @@ export function OrderModal({ food, open, onOpenChange }: OrderModalProps) {
 
   const openWhatsApp = () => {
     const message = encodeURIComponent(
-      `Olá! Vim pelo app EscolheAí e quero pedir ${food.name} 😄`
+      `Olá! Vim pelo app EscolheAí e gostaria de mais informações sobre ${food.name} 😄`
     );
     const url = `https://wa.me/${food.delivery.whatsapp}?text=${message}`;
     window.open(url, "_blank");
@@ -57,7 +57,7 @@ export function OrderModal({ food, open, onOpenChange }: OrderModalProps) {
               className="w-full mt-5 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg"
             >
               <MessageCircle size={20} />
-              Pedir pelo WhatsApp 🍪
+              Falar com a loja 💬
             </button>
           </div>
         ) : (

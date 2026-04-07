@@ -13,7 +13,7 @@ export function PartnerBanner() {
     e.stopPropagation();
     trackEvent("click_pedir_biscoito_nata", { item: "biscoito-nata", source: "partner_banner" });
     const message = encodeURIComponent(
-      "Olá! Vim pelo app EscolheAí e quero pedir biscoitos de nata 😄"
+      "Olá! Vim pelo app EscolheAí e gostaria de mais informações 😄"
     );
     window.open(`https://wa.me/5527988330329?text=${message}`, "_blank");
   };
@@ -52,7 +52,7 @@ export function PartnerBanner() {
               className="flex-1 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 text-xs shadow-md"
             >
               <MessageCircle size={15} />
-              Pedir pelo WhatsApp 🍪
+              Falar com a loja 💬
             </button>
           </div>
         </div>

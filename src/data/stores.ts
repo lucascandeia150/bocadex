@@ -46,7 +46,7 @@ export const stores: Store[] = [
         description: "Biscoitos de nata fresquinhos, caseiros e macios",
         priceMin: 15,
         priceMax: 25,
-        whatsappMessage: "Olá! Vim pelo app EscolheAí e quero pedir biscoitos de nata 😄",
+        whatsappMessage: "Olá! Vim pelo app EscolheAí e gostaria de mais informações 😄",
       },
     ],
   },
