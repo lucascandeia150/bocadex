@@ -5,6 +5,7 @@ import type { Food } from "@/data/foods";
 import HomePage from "./HomePage";
 import LojasPage from "./LojasPage";
 import DescobrirPage from "./DescobrirPage";
+import BebidasPage from "./BebidasPage";
 import BuscarPage from "./BuscarPage";
 import HistoricoPage from "./HistoricoPage";
 import ContatoPage from "./ContatoPage";
