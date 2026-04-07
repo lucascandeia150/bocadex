@@ -316,7 +316,7 @@ export const foods: Food[] = [
       estimatedTime: "Combinar via WhatsApp",
       platform: "Parceiro Local",
       url: "",
-      whatsapp: "5527988330329",
+      whatsapp: "5533998669482",
     },
   },
 ];
