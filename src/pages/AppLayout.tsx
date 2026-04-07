@@ -22,7 +22,7 @@ export default function AppLayout() {
     <div className="min-h-screen bg-background max-w-lg mx-auto">
       <Routes>
         <Route path="/" element={<HomePage onChoose={handleChoose} />} />
-        <Route path="/economico" element={<EconomicoPage />} />
+        <Route path="/lojas" element={<LojasPage />} />
         <Route path="/descobrir" element={<DescobrirPage />} />
         <Route path="/buscar" element={<BuscarPage />} />
         <Route path="/restaurantes" element={<RestaurantesPage />} />
