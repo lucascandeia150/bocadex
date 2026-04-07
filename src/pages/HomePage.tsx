@@ -229,7 +229,8 @@ function QuestionScreen({ step, emoji, title, subtitle, onReset, children }: { s
   );
 }
 
-function ResultScreen({ result, personalMessage, smartTip, onOutraOpcao, onReset }: { result: Food; personalMessage: string; smartTip: string; onOutraOpcao: () => void; onReset: () => void }) {
+function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smartTip, onOutraOpcao, onReset }: { result: Food; pairedDrink: Food | null; drinkPhrase: string; personalMessage: string; smartTip: string; onOutraOpcao: () => void; onReset: () => void }) {
+  const [drinkRecipeOpen, setDrinkRecipeOpen] = useState(false);
   return (
     <div className="flex flex-col items-center px-6 pt-6 pb-10 gap-4">
       <div className="text-center animate-bounce-in">
@@ -239,7 +240,55 @@ function ResultScreen({ result, personalMessage, smartTip, onOutraOpcao, onReset
       <div className="w-full max-w-sm bg-accent/50 rounded-2xl p-4 text-center animate-slide-up">
         <p className="text-sm font-semibold text-accent-foreground">{personalMessage}</p>
       </div>
-      <div className="w-full max-w-sm"><FoodCard food={result} /></div>
+
+      {/* Combo visual */}
+      <div className="w-full max-w-sm animate-slide-up">
+        {/* Food */}
+        <div className="bg-card border border-border rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <span className="text-4xl">{result.emoji}</span>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-foreground">{result.name}</h3>
+              <p className="text-xs text-muted-foreground">R${result.priceMin}–R${result.priceMax} • {result.recipe.prepTime}</p>
+            </div>
+            <span className="text-[10px] font-bold bg-primary/15 text-primary px-2 py-0.5 rounded-full">🍽️ Comida</span>
+          </div>
+        </div>
+
+        {/* Connector */}
+        {pairedDrink && (
+          <>
+            <div className="flex items-center justify-center py-2">
+              <div className="w-px h-4 bg-border" />
+              <Plus size={16} className="text-secondary mx-1" />
+              <div className="w-px h-4 bg-border" />
+            </div>
+
+            {/* Drink */}
+            <div className="bg-card border border-secondary/30 rounded-2xl p-4 shadow-sm">
+              <p className="text-[10px] font-bold text-secondary mb-2">{drinkPhrase}</p>
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">{pairedDrink.emoji}</span>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-foreground">{pairedDrink.name}</h3>
+                  <p className="text-xs text-muted-foreground">R${pairedDrink.priceMin}–R${pairedDrink.priceMax} • {pairedDrink.recipe.prepTime}</p>
+                </div>
+                <button onClick={() => setDrinkRecipeOpen(true)} className="text-[10px] font-bold bg-secondary/15 text-secondary px-2 py-1 rounded-full">
+                  🥤 Ver receita
+                </button>
+              </div>
+            </div>
+
+            {/* Combo total */}
+            <div className="mt-3 bg-accent/60 rounded-xl p-3 text-center">
+              <p className="text-xs font-bold text-accent-foreground">
+                💰 Combo estimado: R${result.priceMin + pairedDrink.priceMin}–R${result.priceMax + pairedDrink.priceMax}
+              </p>
+            </div>
+          </>
+        )}
+      </div>
+
       {result.savingsAmount && (
         <div className="w-full max-w-sm bg-primary/10 rounded-xl p-3 text-center animate-slide-up">
           <p className="text-sm font-bold text-primary">💰 Economize até R${result.savingsAmount} comparado a outras opções!</p>
@@ -254,6 +303,8 @@ function ResultScreen({ result, personalMessage, smartTip, onOutraOpcao, onReset
           <RotateCcw size={18} />Recomeçar
         </button>
       </div>
+
+      {pairedDrink && <RecipeModal food={pairedDrink} open={drinkRecipeOpen} onOpenChange={setDrinkRecipeOpen} />}
     </div>
   );
 }
