@@ -82,7 +82,7 @@ export default function HomePage({ onChoose }: HomePageProps) {
   if (step === "q4") return <QuestionScreen step={4} emoji="🍳" title="Cozinhar ou pedir?" subtitle="Última! Isso muda tudo ✨" onReset={reset}><div className="flex flex-col gap-3 w-full max-w-xs animate-slide-up"><button onClick={() => handleQ4("cozinhar")} className="gradient-primary text-primary-foreground font-bold text-lg py-4 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">👨‍🍳 Fazer em casa</button><button onClick={() => handleQ4("pedir")} className="gradient-secondary text-secondary-foreground font-bold text-lg py-4 rounded-2xl shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">🛵 Pedir delivery</button><button onClick={() => handleQ4("tanto-faz")} className="bg-muted text-foreground font-bold text-lg py-4 rounded-2xl shadow-md active:scale-95 transition-transform">🤷 Tanto faz</button></div></QuestionScreen>;
 
   if (step === "result" && result) {
-    return <ResultScreen result={result} personalMessage={personalMessage} smartTip={smartTip} onOutraOpcao={outraOpcao} onReset={reset} />;
+    return <ResultScreen result={result} pairedDrink={pairedDrink} drinkPhrase={drinkPhrase} personalMessage={personalMessage} smartTip={smartTip} onOutraOpcao={outraOpcao} onReset={reset} />;
   }
 
   return (
