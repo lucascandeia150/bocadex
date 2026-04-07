@@ -26,6 +26,6 @@ export default function AppLayout() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BottomTabs />
-    </div>
+      <InstallPrompt />
   );
 }
