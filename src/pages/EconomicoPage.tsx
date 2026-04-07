@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { getCheapFoods, getBestValueFoods, getRecommendedFoods } from "@/data/foods";
+import type { Food } from "@/data/foods";
 import { FoodCard } from "@/components/FoodCard";
-import { Wallet, Star, TrendingUp } from "lucide-react";
+import { RecipeModal } from "@/components/RecipeModal";
+import { Wallet, Star, TrendingUp, ChefHat } from "lucide-react";
 
 export default function EconomicoPage() {
   const cheapFoods = getCheapFoods();
   const bestValue = getBestValueFoods();
   const recommended = getRecommendedFoods();
+  const [selectedFood, setSelectedFood] = useState<Food | null>(null);
 
   return (
     <div className="px-4 pt-6 pb-24">
@@ -17,7 +21,7 @@ export default function EconomicoPage() {
 
       <div className="max-w-sm mx-auto mb-4 gradient-primary rounded-2xl p-4 text-center animate-slide-up shadow-lg">
         <p className="text-sm font-bold text-primary-foreground">
-          🎯 Economize até 60% fazendo em casa — veja as opções abaixo
+          🎯 Economize até 60% fazendo em casa — toque em qualquer opção para ver a receita
         </p>
       </div>
 
@@ -29,7 +33,12 @@ export default function EconomicoPage() {
 
       <Section icon={<TrendingUp size={20} className="text-primary" />} title="🔥 Mais vantajoso hoje">
         {bestValue.map((food, i) => (
-          <div key={food.id} className="animate-slide-up relative" style={{ animationDelay: `${i * 60}ms` }}>
+          <button
+            key={food.id}
+            onClick={() => setSelectedFood(food)}
+            className="animate-slide-up relative text-left w-full"
+            style={{ animationDelay: `${i * 60}ms` }}
+          >
             <div className="absolute -top-2 -right-2 z-10 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full shadow-md">
               Melhor opção
             </div>
@@ -40,30 +49,57 @@ export default function EconomicoPage() {
               animate={false}
               highlight
             />
-          </div>
+            <div className="mt-1 flex items-center justify-center gap-1 text-xs font-semibold text-primary">
+              <ChefHat size={12} /> Toque para ver receita
+            </div>
+          </button>
         ))}
       </Section>
 
       <Section icon={<Star size={20} className="text-secondary" />} title="⭐ Recomendado">
         {recommended.map((food, i) => (
-          <div key={food.id} className="animate-slide-up" style={{ animationDelay: `${i * 60}ms` }}>
+          <button
+            key={food.id}
+            onClick={() => setSelectedFood(food)}
+            className="animate-slide-up text-left w-full"
+            style={{ animationDelay: `${i * 60}ms` }}
+          >
             <FoodCard food={food} showReason animate={false} recommended />
-          </div>
+            <div className="mt-1 flex items-center justify-center gap-1 text-xs font-semibold text-secondary">
+              <ChefHat size={12} /> Toque para ver receita
+            </div>
+          </button>
         ))}
       </Section>
 
       <Section icon={<Wallet size={20} className="text-primary" />} title="💚 Todas as opções baratas">
         {cheapFoods.map((food, i) => (
-          <div key={food.id} className="animate-slide-up" style={{ animationDelay: `${i * 60}ms` }}>
+          <button
+            key={food.id}
+            onClick={() => setSelectedFood(food)}
+            className="animate-slide-up text-left w-full"
+            style={{ animationDelay: `${i * 60}ms` }}
+          >
             <FoodCard
               food={food}
               showReason={false}
               economyMessage={food.savingsAmount ? `Economize até R$${food.savingsAmount}` : food.reason}
               animate={false}
             />
-          </div>
+            <div className="mt-1 flex items-center justify-center gap-1 text-xs font-semibold text-primary">
+              <ChefHat size={12} /> Toque para ver receita
+            </div>
+          </button>
         ))}
       </Section>
+
+      {selectedFood && (
+        <RecipeModal
+          food={selectedFood}
+          open={!!selectedFood}
+          onOpenChange={(open) => !open && setSelectedFood(null)}
+        />
+      )}
     </div>
   );
 }
