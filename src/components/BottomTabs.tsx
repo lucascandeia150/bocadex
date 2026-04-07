@@ -1,10 +1,10 @@
-import { Home, DollarSign, Lightbulb, Clock, MessageCircle } from "lucide-react";
+import { Home, DollarSign, Dice5, Clock, MessageCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const tabs = [
   { path: "/", label: "Início", icon: Home },
   { path: "/economico", label: "Econômico", icon: DollarSign },
-  { path: "/sugestoes", label: "Sugestões", icon: Lightbulb },
+  { path: "/descobrir", label: "Descobrir", icon: Dice5 },
   { path: "/historico", label: "Histórico", icon: Clock },
   { path: "/contato", label: "Contato", icon: MessageCircle },
 ];
