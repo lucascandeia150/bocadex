@@ -323,6 +323,34 @@ export const foods: Food[] = [
 
 export const drinks: Food[] = [
   {
+    id: "epraja-cerveja",
+    name: "Cerveja Gelada (É Pra Já)",
+    emoji: "🍺",
+    priceMin: 5,
+    priceMax: 15,
+    speed: "rapido",
+    filling: false,
+    cheap: true,
+    reason: "🔥 Bebida gelada na hora, sem demora! Distribuidora É Pra Já",
+    recommended: true,
+    bestValue: true,
+    type: "bebida",
+    tag: "parceiro",
+    recipe: {
+      ingredients: ["Cerveja gelada da distribuidora É Pra Já", "Copo gelado"],
+      steps: ["Peça pelo WhatsApp", "Receba gelada na sua porta", "Aproveite! 🍻"],
+      prepTime: "Entrega rápida",
+      costEstimate: 5,
+    },
+    delivery: {
+      available: true,
+      estimatedTime: "Entrega rápida",
+      platform: "É Pra Já",
+      url: "",
+      whatsapp: "5573999999999",
+    },
+  },
+  {
     id: "suco-natural",
     name: "Suco Natural",
     emoji: "🧃",
