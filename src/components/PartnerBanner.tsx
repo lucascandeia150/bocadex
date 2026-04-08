@@ -3,6 +3,7 @@ import { useState } from "react";
 import { allItems } from "@/data/foods";
 import { RecipeModal } from "./RecipeModal";
 import { trackEvent } from "@/lib/analytics";
+import { trackAnalyticsEvent } from "@/lib/trackEvent";
 
 const biscoito = allItems.find((f) => f.id === "biscoito-nata")!;
 
@@ -12,6 +13,8 @@ export function PartnerBanner() {
   const openWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
     trackEvent("click_pedir_biscoito_nata", { item: "biscoito-nata", source: "partner_banner" });
+    trackAnalyticsEvent("partner_click", { partner_name: biscoito.name, source: "partner_banner" });
+    trackAnalyticsEvent("whatsapp_click", { source: "partner_banner" });
     const message = encodeURIComponent(
       "Olá! Vim pelo app EscolheAí e gostaria de mais informações 😄"
     );
