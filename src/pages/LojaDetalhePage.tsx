@@ -10,6 +10,7 @@ import teteFlocos from "@/assets/partner/tete-flocos.jpg";
 import tetePotinhos from "@/assets/partner/tete-potinhos.jpg";
 import teteGoiabinha from "@/assets/partner/tete-goiabinha.jpg";
 import teteDoceLeite from "@/assets/partner/tete-doce-leite.jpg";
+import teteLogo from "@/assets/partner/tete-logo.png";
 
 interface GalleryImage {
   src: string;
@@ -81,7 +82,11 @@ export default function LojaDetalhePage() {
           <ArrowLeft size={16} /> Voltar
         </button>
         <div className="text-center animate-slide-up">
-          <span className="text-7xl block mb-3">{store.emoji}</span>
+          {store.id === "biscoito-da-tete" ? (
+            <img src={teteLogo} alt={store.name} loading="lazy" width={96} height={96} className="w-24 h-24 rounded-full mx-auto mb-3 shadow-md border-2 border-secondary/30 object-contain bg-white" />
+          ) : (
+            <span className="text-7xl block mb-3">{store.emoji}</span>
+          )}
           <h1 className="text-2xl font-black text-foreground">{store.name}</h1>
           <p className="text-sm text-muted-foreground mt-1">{store.description}</p>
           {store.highlighted && (
@@ -181,8 +186,8 @@ export default function LojaDetalhePage() {
                       <div className="flex-1 min-w-0">
                         <h3 className="text-base font-bold text-foreground">{product.name}</h3>
                         <p className="text-xs text-muted-foreground mt-0.5">{product.description}</p>
-                        <p className="text-sm font-semibold text-primary mt-1">
-                          R${product.priceMin} - R${product.priceMax}
+                        <p className="text-sm font-black text-primary mt-1">
+                          {product.priceMin === product.priceMax ? `R$${product.priceMin},00` : `R$${product.priceMin},00 - R$${product.priceMax},00`}
                         </p>
                         <p className="text-[10px] text-muted-foreground mt-0.5">
                           Loja: {store.name}

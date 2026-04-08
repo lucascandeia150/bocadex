@@ -17,6 +17,7 @@ export interface Store {
   id: string;
   name: string;
   emoji: string;
+  logo?: string;
   category: StoreCategory;
   description: string;
   whatsapp: string;
@@ -59,8 +60,8 @@ export const stores: Store[] = [
         name: "Nata Tradicional",
         emoji: "🍪",
         description: "O clássico biscoito de nata, crocante por fora e macio por dentro",
-        priceMin: 7,
-        priceMax: 10,
+        priceMin: 15,
+        priceMax: 15,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o Nata Tradicional!",
       },
       {
@@ -68,8 +69,8 @@ export const stores: Store[] = [
         name: "Goiabinha",
         emoji: "🍓",
         description: "Biscoito recheado com goiabada caseira",
-        priceMin: 7,
-        priceMax: 10,
+        priceMin: 18,
+        priceMax: 18,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre a Goiabinha!",
       },
       {
@@ -77,8 +78,8 @@ export const stores: Store[] = [
         name: "Doce de Leite",
         emoji: "🥛",
         description: "Biscoito com recheio cremoso de doce de leite",
-        priceMin: 7,
-        priceMax: 10,
+        priceMin: 20,
+        priceMax: 20,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o de Doce de Leite!",
       },
       {
@@ -86,8 +87,8 @@ export const stores: Store[] = [
         name: "Morango",
         emoji: "🍓",
         description: "Biscoito com sabor morango irresistível",
-        priceMin: 7,
-        priceMax: 10,
+        priceMin: 22,
+        priceMax: 22,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o de Morango!",
       },
       {
@@ -95,8 +96,8 @@ export const stores: Store[] = [
         name: "Flocos",
         emoji: "🍫",
         description: "Biscoito com flocos de chocolate irresistível",
-        priceMin: 7,
-        priceMax: 10,
+        priceMin: 25,
+        priceMax: 25,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o de Flocos!",
       },
     ],
