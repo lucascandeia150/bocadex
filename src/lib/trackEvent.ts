@@ -5,9 +5,9 @@ export async function trackAnalyticsEvent(
   eventData: Record<string, unknown> = {}
 ) {
   try {
-    await supabase.from("analytics_events").insert([{
+    await (supabase.from("analytics_events") as any).insert([{
       event_type: eventType,
-      event_data: eventData as unknown as Record<string, unknown>,
+      event_data: eventData,
     }]);
   } catch (e) {
     // silently fail - analytics should never break UX
