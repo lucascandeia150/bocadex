@@ -10,7 +10,7 @@ import teteFlocos from "@/assets/partner/tete-flocos.jpg";
 import tetePotinhos from "@/assets/partner/tete-potinhos.jpg";
 import teteGoiabinha from "@/assets/partner/tete-goiabinha.jpg";
 import teteDoceLeite from "@/assets/partner/tete-doce-leite.jpg";
-import teteLogo from "@/assets/partner/tete-logo.png";
+import teteLogoOficial from "@/assets/partner/tete-logo-oficial.jpg";
 
 interface GalleryImage {
   src: string;
@@ -83,7 +83,7 @@ export default function LojaDetalhePage() {
         </button>
         <div className="text-center animate-slide-up">
           {store.id === "biscoito-da-tete" ? (
-            <img src={teteLogo} alt={store.name} loading="lazy" width={96} height={96} className="w-24 h-24 rounded-full mx-auto mb-3 shadow-md border-2 border-secondary/30 object-contain bg-white" />
+            <img src={teteLogoOficial} alt={store.name} loading="lazy" width={112} height={112} className="w-28 h-28 rounded-full mx-auto mb-3 shadow-lg border-4 border-[hsl(30,30%,80%)] object-cover" />
           ) : (
             <span className="text-7xl block mb-3">{store.emoji}</span>
           )}
@@ -148,12 +148,16 @@ export default function LojaDetalhePage() {
 
         {/* Offer */}
         {store.offer && (
-          <div className="bg-secondary/15 border border-secondary/30 rounded-2xl p-4 text-center animate-slide-up">
-            <p className="text-base font-black text-secondary flex items-center justify-center gap-1.5">
-              <Flame size={18} /> {store.offer} <Flame size={18} />
+          <div className="bg-secondary/15 border-2 border-secondary/40 rounded-2xl p-5 text-center animate-slide-up">
+            <p className="text-xs font-bold text-secondary uppercase tracking-wide mb-1">🔥 Promoção do dia</p>
+            <p className="text-lg font-black text-secondary flex items-center justify-center gap-1.5">
+              <Flame size={20} /> 3 potinhos por R$20,00 <Flame size={20} />
+            </p>
+            <p className="text-sm text-foreground mt-1 font-semibold">
+              Leve 3 por apenas R$20,00 😍
             </p>
             <p className="text-[11px] text-muted-foreground mt-1">
-              🔥 Produção artesanal, estoque limitado!
+              Preço unitário: R$8,00 · 🔥 Produção artesanal, estoque limitado!
             </p>
           </div>
         )}
@@ -247,7 +251,7 @@ export default function LojaDetalhePage() {
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-40">
         <div className="max-w-sm mx-auto">
           <button
-            onClick={() => openWhatsApp("Olá! Vi os produtos no EscolheAí 😄")}
+            onClick={() => openWhatsApp("Olá! Vi a promoção dos biscoitos no EscolheAí 😍")}
             className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-base shadow-lg"
           >
             <MessageCircle size={20} />
