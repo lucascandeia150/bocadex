@@ -696,7 +696,14 @@ export function getDrinkContextPhrase(): string {
 }
 
 export function getRandomDrink(exclude?: string): Food {
+  // Prioritize partner-linked drinks (drinks with delivery from partners)
+  const partnerDrinks = drinks.filter((d) => d.tag === "parceiro" && d.id !== exclude);
   const available = exclude ? drinks.filter((d) => d.id !== exclude) : drinks;
+  
+  if (partnerDrinks.length > 0 && Math.random() < 0.7) {
+    return partnerDrinks[Math.floor(Math.random() * partnerDrinks.length)];
+  }
+  
   return available[Math.floor(Math.random() * available.length)];
 }
 
@@ -763,7 +770,15 @@ export function getSuggestion(hungryLevel: boolean, wantCheap: boolean, wantFast
 }
 
 export function getRandomFood(exclude?: string): Food {
-  const available = exclude ? foods.filter((f) => f.id !== exclude) : foods;
+  // Prioritize partner items (70% chance)
+  const partnerItems = foods.filter((f) => f.tag === "parceiro" && f.id !== exclude);
+  const nonPartnerItems = foods.filter((f) => f.tag !== "parceiro" && f.id !== exclude);
+  
+  if (partnerItems.length > 0 && Math.random() < 0.7) {
+    return partnerItems[Math.floor(Math.random() * partnerItems.length)];
+  }
+  
+  const available = nonPartnerItems.length > 0 ? nonPartnerItems : foods.filter((f) => f.id !== exclude);
   return available[Math.floor(Math.random() * available.length)];
 }
 

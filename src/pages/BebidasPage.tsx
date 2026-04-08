@@ -1,10 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 import { RecipeModal } from "@/components/RecipeModal";
 import { drinks } from "@/data/foods";
+import { stores } from "@/data/stores";
 import type { Food } from "@/data/foods";
-import { Clock, DollarSign, ChefHat, Tag, Wine, Coffee, Droplets, Sparkles, GlassWater } from "lucide-react";
+import { Clock, DollarSign, ChefHat, Tag, Wine, Coffee, GlassWater, Sparkles, MessageCircle, Flame, ArrowRight } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { trackAnalyticsEvent } from "@/lib/trackEvent";
+import eprajaLogo from "@/assets/partner/epraja-logo.jpg";
 
 type DrinkCategory = "todas" | "leve" | "econômico" | "especial" | "rápido";
 
@@ -16,7 +20,10 @@ const categories: { id: DrinkCategory; label: string; emoji: string }[] = [
   { id: "rápido", label: "Rápidas", emoji: "⚡" },
 ];
 
+const eprajaStore = stores.find((s) => s.id === "e-pra-ja");
+
 export default function BebidasPage() {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<DrinkCategory>("todas");
   const [selectedDrink, setSelectedDrink] = useState<Food | null>(null);
   const [recipeOpen, setRecipeOpen] = useState(false);
@@ -31,6 +38,13 @@ export default function BebidasPage() {
     trackEvent("view_drink_recipe", { drink: drink.name });
   };
 
+  const openEprajaWhatsApp = () => {
+    trackAnalyticsEvent("partner_click", { partner_name: "É Pra Já", source: "bebidas_page" });
+    trackAnalyticsEvent("whatsapp_click", { source: "bebidas_partner_banner" });
+    const message = encodeURIComponent("Olá! Vi as bebidas no EscolheAí 🍻");
+    window.open(`https://wa.me/${eprajaStore?.whatsapp || "5573999999999"}?text=${message}`, "_blank");
+  };
+
   return (
     <div className="px-4 pt-8 pb-10">
       <BackButton />
@@ -43,6 +57,75 @@ export default function BebidasPage() {
           Distribuidoras, adegas e receitas de drinks
         </p>
       </div>
+
+      {/* Partner Highlight - É Pra Já */}
+      {eprajaStore && (
+        <div className="mb-6 animate-slide-up">
+          <div className="w-full rounded-2xl border-2 border-secondary/40 bg-card shadow-lg overflow-hidden">
+            <div className="bg-secondary/15 px-4 py-2 flex items-center justify-center gap-2">
+              <Flame size={14} className="text-secondary" />
+              <span className="text-[11px] font-black text-secondary tracking-wide uppercase">
+                Parceiro em destaque
+              </span>
+              <Flame size={14} className="text-secondary" />
+            </div>
+            <div className="p-4">
+              <div className="flex items-start gap-3">
+                <img
+                  src={eprajaLogo}
+                  alt="É Pra Já"
+                  loading="lazy"
+                  width={64}
+                  height={64}
+                  className="w-16 h-16 rounded-2xl shadow-md border-2 border-secondary/30 object-cover shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-black text-foreground">É Pra Já 🍺</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    🔥 Bebida gelada na hora, sem demora!
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Distribuidora com entrega rápida e bebidas sempre geladas 🍻
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {eprajaStore.products.map((p) => (
+                  <span key={p.id} className="text-[11px] font-semibold bg-accent px-2.5 py-1 rounded-full text-accent-foreground">
+                    {p.emoji} {p.name}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-3 bg-secondary/15 border border-secondary/30 rounded-xl p-3 text-center">
+                <p className="text-sm font-black text-secondary flex items-center justify-center gap-1">
+                  <Flame size={16} /> Entrega rápida! <Flame size={16} />
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  🔥 Parceiro com entrega rápida e produtos fresquinhos!
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2 mt-3">
+                <button
+                  onClick={() => navigate("/loja/e-pra-ja")}
+                  className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm"
+                >
+                  🏪 Ver loja completa <ArrowRight size={14} />
+                </button>
+                <button
+                  onClick={openEprajaWhatsApp}
+                  className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 text-sm shadow-md"
+                >
+                  <MessageCircle size={16} />
+                  Pedir agora 📲
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Categorias */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide animate-slide-up">
@@ -129,7 +212,7 @@ export default function BebidasPage() {
         <Sparkles size={24} className="mx-auto text-secondary mb-2" />
         <h3 className="text-sm font-black text-foreground mb-1">Distribuidoras & Adegas</h3>
         <p className="text-xs text-muted-foreground">
-          Em breve, parceiros locais de bebidas estarão disponíveis aqui! 🍷🍺
+          Parceiros locais de bebidas disponíveis aqui! 🍷🍺
         </p>
         <p className="text-[10px] text-muted-foreground mt-2">
           Quer ser parceiro? Entre em contato! 📩
