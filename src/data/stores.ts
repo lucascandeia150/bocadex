@@ -108,14 +108,14 @@ export const stores: Store[] = [
     name: "É Pra Já",
     emoji: "🍺",
     category: "bebidas",
-    description: "Distribuidora com bebidas sempre geladas e preço justo 🍻",
+    description: "Cerveja gelada é pra já 🍻\n⚠️ Não fazemos entrega",
     whatsapp: "557327998060801",
     highlighted: true,
-    offer: "🔥 Bebida gelada na hora, sem demora!",
+    offer: "🍺 Cerveja gelada, é pra já!",
     reviews: [
-      { text: "Entrega super rápida!", stars: 5 },
       { text: "Cerveja sempre geladinha!", stars: 5 },
       { text: "Melhor distribuidora da região!", stars: 5 },
+      { text: "Preço justo e atendimento top!", stars: 5 },
     ],
     products: [
       {

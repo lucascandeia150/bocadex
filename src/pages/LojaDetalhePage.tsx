@@ -155,16 +155,25 @@ export default function LojaDetalhePage() {
         {/* Offer */}
         {store.offer && (
           <div className="bg-secondary/15 border-2 border-secondary/40 rounded-2xl p-5 text-center animate-slide-up">
-            <p className="text-xs font-bold text-secondary uppercase tracking-wide mb-1">🔥 Promoção do dia</p>
+            <p className="text-xs font-bold text-secondary uppercase tracking-wide mb-1">🔥 Destaque</p>
             <p className="text-lg font-black text-secondary flex items-center justify-center gap-1.5">
-              <Flame size={20} /> 3 potinhos por R$20,00 <Flame size={20} />
+              <Flame size={20} /> {store.offer} <Flame size={20} />
             </p>
-            <p className="text-sm text-foreground mt-1 font-semibold">
-              Leve 3 por apenas R$20,00 😍
-            </p>
-            <p className="text-[11px] text-muted-foreground mt-1">
-              Preço unitário: R$8,00 · 🔥 Produção artesanal, estoque limitado!
-            </p>
+            {store.id === "biscoito-da-tete" && (
+              <>
+                <p className="text-sm text-foreground mt-1 font-semibold">
+                  Leve 3 por apenas R$20,00 😍
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Preço unitário: R$8,00 · 🔥 Produção artesanal, estoque limitado!
+                </p>
+              </>
+            )}
+            {store.id === "e-pra-ja" && (
+              <p className="text-[11px] text-destructive font-semibold mt-2">
+                ⚠️ Não fazemos entrega
+              </p>
+            )}
           </div>
         )}
 
