@@ -1,11 +1,14 @@
-import { MessageCircle, ChefHat, Star, ShoppingBag, Flame } from "lucide-react";
+import { MessageCircle, ChefHat, Star, Flame } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { allItems } from "@/data/foods";
+import { stores } from "@/data/stores";
 import { RecipeModal } from "./RecipeModal";
 import { trackEvent } from "@/lib/analytics";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
 
 const biscoito = allItems.find((f) => f.id === "biscoito-nata")!;
+const store = stores.find((s) => s.id === "biscoito-da-tete")!;
 
 const products = [
   { name: "Nata Tradicional", emoji: "🍪" },
@@ -22,6 +25,7 @@ const reviews = [
 export function PartnerBanner() {
   const [recipeOpen, setRecipeOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const navigate = useNavigate();
 
   const openWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
