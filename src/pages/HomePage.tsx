@@ -78,6 +78,10 @@ export default function HomePage({ onChoose }: HomePageProps) {
     }
 
     setStep("result");
+
+    // Track suggestion
+    const foodName = selectedMode === "bebida" ? undefined : selectedMode === "comida" ? undefined : undefined;
+    trackAnalyticsEvent("suggestion_generated", { mode: selectedMode });
   };
 
   const outraOpcao = () => {
