@@ -108,8 +108,8 @@ export const stores: Store[] = [
     name: "É Pra Já",
     emoji: "🍺",
     category: "bebidas",
-    description: "Distribuidora com entrega rápida e bebidas sempre geladas 🍻",
-    whatsapp: "5573999999999",
+    description: "Distribuidora com bebidas sempre geladas e preço justo 🍻",
+    whatsapp: "55732799806-0801",
     highlighted: true,
     offer: "🔥 Bebida gelada na hora, sem demora!",
     reviews: [
