@@ -28,7 +28,7 @@ export interface Store {
   reviews?: StoreReview[];
 }
 
-export type StoreCategory = "lanchonetes" | "pizzarias" | "restaurantes" | "cafes" | "doces";
+export type StoreCategory = "lanchonetes" | "pizzarias" | "restaurantes" | "cafes" | "doces" | "bebidas";
 
 export const categoryLabels: Record<StoreCategory, { label: string; emoji: string }> = {
   lanchonetes: { label: "Lanchonetes", emoji: "🍔" },
@@ -36,6 +36,7 @@ export const categoryLabels: Record<StoreCategory, { label: string; emoji: strin
   restaurantes: { label: "Restaurantes", emoji: "🍽️" },
   cafes: { label: "Cafés", emoji: "☕" },
   doces: { label: "Doces", emoji: "🍪" },
+  bebidas: { label: "Bebidas", emoji: "🍻" },
 };
 
 export const stores: Store[] = [
@@ -99,6 +100,59 @@ export const stores: Store[] = [
         priceMin: 8,
         priceMax: 8,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o de Flocos!",
+    },
+  ],
+  },
+  {
+    id: "e-pra-ja",
+    name: "É Pra Já",
+    emoji: "🍺",
+    category: "bebidas",
+    description: "Distribuidora com entrega rápida e bebidas sempre geladas 🍻",
+    whatsapp: "5573999999999",
+    highlighted: true,
+    offer: "🔥 Bebida gelada na hora, sem demora!",
+    reviews: [
+      { text: "Entrega super rápida!", stars: 5 },
+      { text: "Cerveja sempre geladinha!", stars: 5 },
+      { text: "Melhor distribuidora da região!", stars: 5 },
+    ],
+    products: [
+      {
+        id: "cerveja",
+        name: "Cerveja",
+        emoji: "🍺",
+        description: "Cerveja gelada, diversas marcas disponíveis",
+        priceMin: 5,
+        priceMax: 15,
+        whatsappMessage: "Olá! Vi as bebidas no EscolheAí 🍻 Quero saber mais sobre as cervejas!",
+      },
+      {
+        id: "refrigerante-epraja",
+        name: "Refrigerante",
+        emoji: "🥤",
+        description: "Refrigerantes gelados de todas as marcas",
+        priceMin: 5,
+        priceMax: 10,
+        whatsappMessage: "Olá! Vi as bebidas no EscolheAí 🍻 Quero saber mais sobre os refrigerantes!",
+      },
+      {
+        id: "agua-epraja",
+        name: "Água",
+        emoji: "💧",
+        description: "Água mineral gelada",
+        priceMin: 3,
+        priceMax: 5,
+        whatsappMessage: "Olá! Vi as bebidas no EscolheAí 🍻 Quero uma água gelada!",
+      },
+      {
+        id: "energetico",
+        name: "Energético",
+        emoji: "⚡",
+        description: "Energéticos gelados para dar aquele gás",
+        priceMin: 8,
+        priceMax: 15,
+        whatsappMessage: "Olá! Vi as bebidas no EscolheAí 🍻 Quero saber mais sobre os energéticos!",
       },
     ],
   },

@@ -11,6 +11,7 @@ import tetePotinhos from "@/assets/partner/tete-potinhos.jpg";
 import teteGoiabinha from "@/assets/partner/tete-goiabinha.jpg";
 import teteDoceLeite from "@/assets/partner/tete-doce-leite.jpg";
 import teteLogoOficial from "@/assets/partner/tete-logo-oficial.jpg";
+import eprajaLogo from "@/assets/partner/epraja-logo.jpg";
 
 interface GalleryImage {
   src: string;
@@ -26,6 +27,11 @@ const storeGalleries: Record<string, GalleryImage[]> = {
     { src: teteFlocos, label: "Flocos 🍫", category: "producao" },
     { src: tetePotinhos, label: "Embalagem nos potinhos", category: "embalagem" },
   ],
+};
+
+const storeLogos: Record<string, string> = {
+  "biscoito-da-tete": teteLogoOficial,
+  "e-pra-ja": eprajaLogo,
 };
 
 const productImageMap: Record<string, string> = {
@@ -82,8 +88,8 @@ export default function LojaDetalhePage() {
           <ArrowLeft size={16} /> Voltar
         </button>
         <div className="text-center animate-slide-up">
-          {store.id === "biscoito-da-tete" ? (
-            <img src={teteLogoOficial} alt={store.name} loading="lazy" width={112} height={112} className="w-28 h-28 rounded-full mx-auto mb-3 shadow-lg border-4 border-[hsl(30,30%,80%)] object-cover" />
+          {storeLogos[store.id] ? (
+            <img src={storeLogos[store.id]} alt={store.name} loading="lazy" width={112} height={112} className="w-28 h-28 rounded-full mx-auto mb-3 shadow-lg border-4 border-[hsl(30,30%,80%)] object-cover" />
           ) : (
             <span className="text-7xl block mb-3">{store.emoji}</span>
           )}
@@ -251,11 +257,15 @@ export default function LojaDetalhePage() {
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-40">
         <div className="max-w-sm mx-auto">
           <button
-            onClick={() => openWhatsApp("Olá! Vi a promoção dos biscoitos no EscolheAí 😍")}
+            onClick={() => openWhatsApp(
+              store.id === "e-pra-ja"
+                ? "Olá! Vi as bebidas no EscolheAí 🍻"
+                : "Olá! Vi a promoção dos biscoitos no EscolheAí 😍"
+            )}
             className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-base shadow-lg"
           >
             <MessageCircle size={20} />
-            📲 Falar com a loja 💬
+            📲 Pedir agora 💬
           </button>
         </div>
       </div>
