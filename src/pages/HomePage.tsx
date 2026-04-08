@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine, Plus, Beer, UtensilsCrossed } from "lucide-react";
 import { getRandomFood, getPairedDrink, getComboPhrase, getDrinkContextPhrase, getRandomDrink, allItems, drinks } from "@/data/foods";
@@ -8,6 +8,7 @@ import { PartnerBanner } from "@/components/PartnerBanner";
 import { RecipeModal } from "@/components/RecipeModal";
 import logo from "@/assets/logo.png";
 import { RotateCcw } from "lucide-react";
+import { trackAnalyticsEvent } from "@/lib/trackEvent";
 
 interface HomePageProps {
   onChoose: (food: Food) => void;
