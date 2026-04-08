@@ -109,7 +109,7 @@ export const stores: Store[] = [
     emoji: "🍺",
     category: "bebidas",
     description: "Distribuidora com bebidas sempre geladas e preço justo 🍻",
-    whatsapp: "55732799806-0801",
+    whatsapp: "557327998060801",
     highlighted: true,
     offer: "🔥 Bebida gelada na hora, sem demora!",
     reviews: [
