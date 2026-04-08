@@ -17,6 +17,7 @@ export interface Store {
   id: string;
   name: string;
   emoji: string;
+  logo?: string;
   category: StoreCategory;
   description: string;
   whatsapp: string;
