@@ -82,10 +82,13 @@ export default function BebidasPage() {
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-black text-foreground">É Pra Já 🍺</h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    🔥 Bebida gelada na hora, sem demora!
+                    🍺 Cerveja gelada, é pra já!
                   </p>
                   <p className="text-[11px] text-muted-foreground">
-                    Distribuidora com bebidas sempre geladas e preço justo 🍻
+                    Cerveja gelada é pra já 🍻
+                  </p>
+                  <p className="text-[10px] text-destructive font-semibold mt-1">
+                    ⚠️ Não fazemos entrega
                   </p>
                 </div>
               </div>
