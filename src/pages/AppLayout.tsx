@@ -5,6 +5,7 @@ import { useHistory } from "@/hooks/useHistory";
 import type { Food } from "@/data/foods";
 import HomePage from "./HomePage";
 import LojasPage from "./LojasPage";
+import LojaDetalhePage from "./LojaDetalhePage";
 import DescobrirPage from "./DescobrirPage";
 import BebidasPage from "./BebidasPage";
 import BuscarPage from "./BuscarPage";
@@ -24,6 +25,7 @@ export default function AppLayout() {
       <Routes>
         <Route path="/" element={<HomePage onChoose={handleChoose} />} />
         <Route path="/lojas" element={<LojasPage />} />
+        <Route path="/loja/:id" element={<LojaDetalhePage />} />
         <Route path="/descobrir" element={<DescobrirPage />} />
         <Route path="/bebidas" element={<BebidasPage />} />
         <Route path="/buscar" element={<BuscarPage />} />

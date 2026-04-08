@@ -1,15 +1,20 @@
-import { MessageCircle, ChefHat, Star, ShoppingBag, Flame } from "lucide-react";
+import { MessageCircle, ChefHat, Star, Flame } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { allItems } from "@/data/foods";
+import { stores } from "@/data/stores";
 import { RecipeModal } from "./RecipeModal";
 import { trackEvent } from "@/lib/analytics";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
 
 const biscoito = allItems.find((f) => f.id === "biscoito-nata")!;
+const store = stores.find((s) => s.id === "biscoito-da-tete")!;
 
 const products = [
   { name: "Nata Tradicional", emoji: "🍪" },
   { name: "Goiabinha", emoji: "🍓" },
+  { name: "Doce de Leite", emoji: "🥛" },
+  { name: "Morango", emoji: "🍓" },
   { name: "Flocos", emoji: "🍫" },
 ];
 
@@ -22,6 +27,7 @@ const reviews = [
 export function PartnerBanner() {
   const [recipeOpen, setRecipeOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const navigate = useNavigate();
 
   const openWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -117,21 +123,29 @@ export function PartnerBanner() {
           )}
 
           {/* Actions */}
-          <div className="flex gap-2 mt-3">
+          <div className="flex flex-col gap-2 mt-3">
             <button
-              onClick={(e) => { e.stopPropagation(); setRecipeOpen(true); }}
-              className="flex-1 bg-accent text-accent-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-xs"
+              onClick={(e) => { e.stopPropagation(); navigate("/loja/biscoito-da-tete"); }}
+              className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm"
             >
-              <ChefHat size={15} />
-              Ver receita
+              🏪 Ver loja completa
             </button>
-            <button
-              onClick={openWhatsApp}
-              className="flex-1 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 text-xs shadow-md"
-            >
-              <MessageCircle size={15} />
-              Falar com a loja 💬
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); setRecipeOpen(true); }}
+                className="flex-1 bg-accent text-accent-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-xs"
+              >
+                <ChefHat size={15} />
+                Ver receita
+              </button>
+              <button
+                onClick={openWhatsApp}
+                className="flex-1 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 text-xs shadow-md"
+              >
+                <MessageCircle size={15} />
+                Falar com a loja 💬
+              </button>
+            </div>
           </div>
 
           {/* Tap hint */}
