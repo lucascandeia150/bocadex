@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,41 +24,33 @@ serve(async (req) => {
     const safeComment = String(comment || "").slice(0, 1000);
     const safeOptions = String(options || "Nenhuma");
 
-    const emailBody = `
-Nova avaliação do app EscolheAí
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-Nota: ${"⭐".repeat(rating)} (${rating}/5)
-Opções selecionadas: ${safeOptions}
-Comentário: ${safeComment || "(sem comentário)"}
+    const { error } = await supabase.from("feedbacks").insert({
+      rating,
+      comment: safeComment,
+      options: safeOptions,
+    });
 
----
-Enviado automaticamente pelo EscolheAí
-    `.trim();
-
-    const mailtoSubject = encodeURIComponent("Nova avaliação do app EscolheAí");
-
-    // Store feedback in console for now (email integration can be added later)
-    console.log("=== NOVA AVALIAÇÃO ===");
-    console.log(`Nota: ${rating}/5`);
-    console.log(`Opções: ${safeOptions}`);
-    console.log(`Comentário: ${safeComment}`);
-    console.log("=====================");
+    if (error) {
+      console.error("DB insert error:", error);
+      return new Response(
+        JSON.stringify({ error: "Failed to save feedback" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     return new Response(
-      JSON.stringify({ success: true, message: "Feedback recebido!" }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      JSON.stringify({ success: true, message: "Feedback salvo com sucesso!" }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
     console.error("Error processing feedback:", error);
     return new Response(
       JSON.stringify({ error: "Failed to process feedback" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
