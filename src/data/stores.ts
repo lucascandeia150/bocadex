@@ -129,9 +129,9 @@ export const stores: Store[] = [
       },
       {
         id: "mix-drinks",
-        name: "Mix (Bebidas Prontas)",
+        name: "Mix (Ice)",
         emoji: "🍹",
-        description: "Drinks prontos e refrescantes",
+        description: "Mix tipo ice, refrescante e gelado",
         priceMin: 8,
         priceMax: 18,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os Mix!",
