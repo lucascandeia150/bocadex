@@ -85,7 +85,7 @@ export default function BebidasPage() {
                     🔥 Bebida gelada na hora, sem demora!
                   </p>
                   <p className="text-[11px] text-muted-foreground">
-                    Distribuidora com entrega rápida e bebidas sempre geladas 🍻
+                    Distribuidora com bebidas sempre geladas e preço justo 🍻
                   </p>
                 </div>
               </div>
@@ -100,10 +100,10 @@ export default function BebidasPage() {
 
               <div className="mt-3 bg-secondary/15 border border-secondary/30 rounded-xl p-3 text-center">
                 <p className="text-sm font-black text-secondary flex items-center justify-center gap-1">
-                  <Flame size={16} /> Entrega rápida! <Flame size={16} />
+                  <Flame size={16} /> Bebida gelada na hora! <Flame size={16} />
                 </p>
                 <p className="text-[10px] text-muted-foreground mt-0.5">
-                  🔥 Parceiro com entrega rápida e produtos fresquinhos!
+                  🔥 Parceiro com bebidas sempre geladas e preço justo!
                 </p>
               </div>
 
