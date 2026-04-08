@@ -1,7 +1,9 @@
 import { MessageCircle } from "lucide-react";
+import { trackAnalyticsEvent } from "@/lib/trackEvent";
 
 export function WhatsAppFloat() {
   const handleClick = () => {
+    trackAnalyticsEvent("whatsapp_click", { source: "float_button" });
     const message = encodeURIComponent("Olá! Entrei em contato pelo app EscolheAí 😄");
     window.open(`https://wa.me/5533998669482?text=${message}`, "_blank");
   };
