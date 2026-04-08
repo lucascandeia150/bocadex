@@ -108,7 +108,7 @@ export const stores: Store[] = [
     name: "É Pra Já",
     emoji: "🍺",
     category: "bebidas",
-    description: "Cerveja gelada é pra já 🍻\n⚠️ Não fazemos entrega",
+    description: "Tudo que você precisa em um só lugar: bebidas, snacks e mais 😋\n⚠️ Não fazemos entrega",
     whatsapp: "557327998060801",
     highlighted: true,
     offer: "🍺 Cerveja gelada, é pra já!",

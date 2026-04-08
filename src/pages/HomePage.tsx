@@ -7,8 +7,9 @@ import { FoodActions } from "@/components/FoodActions";
 import { PartnerBanner } from "@/components/PartnerBanner";
 import { RecipeModal } from "@/components/RecipeModal";
 import logo from "@/assets/logo.png";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, MessageCircle } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
+import { stores } from "@/data/stores";
 
 interface HomePageProps {
   onChoose: (food: Food) => void;

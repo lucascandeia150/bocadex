@@ -160,11 +160,11 @@ export function PartnerBanner() {
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-black text-foreground">É Pra Já 🍺</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  🍺 Cerveja gelada, é pra já!
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  Cerveja gelada é pra já 🍻
-                </p>
+                   🍺 Cerveja gelada, é pra já!
+                 </p>
+                 <p className="text-[11px] text-muted-foreground">
+                   Tudo que você precisa: bebidas, snacks e mais 😋
+                 </p>
                 <p className="text-[10px] text-destructive font-semibold mt-1">
                   ⚠️ Não fazemos entrega
                 </p>
