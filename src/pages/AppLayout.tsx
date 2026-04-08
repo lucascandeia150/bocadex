@@ -11,6 +11,8 @@ import BuscarPage from "./BuscarPage";
 import HistoricoPage from "./HistoricoPage";
 import ContatoPage from "./ContatoPage";
 import AvaliarPage from "./AvaliarPage";
+import AdminLoginPage from "./AdminLoginPage";
+import AdminDashboardPage from "./AdminDashboardPage";
 import NotFound from "./NotFound";
 
 export default function AppLayout() {
@@ -28,6 +30,8 @@ export default function AppLayout() {
         <Route path="/historico" element={<HistoricoPage history={history} onClear={clearHistory} />} />
         <Route path="/contato" element={<ContatoPage />} />
         <Route path="/avaliar" element={<AvaliarPage />} />
+        <Route path="/admin" element={<AdminLoginPage />} />
+        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <WhatsAppFloat />

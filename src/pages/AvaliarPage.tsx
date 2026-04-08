@@ -3,6 +3,7 @@ import { Star, Send, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import { BackButton } from "@/components/BackButton";
+import { supabase } from "@/integrations/supabase/client";
 
 const quickOptions = [
   { label: "Fácil de usar 👍", value: "facil" },
@@ -41,18 +42,37 @@ export default function AvaliarPage() {
     const body = {
       rating,
       comment: comment.trim().slice(0, 1000),
-      options: selectedLabels,
+      options: selectedLabels || "Nenhuma",
     };
 
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
-      await supabase.functions.invoke("send-feedback", { body });
-      setSent(true);
+      const { data, error } = await supabase.functions.invoke("send-feedback", { body });
+      
+      if (error) throw error;
+      
+      const result = data as { success?: boolean; error?: string };
+      if (result?.success) {
+        setSent(true);
+      } else {
+        // Fallback: open email
+        openEmailFallback(body);
+      }
     } catch {
-      toast.error("Erro ao enviar. Tente novamente.");
+      // Fallback: open email
+      openEmailFallback(body);
     } finally {
       setSending(false);
     }
+  };
+
+  const openEmailFallback = (body: { rating: number; comment: string; options: string }) => {
+    const subject = encodeURIComponent("Nova avaliação do app EscolheAí");
+    const emailBody = encodeURIComponent(
+      `Nota: ${"⭐".repeat(body.rating)} (${body.rating}/5)\nOpções: ${body.options}\nComentário: ${body.comment || "(sem comentário)"}\n\nEnviado pelo EscolheAí`
+    );
+    window.open(`mailto:escolheai.app@gmail.com?subject=${subject}&body=${emailBody}`, "_blank");
+    setSent(true);
+    toast.info("Abrindo seu email para enviar a avaliação 📧");
   };
 
   if (sent) {
