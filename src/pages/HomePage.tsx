@@ -7,8 +7,9 @@ import { FoodActions } from "@/components/FoodActions";
 import { PartnerBanner } from "@/components/PartnerBanner";
 import { RecipeModal } from "@/components/RecipeModal";
 import logo from "@/assets/logo.png";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, MessageCircle } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
+import { stores } from "@/data/stores";
 
 interface HomePageProps {
   onChoose: (food: Food) => void;
@@ -268,11 +269,38 @@ function NavButton({ icon, label, emoji, onClick }: { icon: React.ReactNode; lab
 function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smartTip, mode, onOutraOpcao, onReset }: {
   result: Food; pairedDrink: Food | null; drinkPhrase: string; personalMessage: string; smartTip: string; mode: SuggestionMode; onOutraOpcao: () => void; onReset: () => void;
 }) {
+  const navigate = useNavigate();
   const [drinkRecipeOpen, setDrinkRecipeOpen] = useState(false);
   const [foodRecipeOpen, setFoodRecipeOpen] = useState(false);
 
   const isBebidaOnly = mode === "bebida";
   const isCombo = mode === "combo" && pairedDrink;
+
+  // Determine partner store based on suggestion type
+  const getPartnerStore = () => {
+    if (isBebidaOnly || result.tag === "parceiro" && result.type === "bebida") {
+      return stores.find(s => s.id === "e-pra-ja");
+    }
+    if (result.id === "biscoito-nata" || result.tag === "parceiro") {
+      return stores.find(s => s.id === "biscoito-da-tete");
+    }
+    // For combos, show drink partner
+    return null;
+  };
+
+  const getDrinkPartner = () => stores.find(s => s.id === "e-pra-ja");
+  const getFoodPartner = () => {
+    if (result.id === "biscoito-nata") return stores.find(s => s.id === "biscoito-da-tete");
+    return null;
+  };
+
+  const mainPartner = getPartnerStore();
+  const drinkPartner = isCombo ? getDrinkPartner() : null;
+  const foodPartner = !isBebidaOnly ? getFoodPartner() : null;
+
+  const openWhatsApp = (phone: string, message: string) => {
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
+  };
 
   return (
     <div className="flex flex-col items-center px-6 pt-6 pb-10 gap-4">
@@ -344,7 +372,70 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
         <p className="text-sm font-bold text-primary">{smartTip}</p>
       </div>
 
-      {!isBebidaOnly && (
+      {/* Partner action buttons */}
+      {mainPartner && (
+        <div className="w-full max-w-sm animate-slide-up">
+          <div className="bg-card border-2 border-secondary/30 rounded-2xl p-4 shadow-sm">
+            <p className="text-xs font-bold text-secondary mb-3 text-center">
+              🔥 Disponível no parceiro:
+            </p>
+            <p className="text-sm font-black text-foreground text-center mb-3">
+              {mainPartner.name} {mainPartner.emoji}
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => navigate(`/loja/${mainPartner.id}`)}
+                className="flex-1 bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm"
+              >
+                🏪 Ver loja
+              </button>
+              <button
+                onClick={() => openWhatsApp(mainPartner.whatsapp, `Olá! Vi a loja no EscolheAí 😄`)}
+                className="flex-1 bg-[hsl(142,70%,45%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm shadow-md"
+              >
+                <MessageCircle size={16} /> Falar 📲
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* If combo, show drink partner too */}
+      {isCombo && drinkPartner && !mainPartner && (
+        <div className="w-full max-w-sm animate-slide-up">
+          <div className="bg-card border-2 border-secondary/30 rounded-2xl p-4 shadow-sm">
+            <p className="text-xs font-bold text-secondary mb-2 text-center">🍺 Bebida disponível em:</p>
+            <p className="text-sm font-black text-foreground text-center mb-3">{drinkPartner.name} {drinkPartner.emoji}</p>
+            <div className="flex gap-2">
+              <button onClick={() => navigate(`/loja/${drinkPartner.id}`)}
+                className="flex-1 bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm">
+                🏪 Ver loja
+              </button>
+              <button onClick={() => openWhatsApp(drinkPartner.whatsapp, "Olá! Vi a loja no EscolheAí 😄")}
+                className="flex-1 bg-[hsl(142,70%,45%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm shadow-md">
+                <MessageCircle size={16} /> Falar 📲
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* For combos: show both partners if food has a partner too */}
+      {isCombo && foodPartner && drinkPartner && (
+        <div className="w-full max-w-sm animate-slide-up">
+          <div className="bg-accent/40 rounded-xl p-3 text-center">
+            <p className="text-[11px] font-bold text-accent-foreground">
+              🍺 Bebida? <span className="text-secondary cursor-pointer" onClick={() => navigate("/loja/e-pra-ja")}>É Pra Já 🏪</span>
+            </p>
+          </div>
+        </div>
+      )}
+
+      {!isBebidaOnly && !mainPartner && (
+        <div className="w-full max-w-sm animate-slide-up"><FoodActions food={result} smartTip="" /></div>
+      )}
+
+      {!isBebidaOnly && mainPartner && (
         <div className="w-full max-w-sm animate-slide-up"><FoodActions food={result} smartTip="" /></div>
       )}
 
