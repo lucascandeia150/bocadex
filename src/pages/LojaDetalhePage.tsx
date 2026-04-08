@@ -266,15 +266,11 @@ export default function LojaDetalhePage() {
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-40">
         <div className="max-w-sm mx-auto">
           <button
-            onClick={() => openWhatsApp(
-              store.id === "e-pra-ja"
-                ? "Olá! Vi as bebidas no EscolheAí 🍻"
-                : "Olá! Vi a promoção dos biscoitos no EscolheAí 😍"
-            )}
+            onClick={() => openWhatsApp("Olá! Vi a loja no EscolheAí 😄")}
             className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-base shadow-lg"
           >
             <MessageCircle size={20} />
-            📲 Pedir agora 💬
+            📲 Falar com a loja 💬
           </button>
         </div>
       </div>

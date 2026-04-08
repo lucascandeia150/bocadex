@@ -181,10 +181,10 @@ export function PartnerBanner() {
 
             <div className="mt-3 bg-secondary/15 border border-secondary/30 rounded-xl p-3 text-center">
               <p className="text-sm font-black text-secondary flex items-center justify-center gap-1">
-                <Flame size={16} /> Bebida gelada na hora! <Flame size={16} />
+                <Flame size={16} /> Produtos disponíveis • consulte! <Flame size={16} />
               </p>
               <p className="text-[10px] text-muted-foreground mt-0.5">
-                🔥 Parceiro com bebidas sempre geladas e preço justo!
+                🔥 Bebidas, snacks, cigarros e muito mais!
               </p>
             </div>
 
@@ -196,10 +196,10 @@ export function PartnerBanner() {
                 🏪 Ver loja completa <ArrowRight size={14} />
               </button>
               <button
-                onClick={(e) => openWhatsApp(e, eprajaStore?.whatsapp || "", "Olá! Vi as bebidas no EscolheAí 🍻", "É Pra Já")}
+                onClick={(e) => openWhatsApp(e, eprajaStore?.whatsapp || "", "Olá! Vi a loja no EscolheAí 😄", "É Pra Já")}
                 className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 text-sm shadow-md"
               >
-                <MessageCircle size={16} /> Pedir agora 📲
+                <MessageCircle size={16} /> Falar com a loja 📲
               </button>
             </div>
           </div>
