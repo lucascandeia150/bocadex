@@ -6,7 +6,7 @@ import { stores } from "@/data/stores";
 import { RecipeModal } from "./RecipeModal";
 import { trackEvent } from "@/lib/analytics";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
-import teteLogo from "@/assets/partner/tete-logo.png";
+import teteLogoOficial from "@/assets/partner/tete-logo-oficial.jpg";
 
 const biscoito = allItems.find((f) => f.id === "biscoito-nata")!;
 const store = stores.find((s) => s.id === "biscoito-da-tete")!;
@@ -57,7 +57,7 @@ export function PartnerBanner() {
         <div className="p-4">
           {/* Header */}
           <div className="flex items-start gap-3">
-            <img src={teteLogo} alt="Biscoito da Tetê" loading="lazy" width={56} height={56} className="w-14 h-14 rounded-full shadow-md border-2 border-secondary/20 object-contain bg-white shrink-0" />
+            <img src={teteLogoOficial} alt="Biscoito da Tetê" loading="lazy" width={56} height={56} className="w-14 h-14 rounded-full shadow-md border-2 border-[hsl(30,30%,80%)] object-cover shrink-0" />
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-black text-foreground">Biscoito da Tetê</h3>
               <p className="text-xs text-muted-foreground mt-0.5">
