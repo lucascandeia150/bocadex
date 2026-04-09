@@ -8,10 +8,12 @@ import { trackEvent } from "@/lib/analytics";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
 import teteLogoOficial from "@/assets/partner/tete-logo-oficial.jpg";
 import eprajaLogo from "@/assets/partner/epraja-logo.jpg";
+import pjLogo from "@/assets/partner/pj-logo.jpg";
 
 const biscoito = allItems.find((f) => f.id === "biscoito-nata")!;
 const teteStore = stores.find((s) => s.id === "biscoito-da-tete")!;
 const eprajaStore = stores.find((s) => s.id === "e-pra-ja")!;
+const pjStore = stores.find((s) => s.id === "pj-distribuidora")!;
 
 const teteProducts = [
   { name: "Nata Tradicional", emoji: "🍪" },
@@ -200,6 +202,67 @@ export function PartnerBanner() {
                 className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 text-sm shadow-md"
               >
                 <MessageCircle size={16} /> Falar com a loja 📲
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* PJ Distribuidora */}
+        <div className="w-full max-w-sm mx-auto rounded-2xl border-2 border-[hsl(45,60%,40%)]/40 bg-card shadow-lg overflow-hidden animate-slide-up">
+          <div className="bg-[hsl(45,60%,40%)]/15 px-4 py-2 flex items-center justify-center gap-2">
+            <Flame size={14} className="text-[hsl(45,60%,40%)]" />
+            <span className="text-[11px] font-black text-[hsl(45,60%,40%)] tracking-wide uppercase">
+              Parceiro em destaque
+            </span>
+            <Flame size={14} className="text-[hsl(45,60%,40%)]" />
+          </div>
+
+          <div className="p-4">
+            <div className="flex items-start gap-3">
+              <img src={pjLogo} alt="PJ Distribuidora" loading="lazy" width={56} height={56} className="w-14 h-14 rounded-2xl shadow-md border-2 border-[hsl(45,60%,40%)]/30 object-cover shrink-0" />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-black text-foreground">PJ Distribuidora 🍺</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Distribuidora de Bebidas
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Distribuidora completa com bebidas geladas e variedade pra você! 🍺
+                </p>
+                <p className="text-[10px] text-destructive font-semibold mt-1">
+                  ⚠️ Não fazemos entrega
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {pjStore?.products.map((p) => (
+                <span key={p.id} className="text-[11px] font-semibold bg-accent px-2.5 py-1 rounded-full text-accent-foreground">
+                  {p.emoji} {p.name}
+                </span>
+              ))}
+            </div>
+
+            <div className="mt-3 bg-[hsl(45,60%,40%)]/15 border border-[hsl(45,60%,40%)]/30 rounded-xl p-3 text-center">
+              <p className="text-sm font-black text-[hsl(45,60%,40%)] flex items-center justify-center gap-1">
+                <Flame size={16} /> Bebidas geladas e muito mais! <Flame size={16} />
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                🔥 Cervejas, whisky, vodka, snacks e doces!
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2 mt-3">
+              <button
+                onClick={() => navigate("/loja/pj-distribuidora")}
+                className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm"
+              >
+                🏪 Ver loja completa <ArrowRight size={14} />
+              </button>
+              <button
+                onClick={(e) => openWhatsApp(e, pjStore?.whatsapp || "", "Olá! Vi a PJ Distribuidora no EscolheAí 😄", "PJ Distribuidora")}
+                className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 text-sm shadow-md"
+              >
+                <MessageCircle size={16} /> Falar com a loja 💬
               </button>
             </div>
           </div>
