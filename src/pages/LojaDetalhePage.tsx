@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import { stores } from "@/data/stores";
-import { ArrowLeft, MessageCircle, Star, Flame, ShoppingBag, X, ChevronLeft, ChevronRight, Camera } from "lucide-react";
+import { ArrowLeft, MessageCircle, Star, Flame, ShoppingBag, X, ChevronLeft, ChevronRight, Camera, MapPin } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
 
@@ -95,6 +95,12 @@ export default function LojaDetalhePage() {
           )}
           <h1 className="text-2xl font-black text-foreground">{store.name}</h1>
           <p className="text-sm text-muted-foreground mt-1">{store.description}</p>
+          {store.address && (
+            <p className="text-xs text-muted-foreground mt-2 flex items-center justify-center gap-1">
+              <MapPin size={12} className="text-primary shrink-0" />
+              {store.address}
+            </p>
+          )}
           {store.highlighted && (
             <span className="inline-flex items-center gap-1 mt-3 text-xs font-black bg-secondary/15 text-secondary px-3 py-1.5 rounded-full">
               <Flame size={12} /> Parceiro destaque
