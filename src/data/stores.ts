@@ -170,8 +170,8 @@ export const stores: Store[] = [
         name: "Energético",
         emoji: "⚡",
         description: "Energéticos gelados para dar aquele gás",
-        priceMin: 8,
-        priceMax: 15,
+        priceMin: 12,
+        priceMax: 20,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os energéticos!",
       },
       {
@@ -269,8 +269,8 @@ export const stores: Store[] = [
         name: "Energético",
         emoji: "⚡",
         description: "Energéticos gelados para dar aquele gás",
-        priceMin: 8,
-        priceMax: 15,
+        priceMin: 12,
+        priceMax: 20,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os energéticos!",
       },
       {
