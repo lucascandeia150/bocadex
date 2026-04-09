@@ -12,6 +12,11 @@ import teteGoiabinha from "@/assets/partner/tete-goiabinha.jpg";
 import teteDoceLeite from "@/assets/partner/tete-doce-leite.jpg";
 import teteLogoOficial from "@/assets/partner/tete-logo-oficial.jpg";
 import eprajaLogo from "@/assets/partner/epraja-logo.jpg";
+import pjLogo from "@/assets/partner/pj-logo.jpg";
+import pjCervejas from "@/assets/partner/pj-cervejas.webp";
+import pjCorona from "@/assets/partner/pj-corona.webp";
+import pjSnacks from "@/assets/partner/pj-snacks.webp";
+import pjBrahma from "@/assets/partner/pj-brahma.webp";
 
 interface GalleryImage {
   src: string;
@@ -27,11 +32,18 @@ const storeGalleries: Record<string, GalleryImage[]> = {
     { src: teteFlocos, label: "Flocos 🍫", category: "producao" },
     { src: tetePotinhos, label: "Embalagem nos potinhos", category: "embalagem" },
   ],
+  "pj-distribuidora": [
+    { src: pjCervejas, label: "Cervejas geladas 🍺", category: "prontos" },
+    { src: pjCorona, label: "Corona gelada 🍻", category: "prontos" },
+    { src: pjBrahma, label: "Brahma Chopp 🍺", category: "prontos" },
+    { src: pjSnacks, label: "Snacks e salgadinhos 🍟", category: "prontos" },
+  ],
 };
 
 const storeLogos: Record<string, string> = {
   "biscoito-da-tete": teteLogoOficial,
   "e-pra-ja": eprajaLogo,
+  "pj-distribuidora": pjLogo,
 };
 
 const productImageMap: Record<string, string> = {
@@ -40,6 +52,8 @@ const productImageMap: Record<string, string> = {
   "flocos": teteFlocos,
   "nata-tradicional": tetePotinhos,
   "morango": teteGoiabinha,
+  "cerveja-pj": pjCervejas,
+  "snacks-pj": pjSnacks,
 };
 
 export default function LojaDetalhePage() {
