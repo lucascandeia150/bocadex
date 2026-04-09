@@ -21,6 +21,7 @@ export interface Store {
   category: StoreCategory;
   description: string;
   whatsapp: string;
+  address?: string;
   products: StoreProduct[];
   highlighted?: boolean;
   offer?: string;
@@ -110,6 +111,7 @@ export const stores: Store[] = [
     category: "bebidas",
     description: "Tudo que você precisa em um só lugar: bebidas, snacks e mais 😋\n⚠️ Não fazemos entrega",
     whatsapp: "557327998060801",
+    address: "Rua Donadilson da Rocha Barros, R. Marcos Aurélio Castro - São Francisco, Serra - ES, 29175-207",
     highlighted: true,
     offer: "🍺 Cerveja gelada, é pra já!",
     reviews: [
