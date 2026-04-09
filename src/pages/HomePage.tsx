@@ -423,9 +423,11 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
       {/* For combos: show both partners if food has a partner too */}
       {isCombo && foodPartner && drinkPartner && (
         <div className="w-full max-w-sm animate-slide-up">
-          <div className="bg-accent/40 rounded-xl p-3 text-center">
+          <div className="bg-accent/40 rounded-xl p-3 text-center space-y-1">
             <p className="text-[11px] font-bold text-accent-foreground">
               🍺 Bebida? <span className="text-secondary cursor-pointer" onClick={() => navigate("/loja/e-pra-ja")}>É Pra Já 🏪</span>
+              {" · "}
+              <span className="text-secondary cursor-pointer" onClick={() => navigate("/loja/pj-distribuidora")}>PJ Distribuidora 🏪</span>
             </p>
           </div>
         </div>
