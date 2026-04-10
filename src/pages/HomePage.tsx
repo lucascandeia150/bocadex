@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine, Plus, Beer, UtensilsCrossed, ExternalLink } from "lucide-react";
+import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine, Plus, Beer, UtensilsCrossed, ExternalLink, ShoppingCart } from "lucide-react";
 import { getRandomFood, getPairedDrink, getComboPhrase, getDrinkContextPhrase, getRandomDrink, allItems, drinks } from "@/data/foods";
 import type { Food } from "@/data/foods";
 import { FoodActions } from "@/components/FoodActions";
@@ -10,7 +10,7 @@ import { AdBanner } from "@/components/AdBanner";
 import logo from "@/assets/logo.png";
 import { RotateCcw, MessageCircle } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
-import { openMoreOptions } from "@/lib/monetization";
+import { openMoreOptions, openBuyIngredients } from "@/lib/monetization";
 import { stores } from "@/data/stores";
 
 interface HomePageProps {
@@ -373,6 +373,27 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
       <div className="w-full max-w-sm bg-primary/10 rounded-xl p-3 text-center animate-slide-up">
         <p className="text-sm font-bold text-primary">{smartTip}</p>
       </div>
+
+      {/* Affiliate CTA - Fazer em casa */}
+      {!isBebidaOnly && (
+        <div className="w-full max-w-sm animate-slide-up">
+          <p className="text-xs text-muted-foreground text-center mb-2">Quer fazer em casa? 👇</p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setFoodRecipeOpen(true)}
+              className="flex-1 bg-primary/10 text-primary font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm border border-primary/20"
+            >
+              <ChefHat size={16} /> Ver receita 🍳
+            </button>
+            <button
+              onClick={() => openBuyIngredients(result.name, result.recipe.ingredients)}
+              className="flex-1 bg-[#FF9900]/10 text-[#FF9900] font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm border border-[#FF9900]/20"
+            >
+              <ShoppingCart size={16} /> Ver ingredientes 🛒
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Partner action buttons */}
       {mainPartner && (

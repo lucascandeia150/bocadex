@@ -1,13 +1,21 @@
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
+import { getAffiliateLink, getRecipeAffiliateLink } from "@/data/affiliateLinks";
 
 /**
- * Opens a Google search for buying ingredients — ready to swap
- * with Amazon/Mercado Livre affiliate links when available.
+ * Opens Amazon affiliate link for buying all ingredients of a recipe.
  */
-export function openBuyIngredients(foodName: string, ingredients: string[]) {
-  const query = encodeURIComponent(`comprar ${ingredients.slice(0, 3).join(" ")} ${foodName}`);
-  const url = `https://www.google.com/search?q=${query}`;
-  trackAnalyticsEvent("buy_ingredients_click", { food: foodName });
+export function openBuyIngredients(foodName: string, _ingredients: string[]) {
+  const url = getRecipeAffiliateLink();
+  trackAnalyticsEvent("buy_ingredients_click", { food: foodName, destination: "amazon" });
+  window.open(url, "_blank");
+}
+
+/**
+ * Opens Amazon affiliate link for a specific ingredient.
+ */
+export function openBuyIngredient(ingredient: string, foodName: string) {
+  const url = getAffiliateLink(ingredient);
+  trackAnalyticsEvent("buy_ingredient_click", { food: foodName, ingredient, destination: "amazon" });
   window.open(url, "_blank");
 }
 

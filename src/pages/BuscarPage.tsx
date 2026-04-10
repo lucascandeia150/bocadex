@@ -1,11 +1,13 @@
 import { useState, useMemo } from "react";
-import { Search, X, Clock, DollarSign, Sparkles, RotateCcw, ArrowLeft, Bookmark, Loader2, ChefHat, Lightbulb } from "lucide-react";
+import { Search, X, Clock, DollarSign, Sparkles, RotateCcw, ArrowLeft, Bookmark, Loader2, ChefHat, Lightbulb, ShoppingCart, ExternalLink } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { allItems, type Food } from "@/data/foods";
 import { RecipeModal } from "@/components/RecipeModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { PartnerBanner } from "@/components/PartnerBanner";
+import { openBuyIngredient, openBuyIngredients } from "@/lib/monetization";
+import { getRecipeAffiliateLink } from "@/data/affiliateLinks";
 
 const tagColors: Record<string, string> = {
   econômico: "bg-primary/15 text-primary",
@@ -246,14 +248,31 @@ export default function BuscarPage() {
                 <ChefHat size={16} className="text-primary" />
                 🛒 Ingredientes
               </h4>
-              <ul className="space-y-1">
+              <ul className="space-y-1.5">
                 {aiRecipe.ingredients.map((ing, i) => (
-                  <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                    <span className="text-primary mt-0.5">•</span>
-                    {ing}
+                  <li key={i} className="text-sm text-muted-foreground flex items-center justify-between gap-2">
+                    <span className="flex items-start gap-2 flex-1 min-w-0">
+                      <span className="text-primary mt-0.5 shrink-0">•</span>
+                      <span className="break-words">{ing}</span>
+                    </span>
+                    <button
+                      onClick={() => openBuyIngredient(ing, aiRecipe.name)}
+                      className="shrink-0 text-[10px] font-bold text-[#FF9900] bg-[#FF9900]/10 px-2 py-1 rounded-lg active:scale-95 transition-transform flex items-center gap-0.5"
+                      title="Comprar na Amazon"
+                    >
+                      <ExternalLink size={10} />
+                      Amazon
+                    </button>
                   </li>
                 ))}
               </ul>
+              <button
+                onClick={() => window.open(getRecipeAffiliateLink(), "_blank")}
+                className="mt-3 w-full bg-[#FF9900]/10 text-[#FF9900] font-bold py-2.5 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-xs border border-[#FF9900]/20"
+              >
+                <ShoppingCart size={14} />
+                🛒 Comprar todos na Amazon
+              </button>
             </div>
 
             {/* Steps */}
