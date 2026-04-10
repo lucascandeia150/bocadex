@@ -374,6 +374,27 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
         <p className="text-sm font-bold text-primary">{smartTip}</p>
       </div>
 
+      {/* Affiliate CTA - Fazer em casa */}
+      {!isBebidaOnly && (
+        <div className="w-full max-w-sm animate-slide-up">
+          <p className="text-xs text-muted-foreground text-center mb-2">Quer fazer em casa? 👇</p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setFoodRecipeOpen(true)}
+              className="flex-1 bg-primary/10 text-primary font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm border border-primary/20"
+            >
+              <ChefHat size={16} /> Ver receita 🍳
+            </button>
+            <button
+              onClick={() => openBuyIngredients(result.name, result.recipe.ingredients)}
+              className="flex-1 bg-[#FF9900]/10 text-[#FF9900] font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm border border-[#FF9900]/20"
+            >
+              <ShoppingCart size={16} /> Ver ingredientes 🛒
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Partner action buttons */}
       {mainPartner && (
         <div className="w-full max-w-sm animate-slide-up">
