@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Rocket, Lightbulb, Handshake, ArrowRight } from "lucide-react";
+import { Rocket, MapPin, ChefHat, MessageSquare, Utensils } from "lucide-react";
 
 export default function SobrePage() {
   const navigate = useNavigate();
@@ -10,49 +10,40 @@ export default function SobrePage() {
       <h1 className="text-2xl font-extrabold text-foreground">Sobre o EscolheAí 🍔</h1>
 
       <div className="bg-card rounded-2xl p-5 shadow-sm space-y-4 text-[15px] leading-relaxed text-foreground/90">
-        <p className="text-lg font-bold text-foreground">
-          Sem ideia do que comer ou beber? 🤔
-        </p>
-        <p className="text-primary font-extrabold text-lg">
-          O EscolheAí resolve isso pra você!
+        <p>
+          O EscolheAí foi criado para resolver um problema simples do dia a dia: <strong className="text-foreground">a indecisão na hora de escolher o que comer ou beber.</strong>
         </p>
         <p>
-          Nosso app foi criado para facilitar sua vida na hora da decisão. Com apenas alguns cliques, você descobre sugestões de comidas, bebidas e opções próximas, sem precisar perder tempo procurando.
+          Nosso objetivo é facilitar sua vida, sugerindo opções rápidas, econômicas e práticas, sem que você precise perder tempo procurando.
         </p>
       </div>
 
       <div className="bg-card rounded-2xl p-5 shadow-sm space-y-3">
-        <div className="flex items-center gap-2 text-primary font-bold text-base">
-          <Lightbulb size={20} />
-          <span>Para você, cliente:</span>
-        </div>
-        <ul className="space-y-2 text-[15px] text-foreground/85 pl-1">
-          <li>✅ Sugestões rápidas do que comer ou beber</li>
-          <li>✅ Ideias práticas e acessíveis</li>
-          <li>✅ Receitas simples quando quiser fazer em casa</li>
-          <li>✅ Conexão direta com lojas parceiras</li>
-        </ul>
-      </div>
-
-      <div className="bg-card rounded-2xl p-5 shadow-sm space-y-3">
-        <div className="flex items-center gap-2 text-secondary font-bold text-base">
-          <Handshake size={20} />
-          <span>Para parceiros:</span>
-        </div>
-        <ul className="space-y-2 text-[15px] text-foreground/85 pl-1">
-          <li>📢 Divulgação dentro do app</li>
-          <li>👀 Mais visibilidade para seus produtos</li>
-          <li>💬 Conexão direta com clientes via WhatsApp</li>
+        <p className="font-bold text-foreground text-base">Com o EscolheAí, você pode:</p>
+        <ul className="space-y-3 text-[15px] text-foreground/85">
+          <li className="flex items-start gap-3">
+            <Utensils size={18} className="text-primary mt-0.5 shrink-0" />
+            <span>🍽️ Descobrir o que comer ou beber rapidamente</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <MapPin size={18} className="text-primary mt-0.5 shrink-0" />
+            <span>📍 Encontrar lojas e parceiros próximos</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <ChefHat size={18} className="text-primary mt-0.5 shrink-0" />
+            <span>🍳 Ver receitas simples e práticas</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <MessageSquare size={18} className="text-primary mt-0.5 shrink-0" />
+            <span>📲 Falar direto com estabelecimentos</span>
+          </li>
         </ul>
       </div>
 
       <div className="bg-card rounded-2xl p-5 shadow-sm space-y-3 text-[15px] leading-relaxed text-foreground/90">
-        <p className="font-bold text-foreground">Nosso objetivo é simples:</p>
-        <p>👉 Te ajudar a decidir rápido</p>
-        <p>👉 Conectar você ao que precisa</p>
-        <p>👉 Economizar seu tempo</p>
-        <p className="pt-2 text-muted-foreground text-sm">
-          O app ainda está em evolução e novas funcionalidades estão sendo adicionadas constantemente 🚀
+        <p className="font-bold text-foreground">Tudo em um só lugar, de forma rápida e fácil.</p>
+        <p className="text-muted-foreground text-sm">
+          O app está em constante evolução, sempre buscando melhorar a experiência do usuário 🚀
         </p>
       </div>
 
