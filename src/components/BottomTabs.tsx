@@ -1,4 +1,4 @@
-import { Home, ShoppingBag, Dice5, Search, Star } from "lucide-react";
+import { Home, ShoppingBag, Dice5, Search, Info } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const tabs = [
@@ -6,7 +6,7 @@ const tabs = [
   { path: "/lojas", label: "Lojas", icon: ShoppingBag },
   { path: "/descobrir", label: "Descobrir", icon: Dice5 },
   { path: "/buscar", label: "Buscar", icon: Search },
-  { path: "/avaliar", label: "Avaliar", icon: Star },
+  { path: "/sobre", label: "Sobre", icon: Info },
 ];
 
 export function BottomTabs() {
