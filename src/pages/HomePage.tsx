@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine, Plus, Beer, UtensilsCrossed, ExternalLink } from "lucide-react";
+import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine, Plus, Beer, UtensilsCrossed, ExternalLink, ShoppingCart } from "lucide-react";
 import { getRandomFood, getPairedDrink, getComboPhrase, getDrinkContextPhrase, getRandomDrink, allItems, drinks } from "@/data/foods";
 import type { Food } from "@/data/foods";
 import { FoodActions } from "@/components/FoodActions";
@@ -10,7 +10,7 @@ import { AdBanner } from "@/components/AdBanner";
 import logo from "@/assets/logo.png";
 import { RotateCcw, MessageCircle } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
-import { openMoreOptions } from "@/lib/monetization";
+import { openMoreOptions, openBuyIngredients } from "@/lib/monetization";
 import { stores } from "@/data/stores";
 
 interface HomePageProps {
