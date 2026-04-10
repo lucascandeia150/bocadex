@@ -25,12 +25,11 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const { state, setOpenMobile } = useSidebar();
-  const collapsed = state === "collapsed";
+  const { setOpenMobile, isMobile } = useSidebar();
   const location = useLocation();
 
   const handleClick = () => {
-    setOpenMobile(false);
+    if (isMobile) setOpenMobile(false);
   };
 
   return (
@@ -38,9 +37,7 @@ export function AppSidebar() {
       <SidebarContent>
         <div className="p-4 flex items-center gap-3 border-b border-sidebar-border">
           <img src={logo} alt="EscolheAí" className="w-10 h-10 rounded-xl" />
-          {!collapsed && (
-            <span className="text-lg font-black text-sidebar-foreground">EscolheAí</span>
-          )}
+          <span className="text-lg font-black text-sidebar-foreground">EscolheAí</span>
         </div>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -58,11 +55,9 @@ export function AppSidebar() {
                         onClick={handleClick}
                       >
                         <item.icon className="mr-3 h-5 w-5" />
-                        {!collapsed && (
-                          <span className="text-sm font-semibold">
-                            {item.emoji} {item.title}
-                          </span>
-                        )}
+                        <span className="text-sm font-semibold">
+                          {item.emoji} {item.title}
+                        </span>
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
