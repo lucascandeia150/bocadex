@@ -71,7 +71,6 @@ export default function ContatoPage() {
             <MessageSquare size={18} />
             Falar no WhatsApp 💬
           </a>
-          <p className="text-sm text-muted-foreground text-center">📲 +55 33 99866-9482</p>
         </div>
 
         {/* Email */}
