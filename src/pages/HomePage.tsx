@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine, Plus, Beer, UtensilsCrossed } from "lucide-react";
+import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine, Plus, Beer, UtensilsCrossed, ExternalLink } from "lucide-react";
 import { getRandomFood, getPairedDrink, getComboPhrase, getDrinkContextPhrase, getRandomDrink, allItems, drinks } from "@/data/foods";
 import type { Food } from "@/data/foods";
 import { FoodActions } from "@/components/FoodActions";
 import { PartnerBanner } from "@/components/PartnerBanner";
 import { RecipeModal } from "@/components/RecipeModal";
+import { AdBanner } from "@/components/AdBanner";
 import logo from "@/assets/logo.png";
 import { RotateCcw, MessageCircle } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
+import { openMoreOptions } from "@/lib/monetization";
 import { stores } from "@/data/stores";
 
 interface HomePageProps {
@@ -441,12 +443,25 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
         <div className="w-full max-w-sm animate-slide-up"><FoodActions food={result} smartTip="" /></div>
       )}
 
-      <div className="flex gap-3 w-full max-w-sm">
-        <button onClick={onOutraOpcao} className="flex-1 bg-accent text-accent-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
-          <Shuffle size={18} />Gerar outra 🔄
+      {/* More options monetized */}
+      <div className="w-full max-w-sm animate-slide-up">
+        <p className="text-xs text-muted-foreground text-center mb-2">Quer ver mais opções? 👇</p>
+        <button
+          onClick={() => openMoreOptions(result.name)}
+          className="w-full bg-card border-2 border-primary/30 text-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm shadow-sm"
+        >
+          <ExternalLink size={16} className="text-primary" /> Ver mais opções 🔎
         </button>
-        <button onClick={onReset} className="flex-1 bg-muted text-muted-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
-          <RotateCcw size={18} />Início
+      </div>
+
+      <AdBanner placement="inline" className="max-w-sm" />
+
+      <div className="flex gap-3 w-full max-w-sm">
+        <button onClick={onOutraOpcao} className="flex-1 gradient-secondary text-secondary-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm">
+          <Shuffle size={18} /> Quero outra 😅
+        </button>
+        <button onClick={onReset} className="flex-1 bg-muted text-muted-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm">
+          <RotateCcw size={18} /> Início
         </button>
       </div>
 
