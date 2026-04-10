@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import AppLayout from "./pages/AppLayout";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
