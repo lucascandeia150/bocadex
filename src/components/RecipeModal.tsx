@@ -6,7 +6,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Clock, DollarSign, ChefHat, Lightbulb } from "lucide-react";
+import { Clock, DollarSign, ChefHat, Lightbulb, Youtube, ShoppingCart } from "lucide-react";
+import { AdBanner } from "./AdBanner";
+import { openBuyIngredients, openRecipeVideo } from "@/lib/monetization";
 
 const tips: Record<string, string[]> = {
   "arroz-feijao": ["Use feijão de pacote — mais barato que enlatado", "Cozinhe mais e congele porções para a semana"],
@@ -104,6 +106,24 @@ export function RecipeModal({ food, open, onOpenChange }: RecipeModalProps) {
               ))}
             </ul>
           </div>
+
+          {/* Monetized buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => openRecipeVideo(food.name)}
+              className="flex-1 bg-[hsl(0,72%,51%)]/10 text-[hsl(0,72%,51%)] font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-xs border border-[hsl(0,72%,51%)]/20"
+            >
+              <Youtube size={16} /> Ver vídeo 🎥
+            </button>
+            <button
+              onClick={() => openBuyIngredients(food.name, recipe.ingredients)}
+              className="flex-1 bg-primary/10 text-primary font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-xs border border-primary/20"
+            >
+              <ShoppingCart size={16} /> Comprar 🛒
+            </button>
+          </div>
+
+          <AdBanner placement="recipe" />
         </div>
       </DialogContent>
     </Dialog>
