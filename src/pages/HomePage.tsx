@@ -144,75 +144,29 @@ export default function HomePage({ onChoose }: HomePageProps) {
 
   // Home screen
   return (
-    <div className="px-4 pt-10 pb-12">
+    <div className="px-4 pt-8 pb-12">
       {/* Hero */}
       <div className="text-center mb-8 animate-bounce-in">
-        <div className="w-28 h-28 mx-auto mb-4 rounded-3xl bg-card shadow-xl border border-border/50 flex items-center justify-center p-2">
+        <div className="w-32 h-32 mx-auto mb-5 rounded-3xl bg-card shadow-xl border border-border/50 flex items-center justify-center p-2">
           <img src={logo} alt="EscolheAí" className="w-full h-full object-contain" />
         </div>
-        <h1 className="text-[1.6rem] font-black text-foreground leading-snug tracking-tight">
+        <h1 className="text-[1.7rem] font-black text-foreground leading-snug tracking-tight">
           Sem ideia do que comer<br />ou beber? 🤔
         </h1>
-        <p className="text-secondary font-extrabold text-base mt-2">
-          A gente escolhe por você 🍽️
+        <p className="text-secondary font-extrabold text-lg mt-3">
+          A gente escolhe por você! 🍽️
         </p>
       </div>
 
-      {/* Search */}
-      <div className="max-w-sm mx-auto mb-8 animate-slide-up relative">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
-            placeholder="Buscar comida ou receita... 🔍"
-            className="w-full bg-card border border-border rounded-2xl py-4 pl-11 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 shadow-sm transition-all"
-          />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"><X size={18} /></button>
-          )}
-        </div>
-        {searchFocused && searchResults.length > 0 && (
-          <div className="absolute z-20 top-full mt-1 w-full bg-card border border-border rounded-2xl shadow-lg overflow-hidden">
-            {searchResults.map((item) => (
-              <button key={item.id} onMouseDown={() => { setSelectedFood(item); setRecipeOpen(true); setSearchQuery(""); }}
-                className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-accent/50 transition-colors border-b border-border/50 last:border-0">
-                <span className="text-2xl">{item.emoji}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-foreground truncate">{item.name}</p>
-                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                    <span className="flex items-center gap-0.5"><Clock size={10} />{item.recipe.prepTime}</span>
-                    <span className="flex items-center gap-0.5"><DollarSign size={10} />R${item.priceMin}–{item.priceMax}</span>
-                  </div>
-                </div>
-                <ChefHat size={14} className="text-primary shrink-0" />
-              </button>
-            ))}
-            <button onMouseDown={() => navigate("/buscar")} className="w-full text-center px-4 py-2.5 text-xs font-bold text-primary hover:bg-accent/50 transition-colors">
-              Ver todos os resultados →
-            </button>
-          </div>
-        )}
-        {searchFocused && searchQuery.trim() && searchResults.length === 0 && (
-          <div className="absolute z-20 top-full mt-1 w-full bg-card border border-border rounded-2xl shadow-lg p-4 text-center">
-            <p className="text-sm text-muted-foreground">Nada encontrado 😕</p>
-            <button onMouseDown={() => navigate("/buscar")} className="mt-2 text-xs font-bold text-primary">Buscar com IA na aba Buscar →</button>
-          </div>
-        )}
-      </div>
-
-      {/* CTA principal */}
-      <div className="max-w-sm mx-auto flex flex-col gap-3 mb-10 animate-slide-up" style={{ animationDelay: "50ms" }}>
-        <button onClick={() => setStep("choose-type")}
-          className="gradient-primary text-primary-foreground font-black text-lg py-5 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
-          <Zap size={22} /> Decidir agora <ArrowRight size={18} />
-        </button>
+      {/* CTA principal - Decide por mim */}
+      <div className="max-w-sm mx-auto flex flex-col gap-3 mb-8 animate-slide-up" style={{ animationDelay: "50ms" }}>
         <button onClick={decidirPorMim}
-          className="gradient-secondary text-secondary-foreground font-bold text-base py-4 rounded-2xl shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">
-          <Shuffle size={20} /> Surpresa! Escolhe pra mim
+          className="gradient-primary text-primary-foreground font-black text-xl py-6 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-3 relative overflow-hidden">
+          <span className="text-2xl">🤖</span> Decide por mim
+        </button>
+        <button onClick={() => setStep("choose-type")}
+          className="bg-card border-2 border-primary text-foreground font-bold text-base py-4 rounded-2xl shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">
+          <Zap size={20} className="text-primary" /> Eu quero escolher <ArrowRight size={16} />
         </button>
       </div>
 
