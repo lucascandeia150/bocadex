@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Search, X, Clock, DollarSign, Sparkles, RotateCcw, ArrowLeft, Bookmark, Loader2, ChefHat, Lightbulb } from "lucide-react";
+import { Search, X, Clock, DollarSign, Sparkles, RotateCcw, ArrowLeft, Bookmark, Loader2, ChefHat, Lightbulb, ShoppingCart, ExternalLink } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { allItems, type Food } from "@/data/foods";
 import { RecipeModal } from "@/components/RecipeModal";
