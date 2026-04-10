@@ -6,6 +6,8 @@ import { RecipeModal } from "@/components/RecipeModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { PartnerBanner } from "@/components/PartnerBanner";
+import { openBuyIngredient, openBuyIngredients } from "@/lib/monetization";
+import { getRecipeAffiliateLink } from "@/data/affiliateLinks";
 
 const tagColors: Record<string, string> = {
   econômico: "bg-primary/15 text-primary",
