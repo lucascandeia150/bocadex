@@ -13,7 +13,7 @@ declare global {
 
 /**
  * Google AdSense ad component.
- * Publisher: ca-pub-6015813141908536
+ * Publisher: ca-pub-8782325610078220
  */
 export function AdBanner({ placement, className = "" }: AdBannerProps) {
   const adRef = useRef<HTMLModElement>(null);
@@ -36,7 +36,7 @@ export function AdBanner({ placement, className = "" }: AdBannerProps) {
           ref={adRef}
           className="adsbygoogle"
           style={{ display: "block" }}
-          data-ad-client="ca-pub-6015813141908536"
+          data-ad-client="ca-pub-8782325610078220"
           data-ad-format="auto"
           data-full-width-responsive="true"
         />
@@ -51,7 +51,7 @@ export function AdBanner({ placement, className = "" }: AdBannerProps) {
           ref={adRef}
           className="adsbygoogle"
           style={{ display: "block" }}
-          data-ad-client="ca-pub-6015813141908536"
+          data-ad-client="ca-pub-8782325610078220"
           data-ad-format="fluid"
           data-ad-layout="in-article"
         />
@@ -66,7 +66,7 @@ export function AdBanner({ placement, className = "" }: AdBannerProps) {
         ref={adRef}
         className="adsbygoogle"
         style={{ display: "block" }}
-        data-ad-client="ca-pub-6015813141908536"
+        data-ad-client="ca-pub-8782325610078220"
         data-ad-format="auto"
         data-full-width-responsive="true"
       />
