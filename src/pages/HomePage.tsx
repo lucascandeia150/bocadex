@@ -343,7 +343,7 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
               onClick={() => openBuyIngredients(result.name, result.recipe.ingredients)}
               className="flex-1 bg-[#FF9900]/10 text-[#FF9900] font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm border border-[#FF9900]/20"
             >
-              <ShoppingCart size={16} /> Ver ingredientes 🛒
+              <ShoppingCart size={16} /> Comprar ingredientes 🛒
             </button>
           </div>
         </div>
