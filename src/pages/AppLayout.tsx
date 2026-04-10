@@ -32,7 +32,8 @@ export default function AppLayout() {
         <div className="flex-1 flex flex-col max-w-lg mx-auto w-full">
           <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border h-14 flex items-center px-4 gap-3">
             <SidebarTrigger className="h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-all animate-pulse [animation-iteration-count:2] [animation-duration:1.5s]" />
-            <span className="text-base font-black text-foreground">EscolheAí</span>
+            <span className="text-xs font-bold text-primary">Menu</span>
+            <span className="text-base font-black text-foreground ml-auto">EscolheAí</span>
           </header>
 
           <main className="flex-1 pb-8">
