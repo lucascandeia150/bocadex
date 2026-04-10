@@ -1,51 +1,75 @@
-import { trackAnalyticsEvent } from "@/lib/trackEvent";
+import { useEffect, useRef } from "react";
 
 interface AdBannerProps {
   placement: "bottom" | "inline" | "recipe";
   className?: string;
 }
 
+declare global {
+  interface Window {
+    adsbygoogle: unknown[];
+  }
+}
+
 /**
- * Ad placeholder component — ready to swap with Google AdSense
- * when the publisher ID (ca-pub-XXXXX) is available.
- * 
- * To activate: replace the placeholder with:
- * <ins className="adsbygoogle" data-ad-client="ca-pub-XXXXX" data-ad-slot="SLOT" />
+ * Google AdSense ad component.
+ * Publisher: ca-pub-6015813141908536
  */
 export function AdBanner({ placement, className = "" }: AdBannerProps) {
-  const handleClick = () => {
-    trackAnalyticsEvent("ad_placeholder_click", { placement });
-  };
+  const adRef = useRef<HTMLModElement>(null);
+  const pushed = useRef(false);
+
+  useEffect(() => {
+    if (pushed.current) return;
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      pushed.current = true;
+    } catch {
+      // adsbygoogle not loaded yet
+    }
+  }, []);
 
   if (placement === "bottom") {
     return (
-      <div
-        onClick={handleClick}
-        className={`w-full bg-gradient-to-r from-muted to-muted/60 border-t border-border py-2 px-4 flex items-center justify-center gap-2 ${className}`}
-      >
-        <span className="text-[10px] text-muted-foreground">Espaço publicitário • EscolheAí</span>
+      <div className={`w-full bg-background border-t border-border py-1 px-2 ${className}`}>
+        <ins
+          ref={adRef}
+          className="adsbygoogle"
+          style={{ display: "block" }}
+          data-ad-client="ca-pub-6015813141908536"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        />
       </div>
     );
   }
 
   if (placement === "recipe") {
     return (
-      <div
-        onClick={handleClick}
-        className={`w-full bg-accent/40 border border-border/50 rounded-xl p-3 flex items-center justify-center ${className}`}
-      >
-        <span className="text-[10px] text-muted-foreground">📢 Anúncio • Apoie o EscolheAí</span>
+      <div className={`w-full rounded-xl overflow-hidden ${className}`}>
+        <ins
+          ref={adRef}
+          className="adsbygoogle"
+          style={{ display: "block" }}
+          data-ad-client="ca-pub-6015813141908536"
+          data-ad-format="fluid"
+          data-ad-layout="in-article"
+        />
       </div>
     );
   }
 
   // inline
   return (
-    <div
-      onClick={handleClick}
-      className={`w-full bg-muted/50 border border-border/50 rounded-2xl p-4 flex items-center justify-center ${className}`}
-    >
-      <span className="text-xs text-muted-foreground">📢 Espaço publicitário</span>
+    <div className={`w-full rounded-2xl overflow-hidden ${className}`}>
+      <ins
+        ref={adRef}
+        className="adsbygoogle"
+        style={{ display: "block" }}
+        data-ad-client="ca-pub-6015813141908536"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
     </div>
   );
 }
