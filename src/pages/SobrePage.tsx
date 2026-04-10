@@ -7,14 +7,11 @@ export default function SobrePage() {
 
   return (
     <div className="px-4 pt-6 pb-24 space-y-6 animate-in fade-in duration-500">
-      <h1 className="text-2xl font-extrabold text-foreground">Sobre o EscolheAí 🍔</h1>
+      <h1 className="text-2xl font-extrabold text-foreground">Por que o EscolheAí existe? 🍔</h1>
 
       <div className="bg-card rounded-2xl p-5 shadow-sm space-y-4 text-[15px] leading-relaxed text-foreground/90">
         <p>
-          O EscolheAí foi criado para resolver um problema simples do dia a dia: <strong className="text-foreground">a indecisão na hora de escolher o que comer ou beber.</strong>
-        </p>
-        <p>
-          Nosso objetivo é facilitar sua vida, sugerindo opções rápidas, econômicas e práticas, sem que você precise perder tempo procurando.
+          O EscolheAí foi criado para resolver <strong className="text-foreground">a indecisão na hora de escolher o que comer ou beber</strong>, trazendo sugestões rápidas, práticas e acessíveis direto no seu celular.
         </p>
       </div>
 
