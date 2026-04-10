@@ -25,12 +25,11 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const { state, setOpenMobile } = useSidebar();
-  const collapsed = state === "collapsed";
+  const { setOpenMobile, isMobile } = useSidebar();
   const location = useLocation();
 
   const handleClick = () => {
-    setOpenMobile(false);
+    if (isMobile) setOpenMobile(false);
   };
 
   return (
