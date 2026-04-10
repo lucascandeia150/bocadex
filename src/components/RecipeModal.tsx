@@ -6,9 +6,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Clock, DollarSign, ChefHat, Lightbulb, Youtube, ShoppingCart } from "lucide-react";
+import { Clock, DollarSign, ChefHat, Lightbulb, Youtube, ShoppingCart, ExternalLink } from "lucide-react";
 import { AdBanner } from "./AdBanner";
-import { openBuyIngredients, openRecipeVideo } from "@/lib/monetization";
+import { openBuyIngredients, openRecipeVideo, openBuyIngredient } from "@/lib/monetization";
 
 const tips: Record<string, string[]> = {
   "arroz-feijao": ["Use feijão de pacote — mais barato que enlatado", "Cozinhe mais e congele porções para a semana"],
@@ -66,17 +66,37 @@ export function RecipeModal({ food, open, onOpenChange }: RecipeModalProps) {
         </div>
 
         <div className="space-y-4">
+          {/* Ingredients with affiliate links */}
           <div>
             <h4 className="font-bold text-foreground mb-2">🛒 Ingredientes</h4>
-            <ul className="space-y-1">
+            <ul className="space-y-1.5">
               {recipe.ingredients.map((ing, i) => (
-                <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                  <span className="text-primary mt-0.5">•</span>
-                  {ing}
+                <li key={i} className="text-sm text-muted-foreground flex items-center justify-between gap-2">
+                  <span className="flex items-start gap-2 flex-1 min-w-0">
+                    <span className="text-primary mt-0.5 shrink-0">•</span>
+                    <span className="break-words">{ing}</span>
+                  </span>
+                  <button
+                    onClick={() => openBuyIngredient(ing, food.name)}
+                    className="shrink-0 text-[10px] font-bold text-primary bg-primary/10 px-2 py-1 rounded-lg active:scale-95 transition-transform flex items-center gap-0.5 hover:bg-primary/20"
+                    title="Comprar na Amazon"
+                  >
+                    <ExternalLink size={10} />
+                    Amazon
+                  </button>
                 </li>
               ))}
             </ul>
           </div>
+
+          {/* Buy all ingredients CTA */}
+          <button
+            onClick={() => openBuyIngredients(food.name, recipe.ingredients)}
+            className="w-full bg-[#FF9900]/10 text-[#FF9900] font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm border border-[#FF9900]/20"
+          >
+            <ShoppingCart size={16} />
+            🛒 Comprar todos na Amazon
+          </button>
 
           <div>
             <h4 className="font-bold text-foreground mb-2">👨‍🍳 Modo de Preparo</h4>
@@ -111,13 +131,13 @@ export function RecipeModal({ food, open, onOpenChange }: RecipeModalProps) {
           <div className="flex gap-2">
             <button
               onClick={() => openRecipeVideo(food.name)}
-              className="flex-1 bg-[hsl(0,72%,51%)]/10 text-[hsl(0,72%,51%)] font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-xs border border-[hsl(0,72%,51%)]/20"
+              className="flex-1 bg-destructive/10 text-destructive font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-xs border border-destructive/20"
             >
               <Youtube size={16} /> Ver vídeo 🎥
             </button>
             <button
               onClick={() => openBuyIngredients(food.name, recipe.ingredients)}
-              className="flex-1 bg-primary/10 text-primary font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-xs border border-primary/20"
+              className="flex-1 bg-[#FF9900]/10 text-[#FF9900] font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-xs border border-[#FF9900]/20"
             >
               <ShoppingCart size={16} /> Comprar 🛒
             </button>
