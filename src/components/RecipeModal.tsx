@@ -127,6 +127,23 @@ export function RecipeModal({ food, open, onOpenChange }: RecipeModalProps) {
             </ul>
           </div>
 
+          {/* Video section */}
+          {recipe.videoUrl && (
+            <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-4">
+              <h4 className="font-bold text-foreground mb-2 flex items-center gap-1.5">
+                <Youtube size={16} className="text-destructive" />
+                🎥 Aprenda com vídeo
+              </h4>
+              <button
+                onClick={() => window.open(recipe.videoUrl, "_blank")}
+                className="w-full bg-destructive text-destructive-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm shadow-md"
+              >
+                <Youtube size={18} />
+                ▶️ Assistir no YouTube
+              </button>
+            </div>
+          )}
+
           {/* Monetized buttons */}
           <div className="flex gap-2">
             <button
