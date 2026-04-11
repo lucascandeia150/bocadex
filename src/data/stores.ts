@@ -2,6 +2,9 @@ import biscoitoNata from "@/assets/stores/biscoito-nata.jpg";
 import biscoitoMorango from "@/assets/stores/biscoito-morango.jpg";
 import biscoitoChocolate from "@/assets/stores/biscoito-chocolate.jpg";
 import biscoitoDoceLeite from "@/assets/stores/biscoito-doce-leite.jpg";
+import coxinhaImg from "@/assets/stores/coxinha.jpg";
+import maravilhaImg from "@/assets/stores/maravilha.jpg";
+import amstelImg from "@/assets/stores/amstel.jpg";
 
 export interface StoreReview {
   text: string;
@@ -135,6 +138,7 @@ export const stores: Store[] = [
         id: "coxinha-tete",
         name: "Coxinha",
         emoji: "🍗",
+        image: coxinhaImg,
         description: "Coxinha crocante por fora e cremosa por dentro, recheio bem temperado.",
         priceMin: 5,
         priceMax: 7,
@@ -144,6 +148,7 @@ export const stores: Store[] = [
         id: "maravilha-tete",
         name: "Maravilha",
         emoji: "🥐",
+        image: maravilhaImg,
         description: "Salgado tipo maravilha, dourado e macio, perfeito para lanches rápidos.",
         priceMin: 5,
         priceMax: 7,
@@ -153,6 +158,7 @@ export const stores: Store[] = [
         id: "amstel-tete",
         name: "Cerveja Amstel",
         emoji: "🍺",
+        image: amstelImg,
         description: "Cerveja Amstel bem gelada, perfeita para acompanhar os lanches.",
         priceMin: 6,
         priceMax: 8,
