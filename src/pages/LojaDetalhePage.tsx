@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
-import { stores } from "@/data/stores";
+import { stores, getProductsByCategory, productCategoryLabels, ProductCategory } from "@/data/stores";
 import { ArrowLeft, MessageCircle, Star, Flame, ShoppingBag, X, ChevronLeft, ChevronRight, Camera, MapPin } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
