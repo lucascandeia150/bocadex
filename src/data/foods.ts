@@ -3,6 +3,7 @@ export interface Recipe {
   steps: string[];
   prepTime: string;
   costEstimate: number;
+  videoUrl?: string;
 }
 
 export interface DeliveryInfo {
@@ -661,7 +662,51 @@ export const drinks: Food[] = [
   },
 ];
 
-export const allItems: Food[] = [...foods, ...drinks];
+export const foods2: Food[] = [
+  {
+    id: "torta-morango",
+    name: "Torta de Morango",
+    emoji: "🍓",
+    priceMin: 25,
+    priceMax: 40,
+    speed: "demorado",
+    filling: false,
+    cheap: false,
+    reason: "Sobremesa clássica e irresistível",
+    recommended: true,
+    type: "comida",
+    tag: "doce",
+    recipe: {
+      ingredients: [
+        "1 pacote de biscoito maisena",
+        "100g de manteiga",
+        "1 caixa de leite condensado",
+        "1 caixa de creme de leite",
+        "1 caixa de morangos",
+        "1 gelatina de morango",
+      ],
+      steps: [
+        "Triture o biscoito maisena até virar farinha",
+        "Misture com a manteiga derretida até formar uma massa",
+        "Forre uma forma com essa base e pressione bem",
+        "Leve ao forno por 10 minutos a 180°C",
+        "Misture o leite condensado com o creme de leite",
+        "Despeje o recheio sobre a base já assada e fria",
+        "Corte os morangos em fatias",
+        "Prepare a gelatina conforme a embalagem",
+        "Coloque os morangos por cima do recheio",
+        "Finalize com a gelatina ainda líquida",
+        "Leve à geladeira por pelo menos 2 horas até firmar",
+      ],
+      prepTime: "40min",
+      costEstimate: 15,
+      videoUrl: "https://www.youtube.com/results?search_query=receita+torta+de+morango+fácil",
+    },
+    delivery: { available: false, estimatedTime: "", platform: "", url: "" },
+  },
+];
+
+export const allItems: Food[] = [...foods, ...drinks, ...foods2];
 
 export const speedLabels: Record<Food["speed"], string> = {
   rapido: "⚡ Rápido",
