@@ -38,7 +38,13 @@ export default function ParceirosPage() {
 
   const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setImages(Array.from(e.target.files).slice(0, 5));
+      const validFiles = Array.from(e.target.files)
+        .filter(f => f.type.startsWith("image/") && f.size <= 5 * 1024 * 1024)
+        .slice(0, 5);
+      if (validFiles.length < (e.target.files.length > 5 ? 5 : e.target.files.length)) {
+        toast({ title: "Arquivo inválido", description: "Apenas imagens até 5MB são aceitas.", variant: "destructive" });
+      }
+      setImages(validFiles);
     }
   };
 
