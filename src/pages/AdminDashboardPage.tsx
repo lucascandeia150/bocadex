@@ -99,7 +99,6 @@ export default function AdminDashboardPage() {
     setPartners((prev) => prev.map((p) => p.id === id ? { ...p, status } : p));
     toast.success(status === "approved" ? "Aprovado ✅" : "Rejeitado ❌");
   };
-  };
 
   // Stats
   const totalAccess = events.filter((e) => e.event_type === "page_view").length;
