@@ -4,8 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Users, MousePointerClick, Star, MessageCircle, Trash2, LogOut,
-  BarChart3, TrendingUp, Clock, RefreshCw
+  BarChart3, TrendingUp, Clock, RefreshCw, Handshake, CheckCircle, XCircle
 } from "lucide-react";
+
+interface PartnerApplication {
+  id: string;
+  business_name: string;
+  business_type: string;
+  address: string;
+  description: string;
+  whatsapp: string;
+  promotions: string | null;
+  images: string[];
+  status: string;
+  created_at: string;
+}
 
 interface Feedback {
   id: string;
@@ -22,7 +35,7 @@ interface AnalyticsEvent {
   created_at: string;
 }
 
-type Tab = "overview" | "feedbacks" | "clicks" | "messages";
+type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -30,6 +43,7 @@ export default function AdminDashboardPage() {
   const [tab, setTab] = useState<Tab>("overview");
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
+  const [partners, setPartners] = useState<PartnerApplication[]>([]);
 
   useEffect(() => {
     checkAuth();
@@ -56,12 +70,14 @@ export default function AdminDashboardPage() {
 
   const loadData = async () => {
     setLoading(true);
-    const [fbRes, evRes] = await Promise.all([
+    const [fbRes, evRes, ptRes] = await Promise.all([
       supabase.from("feedbacks").select("*").order("created_at", { ascending: false }).limit(100),
       supabase.from("analytics_events").select("*").order("created_at", { ascending: false }).limit(500),
+      supabase.from("partner_applications").select("*").order("created_at", { ascending: false }),
     ]);
     setFeedbacks((fbRes.data as Feedback[]) || []);
     setEvents((evRes.data as AnalyticsEvent[]) || []);
+    setPartners((ptRes.data as PartnerApplication[]) || []);
     setLoading(false);
   };
 
@@ -75,6 +91,14 @@ export default function AdminDashboardPage() {
     if (error) { toast.error("Erro ao excluir"); return; }
     setFeedbacks((prev) => prev.filter((f) => f.id !== id));
     toast.success("Excluído ✅");
+  };
+
+  const updatePartnerStatus = async (id: string, status: string) => {
+    const { error } = await supabase.from("partner_applications").update({ status }).eq("id", id);
+    if (error) { toast.error("Erro ao atualizar"); return; }
+    setPartners((prev) => prev.map((p) => p.id === id ? { ...p, status } : p));
+    toast.success(status === "approved" ? "Aprovado ✅" : "Rejeitado ❌");
+  };
   };
 
   // Stats
@@ -133,6 +157,7 @@ export default function AdminDashboardPage() {
           { id: "feedbacks", label: "Avaliações", icon: <Star size={14} /> },
           { id: "clicks", label: "Cliques", icon: <MousePointerClick size={14} /> },
           { id: "messages", label: "Sugestões", icon: <MessageCircle size={14} /> },
+          { id: "partners", label: "Parceiros", icon: <Handshake size={14} /> },
         ] as { id: Tab; label: string; icon: React.ReactNode }[]).map((t) => (
           <button
             key={t.id}
@@ -245,6 +270,56 @@ export default function AdminDashboardPage() {
             ))}
             {suggestions.length === 0 && (
               <p className="text-center text-muted-foreground text-sm py-10">Nenhuma sugestão registrada ainda 🎯</p>
+            )}
+          </div>
+        )}
+
+        {tab === "partners" && (
+          <div className="space-y-3 animate-slide-up">
+            <h2 className="text-base font-black text-foreground">Cadastros de Parceiros ({partners.length})</h2>
+            {partners.map((p) => (
+              <div key={p.id} className="bg-card rounded-2xl border border-border p-4 space-y-2">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-sm font-bold text-foreground">{p.business_name}</h3>
+                    <span className="text-xs text-primary font-semibold">{p.business_type}</span>
+                  </div>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    p.status === "approved" ? "bg-green-100 text-green-700" :
+                    p.status === "rejected" ? "bg-red-100 text-red-700" :
+                    "bg-yellow-100 text-yellow-700"
+                  }`}>
+                    {p.status === "approved" ? "Aprovado" : p.status === "rejected" ? "Rejeitado" : "Pendente"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">📍 {p.address}</p>
+                <p className="text-xs text-foreground">{p.description}</p>
+                <p className="text-xs text-muted-foreground">📱 {p.whatsapp}</p>
+                {p.promotions && <p className="text-xs text-primary">🎉 {p.promotions}</p>}
+                {p.images && p.images.length > 0 && (
+                  <div className="flex gap-2 overflow-x-auto">
+                    {p.images.map((img, i) => (
+                      <img key={i} src={img} alt="Parceiro" className="h-16 w-16 rounded-lg object-cover border border-border" />
+                    ))}
+                  </div>
+                )}
+                <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                  <Clock size={10} /> {new Date(p.created_at).toLocaleString("pt-BR")}
+                </p>
+                {p.status === "pending" && (
+                  <div className="flex gap-2 pt-1">
+                    <button onClick={() => updatePartnerStatus(p.id, "approved")} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-green-500 text-white text-xs font-bold">
+                      <CheckCircle size={12} /> Aprovar
+                    </button>
+                    <button onClick={() => updatePartnerStatus(p.id, "rejected")} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-destructive text-destructive-foreground text-xs font-bold">
+                      <XCircle size={12} /> Rejeitar
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+            {partners.length === 0 && (
+              <p className="text-center text-muted-foreground text-sm py-10">Nenhum cadastro de parceiro ainda 🤝</p>
             )}
           </div>
         )}

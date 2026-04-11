@@ -59,6 +59,45 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_applications: {
+        Row: {
+          address: string
+          business_name: string
+          business_type: string
+          created_at: string
+          description: string
+          id: string
+          images: string[] | null
+          promotions: string | null
+          status: string
+          whatsapp: string
+        }
+        Insert: {
+          address: string
+          business_name: string
+          business_type: string
+          created_at?: string
+          description: string
+          id?: string
+          images?: string[] | null
+          promotions?: string | null
+          status?: string
+          whatsapp: string
+        }
+        Update: {
+          address?: string
+          business_name?: string
+          business_type?: string
+          created_at?: string
+          description?: string
+          id?: string
+          images?: string[] | null
+          promotions?: string | null
+          status?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
