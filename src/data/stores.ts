@@ -1,3 +1,8 @@
+import biscoitoNata from "@/assets/stores/biscoito-nata.jpg";
+import biscoitoMorango from "@/assets/stores/biscoito-morango.jpg";
+import biscoitoChocolate from "@/assets/stores/biscoito-chocolate.jpg";
+import biscoitoDoceLeite from "@/assets/stores/biscoito-doce-leite.jpg";
+
 export interface StoreReview {
   text: string;
   stars: number;
@@ -7,6 +12,7 @@ export interface StoreProduct {
   id: string;
   name: string;
   emoji: string;
+  image?: string;
   description: string;
   priceMin: number;
   priceMax: number;
@@ -61,6 +67,7 @@ export const stores: Store[] = [
         id: "nata-tradicional",
         name: "Nata Tradicional",
         emoji: "🍪",
+        image: biscoitoNata,
         description: "O clássico biscoito de nata, crocante por fora e macio por dentro",
         priceMin: 8,
         priceMax: 8,
@@ -70,6 +77,7 @@ export const stores: Store[] = [
         id: "goiabinha",
         name: "Goiabinha",
         emoji: "🍓",
+        image: biscoitoMorango,
         description: "Biscoito recheado com goiabada caseira",
         priceMin: 8,
         priceMax: 8,
@@ -79,6 +87,7 @@ export const stores: Store[] = [
         id: "doce-de-leite",
         name: "Doce de Leite",
         emoji: "🥛",
+        image: biscoitoDoceLeite,
         description: "Biscoito com recheio cremoso de doce de leite",
         priceMin: 8,
         priceMax: 8,
@@ -106,6 +115,7 @@ export const stores: Store[] = [
         id: "nata-recheio-morango",
         name: "Nata com Recheio de Morango",
         emoji: "🍓",
+        image: biscoitoMorango,
         description: "Biscoitos caseiros de nata com recheio cremoso de morango, macios e deliciosos.",
         priceMin: 10,
         priceMax: 10,
@@ -115,6 +125,7 @@ export const stores: Store[] = [
         id: "nata-recheio-chocolate",
         name: "Nata com Recheio de Chocolate",
         emoji: "🍫",
+        image: biscoitoChocolate,
         description: "Biscoitos caseiros de nata com recheio cremoso de chocolate, perfeitos para qualquer momento.",
         priceMin: 10,
         priceMax: 10,

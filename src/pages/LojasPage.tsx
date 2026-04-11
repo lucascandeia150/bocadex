@@ -142,6 +142,14 @@ function StoreDetail({ store, onBack }: { store: Store; onBack: () => void }) {
         <div className="flex flex-col gap-3">
           {store.products.map((product) => (
             <div key={product.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+              {product.image && (
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-40 object-cover rounded-xl mb-3"
+                  loading="lazy"
+                />
+              )}
               <div className="flex items-start gap-3">
                 <span className="text-4xl">{product.emoji}</span>
                 <div className="flex-1 min-w-0">
