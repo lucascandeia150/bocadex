@@ -4,11 +4,11 @@ import type { Food } from "@/data/foods";
 import { RecipeModal } from "@/components/RecipeModal";
 import { ChefHat, Flame, Zap, DollarSign, Cookie, Wine, Clock, Youtube, Play } from "lucide-react";
 
-type Category = "populares" | "rapidos" | "baratos" | "doces" | "bebidas" | "videos";
+type Category = "videos" | "populares" | "rapidos" | "baratos" | "doces" | "bebidas";
 
 const categories: { id: Category; label: string; emoji: string; icon: typeof Flame }[] = [
+  { id: "videos", label: "Com vídeo ⭐", emoji: "🎥", icon: Play },
   { id: "populares", label: "Mais procurados", emoji: "🔥", icon: Flame },
-  { id: "videos", label: "Com vídeo", emoji: "🎥", icon: Play },
   { id: "rapidos", label: "Rápidos e fáceis", emoji: "⚡", icon: Zap },
   { id: "baratos", label: "Baratos do dia a dia", emoji: "💸", icon: DollarSign },
   { id: "doces", label: "Doces e sobremesas", emoji: "🍪", icon: Cookie },
@@ -35,7 +35,7 @@ function filterByCategory(items: Food[], cat: Category): Food[] {
 }
 
 export default function ReceitasPage() {
-  const [activeCategory, setActiveCategory] = useState<Category>("populares");
+  const [activeCategory, setActiveCategory] = useState<Category>("videos");
   const [selectedFood, setSelectedFood] = useState<Food | null>(null);
   const [recipeOpen, setRecipeOpen] = useState(false);
 
