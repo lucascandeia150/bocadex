@@ -2,6 +2,9 @@ import biscoitoNata from "@/assets/stores/biscoito-nata.jpg";
 import biscoitoMorango from "@/assets/stores/biscoito-morango.jpg";
 import biscoitoChocolate from "@/assets/stores/biscoito-chocolate.jpg";
 import biscoitoDoceLeite from "@/assets/stores/biscoito-doce-leite.jpg";
+import coxinhaImg from "@/assets/stores/coxinha.jpg";
+import maravilhaImg from "@/assets/stores/maravilha.jpg";
+import amstelImg from "@/assets/stores/amstel.jpg";
 
 export interface StoreReview {
   text: string;
