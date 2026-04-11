@@ -23,6 +23,7 @@ const tips: Record<string, string[]> = {
   "acai": ["Compre polpa congelada no atacado — sai mais barato", "Banana dá cremosidade sem custo extra"],
   "coxinha": ["Faça em quantidade e congele antes de empanar", "Use frango de coxa — mais barato e saboroso"],
   "pf": ["Monte com o que tiver na geladeira", "Farofa de manteiga é barata e completa o prato"],
+  "torta-morango": ["Biscoito maisena de marca genérica é mais barato", "Use morangos da estação — mais baratos e doces"],
 };
 
 const defaultTips = ["Compre ingredientes no atacado para economizar", "Cozinhar em casa sempre sai mais barato que pedir"];
