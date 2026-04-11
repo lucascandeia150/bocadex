@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; 
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -98,7 +98,6 @@ export default function AdminDashboardPage() {
     if (error) { toast.error("Erro ao atualizar"); return; }
     setPartners((prev) => prev.map((p) => p.id === id ? { ...p, status } : p));
     toast.success(status === "approved" ? "Aprovado ✅" : "Rejeitado ❌");
-  };
   };
 
   // Stats
