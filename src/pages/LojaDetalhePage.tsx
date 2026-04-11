@@ -56,6 +56,46 @@ const productImageMap: Record<string, string> = {
   "snacks-pj": pjSnacks,
 };
 
+import type { Store, StoreProduct } from "@/data/stores";
+
+function ProductCard({ product, store, openWhatsApp, index }: { product: StoreProduct; store: Store; openWhatsApp: (msg: string) => void; index: number }) {
+  const productImg = product.image || productImageMap[product.id];
+  return (
+    <div
+      className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden animate-slide-up"
+      style={{ animationDelay: `${(index + 1) * 60}ms` }}
+    >
+      {productImg && (
+        <img
+          src={productImg}
+          alt={product.name}
+          loading="lazy"
+          className="w-full h-36 object-cover"
+        />
+      )}
+      <div className="p-4">
+        <div className="flex items-start gap-3">
+          <span className="text-3xl">{product.emoji}</span>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base font-bold text-foreground">{product.name}</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">{product.description}</p>
+            <p className="text-sm font-black text-primary mt-1">
+              {product.priceMin === product.priceMax ? `R$${product.priceMin},00` : `R$${product.priceMin},00 - R$${product.priceMax},00`}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => openWhatsApp(product.whatsappMessage)}
+          className="w-full mt-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
+        >
+          <MessageCircle size={16} />
+          Pedir via WhatsApp 💬
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function LojaDetalhePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
