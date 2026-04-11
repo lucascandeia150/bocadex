@@ -202,49 +202,38 @@ export default function LojaDetalhePage() {
           <h2 className="text-base font-bold text-foreground mb-3 flex items-center gap-2">
             <ShoppingBag size={16} className="text-primary" /> Produtos disponíveis
           </h2>
-          <div className="flex flex-col gap-3">
-            {store.products.map((product, i) => {
-              const productImg = productImageMap[product.id];
-              return (
-                <div
-                  key={product.id}
-                  className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden animate-slide-up"
-                  style={{ animationDelay: `${(i + 1) * 60}ms` }}
-                >
-                  {productImg && (
-                    <img
-                      src={productImg}
-                      alt={product.name}
-                      loading="lazy"
-                      className="w-full h-36 object-cover"
-                    />
-                  )}
-                  <div className="p-4">
-                    <div className="flex items-start gap-3">
-                      <span className="text-3xl">{product.emoji}</span>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-base font-bold text-foreground">{product.name}</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">{product.description}</p>
-                        <p className="text-sm font-black text-primary mt-1">
-                          {product.priceMin === product.priceMax ? `R$${product.priceMin},00` : `R$${product.priceMin},00 - R$${product.priceMax},00`}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">
-                          Loja: {store.name}
-                        </p>
-                      </div>
+          {(() => {
+            const grouped = getProductsByCategory(store.products);
+            const categoryOrder: ProductCategory[] = ["cervejas", "salgados", "doces", "bebidas", "outros"];
+            const filledCategories = categoryOrder.filter((cat) => grouped[cat].length > 0);
+
+            return filledCategories.length > 1 ? (
+              <div className="flex flex-col gap-5">
+                {filledCategories.map((cat) => (
+                  <div key={cat}>
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <span className="text-lg">{productCategoryLabels[cat].emoji}</span>
+                      <h3 className="text-sm font-black text-foreground uppercase tracking-wide">
+                        {productCategoryLabels[cat].label}
+                      </h3>
+                      <div className="flex-1 h-px bg-border" />
                     </div>
-                    <button
-                      onClick={() => openWhatsApp(product.whatsappMessage)}
-                      className="w-full mt-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
-                    >
-                      <MessageCircle size={16} />
-                      Pedir via WhatsApp 💬
-                    </button>
+                    <div className="flex flex-col gap-3">
+                      {grouped[cat].map((product, i) => (
+                        <ProductCard key={product.id} product={product} store={store} openWhatsApp={openWhatsApp} index={i} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {store.products.map((product, i) => (
+                  <ProductCard key={product.id} product={product} store={store} openWhatsApp={openWhatsApp} index={i} />
+                ))}
+              </div>
+            );
+          })()}
         </div>
 
         {/* Ingredients */}
