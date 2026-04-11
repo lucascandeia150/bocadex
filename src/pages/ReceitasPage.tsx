@@ -26,7 +26,7 @@ function filterByCategory(items: Food[], cat: Category): Food[] {
     case "baratos":
       return items.filter((i) => i.cheap);
     case "doces":
-      return items.filter((i) => ["acai", "bolo-cenoura", "brigadeiro", "pudim", "torta-morango"].includes(i.id));
+      return items.filter((i) => ["acai", "bolo-cenoura", "brigadeiro", "pudim", "torta-morango", "mousse-maracuja"].includes(i.id));
     case "bebidas":
       return items.filter((i) => i.type === "bebida");
     default:

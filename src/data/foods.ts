@@ -704,6 +704,36 @@ export const foods2: Food[] = [
     },
     delivery: { available: false, estimatedTime: "", platform: "", url: "" },
   },
+  {
+    id: "mousse-maracuja",
+    name: "Mousse de Maracujá",
+    emoji: "🥭",
+    priceMin: 10,
+    priceMax: 20,
+    speed: "rapido",
+    filling: false,
+    cheap: true,
+    reason: "Sobremesa simples, rápida e deliciosa",
+    recommended: true,
+    type: "comida",
+    tag: "doce",
+    recipe: {
+      ingredients: [
+        "1 lata de leite condensado",
+        "1 lata de creme de leite",
+        "1 medida de suco de maracujá",
+      ],
+      steps: [
+        "Coloque todos os ingredientes no liquidificador e bata por 2 a 3 minutos até obter um creme homogêneo",
+        "Despeje em um recipiente e leve à geladeira por 2 a 4 horas até ficar firme",
+        "Sirva gelado",
+      ],
+      prepTime: "10min + geladeira",
+      costEstimate: 8,
+      videoUrl: "https://youtube.com/seu-video-aqui",
+    },
+    delivery: { available: false, estimatedTime: "", platform: "", url: "" },
+  },
 ];
 
 export const allItems: Food[] = [...foods, ...drinks, ...foods2];
