@@ -2,12 +2,13 @@ import { useState } from "react";
 import { allItems } from "@/data/foods";
 import type { Food } from "@/data/foods";
 import { RecipeModal } from "@/components/RecipeModal";
-import { ChefHat, Flame, Zap, DollarSign, Cookie, Wine, Clock } from "lucide-react";
+import { ChefHat, Flame, Zap, DollarSign, Cookie, Wine, Clock, Youtube, Play } from "lucide-react";
 
-type Category = "populares" | "rapidos" | "baratos" | "doces" | "bebidas";
+type Category = "populares" | "rapidos" | "baratos" | "doces" | "bebidas" | "videos";
 
 const categories: { id: Category; label: string; emoji: string; icon: typeof Flame }[] = [
   { id: "populares", label: "Mais procurados", emoji: "🔥", icon: Flame },
+  { id: "videos", label: "Com vídeo", emoji: "🎥", icon: Play },
   { id: "rapidos", label: "Rápidos e fáceis", emoji: "⚡", icon: Zap },
   { id: "baratos", label: "Baratos do dia a dia", emoji: "💸", icon: DollarSign },
   { id: "doces", label: "Doces e sobremesas", emoji: "🍪", icon: Cookie },
@@ -18,12 +19,14 @@ function filterByCategory(items: Food[], cat: Category): Food[] {
   switch (cat) {
     case "populares":
       return items.filter((i) => i.recommended);
+    case "videos":
+      return items.filter((i) => i.recipe.videoUrl);
     case "rapidos":
       return items.filter((i) => i.speed === "rapido");
     case "baratos":
       return items.filter((i) => i.cheap);
     case "doces":
-      return items.filter((i) => ["acai", "bolo-cenoura", "brigadeiro", "pudim"].includes(i.id));
+      return items.filter((i) => ["acai", "bolo-cenoura", "brigadeiro", "pudim", "torta-morango"].includes(i.id));
     case "bebidas":
       return items.filter((i) => i.type === "bebida");
     default:
@@ -48,6 +51,21 @@ export default function ReceitasPage() {
           Simples, rápidas e econômicas
         </p>
       </div>
+
+      {/* YouTube Channel Banner */}
+      <a
+        href="https://www.youtube.com/@escolheai.receitas"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 bg-destructive/10 border border-destructive/20 rounded-2xl p-3.5 mb-5 active:scale-[0.98] transition-transform"
+      >
+        <Youtube size={28} className="text-destructive shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-foreground">📺 Ver mais receitas no canal</p>
+          <p className="text-xs text-muted-foreground">@escolheai.receitas no YouTube</p>
+        </div>
+        <Play size={18} className="text-destructive shrink-0" />
+      </a>
 
       {/* Categories */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide animate-slide-up">
@@ -87,6 +105,12 @@ export default function ReceitasPage() {
                   <DollarSign size={12} />
                   ~R${item.recipe.costEstimate}
                 </span>
+                {item.recipe.videoUrl && (
+                  <span className="text-xs text-destructive font-semibold flex items-center gap-1">
+                    <Play size={10} />
+                    Vídeo
+                  </span>
+                )}
               </div>
             </div>
             <ChefHat size={16} className="text-primary shrink-0 mt-1 group-hover:scale-110 transition-transform" />
