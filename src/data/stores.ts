@@ -11,6 +11,16 @@ export interface StoreReview {
   stars: number;
 }
 
+export type ProductCategory = "doces" | "salgados" | "cervejas" | "bebidas" | "outros";
+
+export const productCategoryLabels: Record<ProductCategory, { label: string; emoji: string }> = {
+  doces: { label: "Doces", emoji: "🍪" },
+  salgados: { label: "Salgados", emoji: "🍗" },
+  cervejas: { label: "Cervejas", emoji: "🍺" },
+  bebidas: { label: "Bebidas", emoji: "🥤" },
+  outros: { label: "Outros", emoji: "📦" },
+};
+
 export interface StoreProduct {
   id: string;
   name: string;
@@ -20,6 +30,7 @@ export interface StoreProduct {
   priceMin: number;
   priceMax: number;
   whatsappMessage: string;
+  productCategory?: ProductCategory;
 }
 
 export interface Store {
@@ -75,6 +86,7 @@ export const stores: Store[] = [
         priceMin: 8,
         priceMax: 8,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o Nata Tradicional!",
+        productCategory: "doces",
       },
       {
         id: "goiabinha",
@@ -85,6 +97,7 @@ export const stores: Store[] = [
         priceMin: 8,
         priceMax: 8,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre a Goiabinha!",
+        productCategory: "doces",
       },
       {
         id: "doce-de-leite",
@@ -95,6 +108,7 @@ export const stores: Store[] = [
         priceMin: 8,
         priceMax: 8,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o de Doce de Leite!",
+        productCategory: "doces",
       },
       {
         id: "morango",
@@ -104,6 +118,7 @@ export const stores: Store[] = [
         priceMin: 8,
         priceMax: 8,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o de Morango!",
+        productCategory: "doces",
       },
       {
         id: "flocos",
@@ -113,16 +128,7 @@ export const stores: Store[] = [
         priceMin: 8,
         priceMax: 8,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o de Flocos!",
-      },
-      {
-        id: "nata-recheio-morango",
-        name: "Nata com Recheio de Morango",
-        emoji: "🍓",
-        image: biscoitoMorango,
-        description: "Biscoitos caseiros de nata com recheio cremoso de morango, macios e deliciosos.",
-        priceMin: 10,
-        priceMax: 10,
-        whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o Nata com Recheio de Morango!",
+        productCategory: "doces",
       },
       {
         id: "nata-recheio-chocolate",
@@ -130,9 +136,10 @@ export const stores: Store[] = [
         emoji: "🍫",
         image: biscoitoChocolate,
         description: "Biscoitos caseiros de nata com recheio cremoso de chocolate, perfeitos para qualquer momento.",
-        priceMin: 10,
-        priceMax: 10,
+        priceMin: 8,
+        priceMax: 8,
         whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o Nata com Recheio de Chocolate!",
+        productCategory: "doces",
       },
     ],
   },
@@ -152,125 +159,7 @@ export const stores: Store[] = [
       { text: "Preço justo e atendimento top!", stars: 5 },
     ],
     products: [
-      {
-        id: "cerveja",
-        name: "Cerveja Gelada",
-        emoji: "🍺",
-        description: "Cerveja gelada, diversas marcas disponíveis",
-        priceMin: 5,
-        priceMax: 15,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as cervejas!",
-      },
-      {
-        id: "mix-drinks",
-        name: "Mix (Ice)",
-        emoji: "🍹",
-        description: "Mix tipo ice, refrescante e gelado",
-        priceMin: 8,
-        priceMax: 18,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os Mix!",
-      },
-      {
-        id: "copao-whisky",
-        name: "Copão de Whisky",
-        emoji: "🥃",
-        description: "Copão de whisky preparado na hora",
-        priceMin: 15,
-        priceMax: 25,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre o Copão de Whisky!",
-      },
-      {
-        id: "refrigerante-epraja",
-        name: "Refrigerante",
-        emoji: "🥤",
-        description: "Refrigerantes gelados de todas as marcas",
-        priceMin: 5,
-        priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os refrigerantes!",
-      },
-      {
-        id: "agua-epraja",
-        name: "Água",
-        emoji: "💧",
-        description: "Água mineral gelada",
-        priceMin: 3,
-        priceMax: 5,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero uma água gelada!",
-      },
-      {
-        id: "energetico",
-        name: "Energético",
-        emoji: "⚡",
-        description: "Energéticos gelados para dar aquele gás",
-        priceMin: 12,
-        priceMax: 20,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os energéticos!",
-      },
-      {
-        id: "vodkas",
-        name: "Vodkas",
-        emoji: "🍸",
-        description: "Vodkas diversas marcas",
-        priceMin: 10,
-        priceMax: 25,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as vodkas!",
-      },
-      {
-        id: "cigarros",
-        name: "Cigarros",
-        emoji: "🚬",
-        description: "Cigarros variados",
-        priceMin: 8,
-        priceMax: 15,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os cigarros!",
-      },
-      {
-        id: "chips-epraja",
-        name: "Chips",
-        emoji: "🍟",
-        description: "Salgadinhos e chips variados",
-        priceMin: 5,
-        priceMax: 12,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os chips!",
-      },
-      {
-        id: "doces-epraja",
-        name: "Doces",
-        emoji: "🍫",
-        description: "Chocolates e doces variados",
-        priceMin: 3,
-        priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os doces!",
-      },
-      {
-        id: "salgados-epraja",
-        name: "Salgados",
-        emoji: "🥪",
-        description: "Salgados fresquinhos",
-        priceMin: 5,
-        priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os salgados!",
-      },
-      {
-        id: "coxinha-epraja",
-        name: "Coxinha",
-        emoji: "🍗",
-        image: coxinhaImg,
-        description: "Coxinha crocante por fora e cremosa por dentro, recheio bem temperado.",
-        priceMin: 5,
-        priceMax: 7,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as Coxinhas!",
-      },
-      {
-        id: "maravilha-epraja",
-        name: "Maravilha",
-        emoji: "🥐",
-        image: maravilhaImg,
-        description: "Salgado tipo maravilha, dourado e macio, perfeito para lanches rápidos.",
-        priceMin: 5,
-        priceMax: 7,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre a Maravilha!",
-      },
+      // Cervejas
       {
         id: "amstel-epraja",
         name: "Cerveja Amstel",
@@ -280,6 +169,162 @@ export const stores: Store[] = [
         priceMin: 6,
         priceMax: 8,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero uma Cerveja Amstel!",
+        productCategory: "cervejas",
+      },
+      {
+        id: "cerveja",
+        name: "Outras Cervejas",
+        emoji: "🍺",
+        description: "Cervejas geladas de diversas marcas",
+        priceMin: 5,
+        priceMax: 15,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as cervejas!",
+        productCategory: "cervejas",
+      },
+      // Salgados
+      {
+        id: "coxinha-epraja",
+        name: "Coxinha",
+        emoji: "🍗",
+        image: coxinhaImg,
+        description: "Coxinha crocante por fora e cremosa por dentro, recheio bem temperado.",
+        priceMin: 5,
+        priceMax: 10,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as Coxinhas!",
+        productCategory: "salgados",
+      },
+      {
+        id: "maravilha-epraja",
+        name: "Maravilha",
+        emoji: "🥐",
+        image: maravilhaImg,
+        description: "Salgado tipo maravilha, dourado e macio, perfeito para lanches rápidos.",
+        priceMin: 5,
+        priceMax: 10,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre a Maravilha!",
+        productCategory: "salgados",
+      },
+      {
+        id: "quibe-epraja",
+        name: "Quibe",
+        emoji: "🥩",
+        description: "Quibe frito crocante e saboroso.",
+        priceMin: 5,
+        priceMax: 10,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre o Quibe!",
+        productCategory: "salgados",
+      },
+      {
+        id: "enroladinho-epraja",
+        name: "Enroladinho de Salsicha",
+        emoji: "🌭",
+        description: "Enroladinho de salsicha crocante e quentinho.",
+        priceMin: 5,
+        priceMax: 10,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre o Enroladinho!",
+        productCategory: "salgados",
+      },
+      {
+        id: "pastel-epraja",
+        name: "Pastel",
+        emoji: "🥟",
+        description: "Pastel frito com recheios variados.",
+        priceMin: 5,
+        priceMax: 10,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre o Pastel!",
+        productCategory: "salgados",
+      },
+      // Bebidas
+      {
+        id: "mix-drinks",
+        name: "Mix (Ice)",
+        emoji: "🍹",
+        description: "Mix tipo ice, refrescante e gelado",
+        priceMin: 8,
+        priceMax: 18,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os Mix!",
+        productCategory: "bebidas",
+      },
+      {
+        id: "copao-whisky",
+        name: "Copão de Whisky",
+        emoji: "🥃",
+        description: "Copão de whisky preparado na hora",
+        priceMin: 15,
+        priceMax: 25,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre o Copão de Whisky!",
+        productCategory: "bebidas",
+      },
+      {
+        id: "refrigerante-epraja",
+        name: "Refrigerante",
+        emoji: "🥤",
+        description: "Refrigerantes gelados de todas as marcas",
+        priceMin: 5,
+        priceMax: 10,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os refrigerantes!",
+        productCategory: "bebidas",
+      },
+      {
+        id: "agua-epraja",
+        name: "Água",
+        emoji: "💧",
+        description: "Água mineral gelada",
+        priceMin: 3,
+        priceMax: 5,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero uma água gelada!",
+        productCategory: "bebidas",
+      },
+      {
+        id: "energetico",
+        name: "Energético",
+        emoji: "⚡",
+        description: "Energéticos gelados para dar aquele gás",
+        priceMin: 12,
+        priceMax: 20,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os energéticos!",
+        productCategory: "bebidas",
+      },
+      {
+        id: "vodkas",
+        name: "Vodkas",
+        emoji: "🍸",
+        description: "Vodkas diversas marcas",
+        priceMin: 10,
+        priceMax: 25,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as vodkas!",
+        productCategory: "bebidas",
+      },
+      // Outros
+      {
+        id: "cigarros",
+        name: "Cigarros",
+        emoji: "🚬",
+        description: "Cigarros variados",
+        priceMin: 8,
+        priceMax: 15,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os cigarros!",
+        productCategory: "outros",
+      },
+      {
+        id: "chips-epraja",
+        name: "Chips",
+        emoji: "🍟",
+        description: "Salgadinhos e chips variados",
+        priceMin: 5,
+        priceMax: 12,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os chips!",
+        productCategory: "outros",
+      },
+      {
+        id: "doces-epraja",
+        name: "Doces",
+        emoji: "🍫",
+        description: "Chocolates e doces variados",
+        priceMin: 3,
+        priceMax: 10,
+        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os doces!",
+        productCategory: "outros",
       },
     ],
   },
@@ -307,6 +352,7 @@ export const stores: Store[] = [
         priceMin: 5,
         priceMax: 15,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as cervejas!",
+        productCategory: "cervejas",
       },
       {
         id: "refrigerante-pj",
@@ -316,6 +362,7 @@ export const stores: Store[] = [
         priceMin: 5,
         priceMax: 10,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os refrigerantes!",
+        productCategory: "bebidas",
       },
       {
         id: "agua-pj",
@@ -325,6 +372,7 @@ export const stores: Store[] = [
         priceMin: 3,
         priceMax: 5,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero uma água gelada!",
+        productCategory: "bebidas",
       },
       {
         id: "energetico-pj",
@@ -334,6 +382,7 @@ export const stores: Store[] = [
         priceMin: 12,
         priceMax: 20,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os energéticos!",
+        productCategory: "bebidas",
       },
       {
         id: "whisky-pj",
@@ -343,6 +392,7 @@ export const stores: Store[] = [
         priceMin: 15,
         priceMax: 50,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os whiskys!",
+        productCategory: "bebidas",
       },
       {
         id: "vodka-pj",
@@ -352,6 +402,7 @@ export const stores: Store[] = [
         priceMin: 10,
         priceMax: 30,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as vodkas!",
+        productCategory: "bebidas",
       },
       {
         id: "snacks-pj",
@@ -361,6 +412,7 @@ export const stores: Store[] = [
         priceMin: 5,
         priceMax: 12,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os snacks!",
+        productCategory: "outros",
       },
       {
         id: "doces-pj",
@@ -370,6 +422,7 @@ export const stores: Store[] = [
         priceMin: 3,
         priceMax: 10,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os doces!",
+        productCategory: "outros",
       },
       {
         id: "cigarros-pj",
@@ -379,6 +432,7 @@ export const stores: Store[] = [
         priceMin: 8,
         priceMax: 15,
         whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os cigarros!",
+        productCategory: "outros",
       },
     ],
   },
@@ -390,4 +444,19 @@ export function getStoresByCategory(category: StoreCategory): Store[] {
 
 export function getAllCategories(): StoreCategory[] {
   return Object.keys(categoryLabels) as StoreCategory[];
+}
+
+export function getProductsByCategory(products: StoreProduct[]): Record<ProductCategory, StoreProduct[]> {
+  const grouped: Record<ProductCategory, StoreProduct[]> = {
+    doces: [],
+    salgados: [],
+    cervejas: [],
+    bebidas: [],
+    outros: [],
+  };
+  products.forEach((p) => {
+    const cat = p.productCategory || "outros";
+    grouped[cat].push(p);
+  });
+  return grouped;
 }
