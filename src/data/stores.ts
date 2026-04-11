@@ -1,3 +1,8 @@
+import biscoitoNata from "@/assets/stores/biscoito-nata.jpg";
+import biscoitoMorango from "@/assets/stores/biscoito-morango.jpg";
+import biscoitoChocolate from "@/assets/stores/biscoito-chocolate.jpg";
+import biscoitoDoceLeite from "@/assets/stores/biscoito-doce-leite.jpg";
+
 export interface StoreReview {
   text: string;
   stars: number;
@@ -7,6 +12,7 @@ export interface StoreProduct {
   id: string;
   name: string;
   emoji: string;
+  image?: string;
   description: string;
   priceMin: number;
   priceMax: number;
