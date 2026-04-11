@@ -3,6 +3,7 @@ export interface Recipe {
   steps: string[];
   prepTime: string;
   costEstimate: number;
+  videoUrl?: string;
 }
 
 export interface DeliveryInfo {
