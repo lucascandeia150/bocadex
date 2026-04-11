@@ -4,8 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Users, MousePointerClick, Star, MessageCircle, Trash2, LogOut,
-  BarChart3, TrendingUp, Clock, RefreshCw
+  BarChart3, TrendingUp, Clock, RefreshCw, Handshake, CheckCircle, XCircle
 } from "lucide-react";
+
+interface PartnerApplication {
+  id: string;
+  business_name: string;
+  business_type: string;
+  address: string;
+  description: string;
+  whatsapp: string;
+  promotions: string | null;
+  images: string[];
+  status: string;
+  created_at: string;
+}
 
 interface Feedback {
   id: string;
@@ -22,7 +35,7 @@ interface AnalyticsEvent {
   created_at: string;
 }
 
-type Tab = "overview" | "feedbacks" | "clicks" | "messages";
+type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -30,6 +43,7 @@ export default function AdminDashboardPage() {
   const [tab, setTab] = useState<Tab>("overview");
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
+  const [partners, setPartners] = useState<PartnerApplication[]>([]);
 
   useEffect(() => {
     checkAuth();
@@ -56,12 +70,14 @@ export default function AdminDashboardPage() {
 
   const loadData = async () => {
     setLoading(true);
-    const [fbRes, evRes] = await Promise.all([
+    const [fbRes, evRes, ptRes] = await Promise.all([
       supabase.from("feedbacks").select("*").order("created_at", { ascending: false }).limit(100),
       supabase.from("analytics_events").select("*").order("created_at", { ascending: false }).limit(500),
+      supabase.from("partner_applications").select("*").order("created_at", { ascending: false }),
     ]);
     setFeedbacks((fbRes.data as Feedback[]) || []);
     setEvents((evRes.data as AnalyticsEvent[]) || []);
+    setPartners((ptRes.data as PartnerApplication[]) || []);
     setLoading(false);
   };
 
@@ -75,6 +91,14 @@ export default function AdminDashboardPage() {
     if (error) { toast.error("Erro ao excluir"); return; }
     setFeedbacks((prev) => prev.filter((f) => f.id !== id));
     toast.success("Excluído ✅");
+  };
+
+  const updatePartnerStatus = async (id: string, status: string) => {
+    const { error } = await supabase.from("partner_applications").update({ status }).eq("id", id);
+    if (error) { toast.error("Erro ao atualizar"); return; }
+    setPartners((prev) => prev.map((p) => p.id === id ? { ...p, status } : p));
+    toast.success(status === "approved" ? "Aprovado ✅" : "Rejeitado ❌");
+  };
   };
 
   // Stats
@@ -133,6 +157,7 @@ export default function AdminDashboardPage() {
           { id: "feedbacks", label: "Avaliações", icon: <Star size={14} /> },
           { id: "clicks", label: "Cliques", icon: <MousePointerClick size={14} /> },
           { id: "messages", label: "Sugestões", icon: <MessageCircle size={14} /> },
+          { id: "partners", label: "Parceiros", icon: <Handshake size={14} /> },
         ] as { id: Tab; label: string; icon: React.ReactNode }[]).map((t) => (
           <button
             key={t.id}
