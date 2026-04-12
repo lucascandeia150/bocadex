@@ -85,39 +85,53 @@ export default function ReceitasPage() {
         ))}
       </div>
 
-      {/* Items */}
-      <div className="flex flex-col gap-3 animate-slide-up">
-        {filtered.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => { setSelectedFood(item); setRecipeOpen(true); }}
-            className="w-full bg-card border border-border rounded-2xl p-4 flex items-start gap-4 shadow-sm active:scale-[0.98] transition-transform hover:border-primary/30 text-left group"
-          >
-            <span className="text-4xl">{item.emoji}</span>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-base font-bold text-foreground">{item.name}</h3>
-              <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">{item.reason}</p>
-              <div className="flex items-center gap-3 mt-2">
-                <span className="text-xs text-foreground font-semibold flex items-center gap-1">
-                  <Clock size={12} className="text-primary" />
-                  {item.recipe.prepTime}
-                </span>
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <DollarSign size={12} />
-                  ~R${item.recipe.costEstimate}
-                </span>
-                {item.recipe.videoUrl && (
-                  <span className="text-xs text-destructive font-semibold flex items-center gap-1">
-                    <Play size={10} />
-                    Vídeo
+      {/* Video section for "videos" category */}
+      {activeCategory === "videos" && (
+        <div className="flex flex-col gap-4 animate-slide-up mb-4">
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+            🎥 Receitas em vídeo
+          </h2>
+          {filtered.map((item) => (
+            <VideoRecipeCard key={item.id} food={item} />
+          ))}
+        </div>
+      )}
+
+      {/* Regular list for other categories */}
+      {activeCategory !== "videos" && (
+        <div className="flex flex-col gap-3 animate-slide-up">
+          {filtered.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => { setSelectedFood(item); setRecipeOpen(true); }}
+              className="w-full bg-card border border-border rounded-2xl p-4 flex items-start gap-4 shadow-sm active:scale-[0.98] transition-transform hover:border-primary/30 text-left group"
+            >
+              <span className="text-4xl">{item.emoji}</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-bold text-foreground">{item.name}</h3>
+                <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">{item.reason}</p>
+                <div className="flex items-center gap-3 mt-2">
+                  <span className="text-xs text-foreground font-semibold flex items-center gap-1">
+                    <Clock size={12} className="text-primary" />
+                    {item.recipe.prepTime}
                   </span>
-                )}
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <DollarSign size={12} />
+                    ~R${item.recipe.costEstimate}
+                  </span>
+                  {item.recipe.videoUrl && (
+                    <span className="text-xs text-destructive font-semibold flex items-center gap-1">
+                      <Play size={10} />
+                      Vídeo
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-            <ChefHat size={16} className="text-primary shrink-0 mt-1 group-hover:scale-110 transition-transform" />
-          </button>
-        ))}
-      </div>
+              <ChefHat size={16} className="text-primary shrink-0 mt-1 group-hover:scale-110 transition-transform" />
+            </button>
+          ))}
+        </div>
+      )}
 
       {filtered.length === 0 && (
         <div className="text-center py-12">
