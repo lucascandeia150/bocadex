@@ -202,8 +202,18 @@ export default function HomePage({ onChoose }: HomePageProps) {
         </div>
       </div>
 
-      {/* Indicação de parceiro */}
+      {/* CTA Seja Parceiro */}
       <div className="max-w-sm mx-auto mt-8 animate-slide-up" style={{ animationDelay: "200ms" }}>
+        <button
+          onClick={() => navigate("/seja-parceiro")}
+          className="w-full gradient-primary text-primary-foreground font-black text-base py-4 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
+        >
+          🚀 Quero ser parceiro
+        </button>
+      </div>
+
+      {/* Indicação de parceiro */}
+      <div className="max-w-sm mx-auto mt-4 animate-slide-up" style={{ animationDelay: "250ms" }}>
         <PartnerReferralCard />
       </div>
 
