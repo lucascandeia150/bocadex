@@ -48,6 +48,9 @@ export default function AdminDashboardPage() {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
   const [partners, setPartners] = useState<PartnerApplication[]>([]);
+  const [dbRecipes, setDbRecipes] = useState<any[]>([]);
+  const [dbVideos, setDbVideos] = useState<any[]>([]);
+  const [dbAffiliateLinks, setDbAffiliateLinks] = useState<any[]>([]);
 
   useEffect(() => {
     checkAuth();
