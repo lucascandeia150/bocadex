@@ -77,14 +77,20 @@ export default function AdminDashboardPage() {
 
   const loadData = async () => {
     setLoading(true);
-    const [fbRes, evRes, ptRes] = await Promise.all([
+    const [fbRes, evRes, ptRes, rcRes, vdRes, alRes] = await Promise.all([
       supabase.from("feedbacks").select("*").order("created_at", { ascending: false }).limit(100),
       supabase.from("analytics_events").select("*").order("created_at", { ascending: false }).limit(500),
       supabase.from("partner_applications").select("*").order("created_at", { ascending: false }),
+      supabase.from("recipes").select("*").order("created_at", { ascending: false }),
+      supabase.from("videos").select("*").order("created_at", { ascending: false }),
+      supabase.from("affiliate_links").select("*").order("keyword"),
     ]);
     setFeedbacks((fbRes.data as Feedback[]) || []);
     setEvents((evRes.data as AnalyticsEvent[]) || []);
     setPartners((ptRes.data as PartnerApplication[]) || []);
+    setDbRecipes(rcRes.data || []);
+    setDbVideos(vdRes.data || []);
+    setDbAffiliateLinks(alRes.data || []);
     setLoading(false);
   };
 
