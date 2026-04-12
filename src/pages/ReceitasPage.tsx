@@ -2,6 +2,7 @@ import { useState } from "react";
 import { allItems } from "@/data/foods";
 import type { Food } from "@/data/foods";
 import { RecipeModal } from "@/components/RecipeModal";
+import { VideoRecipeCard } from "@/components/VideoRecipeCard";
 import { ChefHat, Flame, Zap, DollarSign, Cookie, Wine, Clock, Youtube, Play } from "lucide-react";
 
 type Category = "videos" | "populares" | "rapidos" | "baratos" | "doces" | "bebidas";
