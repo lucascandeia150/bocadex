@@ -41,6 +41,17 @@ export default function ReceitasPage() {
   const [activeCategory, setActiveCategory] = useState<Category>("videos");
   const [selectedFood, setSelectedFood] = useState<Food | null>(null);
   const [recipeOpen, setRecipeOpen] = useState(false);
+  const [dbVideos, setDbVideos] = useState<{ id: string; title: string; youtube_url: string; description: string; thumbnail_url: string | null }[]>([]);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      const { data } = await supabase.from("videos").select("*").order("created_at", { ascending: false });
+      if (data) setDbVideos(data);
+    };
+    fetchVideos();
+    const channel = supabase.channel("videos-realtime").on("postgres_changes", { event: "*", schema: "public", table: "videos" }, () => fetchVideos()).subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const filtered = filterByCategory(allItems, activeCategory);
 
