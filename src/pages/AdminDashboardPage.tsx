@@ -4,8 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Users, MousePointerClick, Star, MessageCircle, Trash2, LogOut,
-  BarChart3, TrendingUp, Clock, RefreshCw, Handshake, CheckCircle, XCircle
+  BarChart3, TrendingUp, Clock, RefreshCw, Handshake, CheckCircle, XCircle,
+  ChefHat, Video, Link2
 } from "lucide-react";
+import AdminRecipesTab from "@/components/admin/AdminRecipesTab";
+import AdminVideosTab from "@/components/admin/AdminVideosTab";
+import AdminAffiliateTab from "@/components/admin/AdminAffiliateTab";
 
 interface PartnerApplication {
   id: string;
@@ -35,7 +39,7 @@ interface AnalyticsEvent {
   created_at: string;
 }
 
-type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners";
+type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "recipes" | "videos" | "affiliates";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -44,6 +48,9 @@ export default function AdminDashboardPage() {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
   const [partners, setPartners] = useState<PartnerApplication[]>([]);
+  const [dbRecipes, setDbRecipes] = useState<any[]>([]);
+  const [dbVideos, setDbVideos] = useState<any[]>([]);
+  const [dbAffiliateLinks, setDbAffiliateLinks] = useState<any[]>([]);
 
   useEffect(() => {
     checkAuth();
@@ -70,14 +77,20 @@ export default function AdminDashboardPage() {
 
   const loadData = async () => {
     setLoading(true);
-    const [fbRes, evRes, ptRes] = await Promise.all([
+    const [fbRes, evRes, ptRes, rcRes, vdRes, alRes] = await Promise.all([
       supabase.from("feedbacks").select("*").order("created_at", { ascending: false }).limit(100),
       supabase.from("analytics_events").select("*").order("created_at", { ascending: false }).limit(500),
       supabase.from("partner_applications").select("*").order("created_at", { ascending: false }),
+      supabase.from("recipes").select("*").order("created_at", { ascending: false }),
+      supabase.from("videos").select("*").order("created_at", { ascending: false }),
+      supabase.from("affiliate_links").select("*").order("keyword"),
     ]);
     setFeedbacks((fbRes.data as Feedback[]) || []);
     setEvents((evRes.data as AnalyticsEvent[]) || []);
     setPartners((ptRes.data as PartnerApplication[]) || []);
+    setDbRecipes(rcRes.data || []);
+    setDbVideos(vdRes.data || []);
+    setDbAffiliateLinks(alRes.data || []);
     setLoading(false);
   };
 
@@ -157,6 +170,9 @@ export default function AdminDashboardPage() {
           { id: "clicks", label: "Cliques", icon: <MousePointerClick size={14} /> },
           { id: "messages", label: "Sugestões", icon: <MessageCircle size={14} /> },
           { id: "partners", label: "Parceiros", icon: <Handshake size={14} /> },
+          { id: "recipes", label: "Receitas", icon: <ChefHat size={14} /> },
+          { id: "videos", label: "Vídeos", icon: <Video size={14} /> },
+          { id: "affiliates", label: "Afiliados", icon: <Link2 size={14} /> },
         ] as { id: Tab; label: string; icon: React.ReactNode }[]).map((t) => (
           <button
             key={t.id}
@@ -322,6 +338,10 @@ export default function AdminDashboardPage() {
             )}
           </div>
         )}
+
+        {tab === "recipes" && <AdminRecipesTab recipes={dbRecipes} onRefresh={loadData} />}
+        {tab === "videos" && <AdminVideosTab videos={dbVideos} onRefresh={loadData} />}
+        {tab === "affiliates" && <AdminAffiliateTab links={dbAffiliateLinks} onRefresh={loadData} />}
       </div>
     </div>
   );
