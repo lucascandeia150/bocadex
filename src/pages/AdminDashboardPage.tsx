@@ -170,6 +170,9 @@ export default function AdminDashboardPage() {
           { id: "clicks", label: "Cliques", icon: <MousePointerClick size={14} /> },
           { id: "messages", label: "Sugestões", icon: <MessageCircle size={14} /> },
           { id: "partners", label: "Parceiros", icon: <Handshake size={14} /> },
+          { id: "recipes", label: "Receitas", icon: <ChefHat size={14} /> },
+          { id: "videos", label: "Vídeos", icon: <Video size={14} /> },
+          { id: "affiliates", label: "Afiliados", icon: <Link2 size={14} /> },
         ] as { id: Tab; label: string; icon: React.ReactNode }[]).map((t) => (
           <button
             key={t.id}
