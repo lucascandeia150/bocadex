@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { allItems } from "@/data/foods";
 import type { Food } from "@/data/foods";
 import { RecipeModal } from "@/components/RecipeModal";
 import { VideoRecipeCard } from "@/components/VideoRecipeCard";
+import { DbVideoCard } from "@/components/DbVideoCard";
+import { supabase } from "@/integrations/supabase/client";
 import { ChefHat, Flame, Zap, DollarSign, Cookie, Wine, Clock, Youtube, Play } from "lucide-react";
 
 type Category = "videos" | "populares" | "rapidos" | "baratos" | "doces" | "bebidas";
@@ -39,6 +41,17 @@ export default function ReceitasPage() {
   const [activeCategory, setActiveCategory] = useState<Category>("videos");
   const [selectedFood, setSelectedFood] = useState<Food | null>(null);
   const [recipeOpen, setRecipeOpen] = useState(false);
+  const [dbVideos, setDbVideos] = useState<{ id: string; title: string; youtube_url: string; description: string; thumbnail_url: string | null }[]>([]);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      const { data } = await supabase.from("videos").select("*").order("created_at", { ascending: false });
+      if (data) setDbVideos(data);
+    };
+    fetchVideos();
+    const channel = supabase.channel("videos-realtime").on("postgres_changes", { event: "*", schema: "public", table: "videos" }, () => fetchVideos()).subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const filtered = filterByCategory(allItems, activeCategory);
 
@@ -91,9 +104,17 @@ export default function ReceitasPage() {
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             🎥 Receitas em vídeo
           </h2>
+          {/* Videos from database (admin) */}
+          {dbVideos.map((v) => (
+            <DbVideoCard key={v.id} video={v} />
+          ))}
+          {/* Videos from static data */}
           {filtered.map((item) => (
             <VideoRecipeCard key={item.id} food={item} />
           ))}
+          {dbVideos.length === 0 && filtered.length === 0 && (
+            <p className="text-center text-muted-foreground text-sm py-6">Nenhum vídeo ainda 🎥</p>
+          )}
         </div>
       )}
 
