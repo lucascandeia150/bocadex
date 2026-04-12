@@ -338,6 +338,10 @@ export default function AdminDashboardPage() {
             )}
           </div>
         )}
+
+        {tab === "recipes" && <AdminRecipesTab recipes={dbRecipes} onRefresh={loadData} />}
+        {tab === "videos" && <AdminVideosTab videos={dbVideos} onRefresh={loadData} />}
+        {tab === "affiliates" && <AdminAffiliateTab links={dbAffiliateLinks} onRefresh={loadData} />}
       </div>
     </div>
   );
