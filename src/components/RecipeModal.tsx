@@ -128,22 +128,36 @@ export function RecipeModal({ food, open, onOpenChange }: RecipeModalProps) {
             </ul>
           </div>
 
-          {/* Video section */}
-          {recipe.videoUrl && (
-            <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-4">
-              <h4 className="font-bold text-foreground mb-2 flex items-center gap-1.5">
-                <Youtube size={16} className="text-destructive" />
-                🎥 Aprenda com vídeo
-              </h4>
-              <button
-                onClick={() => window.open(recipe.videoUrl, "_blank")}
-                className="w-full bg-destructive text-destructive-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm shadow-md"
-              >
-                <Youtube size={18} />
-                ▶️ Assistir no YouTube
-              </button>
-            </div>
-          )}
+          {/* Video section - embedded */}
+          {recipe.videoUrl && (() => {
+            const patterns = [
+              /youtu\.be\/([^?&]+)/,
+              /youtube\.com\/shorts\/([^?&]+)/,
+              /youtube\.com\/watch\?v=([^&]+)/,
+              /youtube\.com\/embed\/([^?&]+)/,
+            ];
+            let vid: string | null = null;
+            for (const p of patterns) { const m = recipe.videoUrl!.match(p); if (m) { vid = m[1]; break; } }
+            if (!vid) return null;
+            return (
+              <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-4">
+                <h4 className="font-bold text-foreground mb-2 flex items-center gap-1.5">
+                  <Youtube size={16} className="text-destructive" />
+                  🎥 Aprenda com vídeo
+                </h4>
+                <div className="relative w-full rounded-lg overflow-hidden" style={{ paddingBottom: "56.25%" }}>
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={`https://www.youtube-nocookie.com/embed/${vid}?rel=0`}
+                    title={food.name}
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Monetized buttons */}
           <div className="flex gap-2">
