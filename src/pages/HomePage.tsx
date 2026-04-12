@@ -9,6 +9,7 @@ import { RecipeModal } from "@/components/RecipeModal";
 import { AdBanner } from "@/components/AdBanner";
 import logo from "@/assets/logo.png";
 import { RotateCcw, MessageCircle } from "lucide-react";
+import { PartnerReferralCard } from "@/components/PartnerReferralCard";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
 import { openMoreOptions, openBuyIngredients } from "@/lib/monetization";
 import { stores } from "@/data/stores";
@@ -199,6 +200,11 @@ export default function HomePage({ onChoose }: HomePageProps) {
             <span className="text-xs font-bold text-foreground">Avaliar ⭐</span>
           </button>
         </div>
+      </div>
+
+      {/* Indicação de parceiro */}
+      <div className="max-w-sm mx-auto mt-8 animate-slide-up" style={{ animationDelay: "200ms" }}>
+        <PartnerReferralCard />
       </div>
 
       {/* Footer */}
