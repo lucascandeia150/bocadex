@@ -6,7 +6,7 @@ const WHATSAPP_NUMBER = "5533998669482";
 
 const benefits = [
   "Divulgação dentro do app",
-  "Até 3 postagens diárias no Instagram (reels e stories)",
+  "3 postagens diárias em nossas redes sociais",
   "Mais visibilidade local",
   "Aumento de pedidos e vendas",
 ];
