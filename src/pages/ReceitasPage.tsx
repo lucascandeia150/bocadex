@@ -104,9 +104,17 @@ export default function ReceitasPage() {
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             🎥 Receitas em vídeo
           </h2>
+          {/* Videos from database (admin) */}
+          {dbVideos.map((v) => (
+            <DbVideoCard key={v.id} video={v} />
+          ))}
+          {/* Videos from static data */}
           {filtered.map((item) => (
             <VideoRecipeCard key={item.id} food={item} />
           ))}
+          {dbVideos.length === 0 && filtered.length === 0 && (
+            <p className="text-center text-muted-foreground text-sm py-6">Nenhum vídeo ainda 🎥</p>
+          )}
         </div>
       )}
 
