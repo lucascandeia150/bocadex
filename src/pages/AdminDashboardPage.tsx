@@ -4,8 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Users, MousePointerClick, Star, MessageCircle, Trash2, LogOut,
-  BarChart3, TrendingUp, Clock, RefreshCw, Handshake, CheckCircle, XCircle
+  BarChart3, TrendingUp, Clock, RefreshCw, Handshake, CheckCircle, XCircle,
+  ChefHat, Video, Link2
 } from "lucide-react";
+import AdminRecipesTab from "@/components/admin/AdminRecipesTab";
+import AdminVideosTab from "@/components/admin/AdminVideosTab";
+import AdminAffiliateTab from "@/components/admin/AdminAffiliateTab";
 
 interface PartnerApplication {
   id: string;
@@ -35,7 +39,7 @@ interface AnalyticsEvent {
   created_at: string;
 }
 
-type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners";
+type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "recipes" | "videos" | "affiliates";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
