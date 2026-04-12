@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_links: {
+        Row: {
+          created_at: string
+          id: string
+          keyword: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          keyword: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          keyword?: string
+          url?: string
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           created_at: string
@@ -98,6 +119,33 @@ export type Database = {
         }
         Relationships: []
       }
+      recipes: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          ingredients: string[]
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          ingredients?: string[]
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          ingredients?: string[]
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -113,6 +161,36 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      videos: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          youtube_url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          youtube_url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          youtube_url?: string
         }
         Relationships: []
       }
