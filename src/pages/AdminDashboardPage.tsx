@@ -21,7 +21,9 @@ interface PartnerApplication {
   whatsapp: string;
   promotions: string | null;
   images: string[];
+  logo_url: string | null;
   status: string;
+  is_active: boolean;
   created_at: string;
 }
 
