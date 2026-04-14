@@ -10,6 +10,7 @@ import {
 import AdminRecipesTab from "@/components/admin/AdminRecipesTab";
 import AdminVideosTab from "@/components/admin/AdminVideosTab";
 import AdminAffiliateTab from "@/components/admin/AdminAffiliateTab";
+import AdminPartnersTab from "@/components/admin/AdminPartnersTab";
 
 interface PartnerApplication {
   id: string;
@@ -20,7 +21,9 @@ interface PartnerApplication {
   whatsapp: string;
   promotions: string | null;
   images: string[];
+  logo_url: string | null;
   status: string;
+  is_active: boolean;
   created_at: string;
 }
 
@@ -289,55 +292,7 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {tab === "partners" && (
-          <div className="space-y-3 animate-slide-up">
-            <h2 className="text-base font-black text-foreground">Cadastros de Parceiros ({partners.length})</h2>
-            {partners.map((p) => (
-              <div key={p.id} className="bg-card rounded-2xl border border-border p-4 space-y-2">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-sm font-bold text-foreground">{p.business_name}</h3>
-                    <span className="text-xs text-primary font-semibold">{p.business_type}</span>
-                  </div>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    p.status === "approved" ? "bg-green-100 text-green-700" :
-                    p.status === "rejected" ? "bg-red-100 text-red-700" :
-                    "bg-yellow-100 text-yellow-700"
-                  }`}>
-                    {p.status === "approved" ? "Aprovado" : p.status === "rejected" ? "Rejeitado" : "Pendente"}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">📍 {p.address}</p>
-                <p className="text-xs text-foreground">{p.description}</p>
-                <p className="text-xs text-muted-foreground">📱 {p.whatsapp}</p>
-                {p.promotions && <p className="text-xs text-primary">🎉 {p.promotions}</p>}
-                {p.images && p.images.length > 0 && (
-                  <div className="flex gap-2 overflow-x-auto">
-                    {p.images.map((img, i) => (
-                      <img key={i} src={img} alt="Parceiro" className="h-16 w-16 rounded-lg object-cover border border-border" />
-                    ))}
-                  </div>
-                )}
-                <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                  <Clock size={10} /> {new Date(p.created_at).toLocaleString("pt-BR")}
-                </p>
-                {p.status === "pending" && (
-                  <div className="flex gap-2 pt-1">
-                    <button onClick={() => updatePartnerStatus(p.id, "approved")} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-green-500 text-white text-xs font-bold">
-                      <CheckCircle size={12} /> Aprovar
-                    </button>
-                    <button onClick={() => updatePartnerStatus(p.id, "rejected")} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-destructive text-destructive-foreground text-xs font-bold">
-                      <XCircle size={12} /> Rejeitar
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
-            {partners.length === 0 && (
-              <p className="text-center text-muted-foreground text-sm py-10">Nenhum cadastro de parceiro ainda 🤝</p>
-            )}
-          </div>
-        )}
+        {tab === "partners" && <AdminPartnersTab partners={partners as any} onRefresh={loadData} />}
 
         {tab === "recipes" && <AdminRecipesTab recipes={dbRecipes} onRefresh={loadData} />}
         {tab === "videos" && <AdminVideosTab videos={dbVideos} onRefresh={loadData} />}

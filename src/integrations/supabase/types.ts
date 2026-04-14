@@ -89,6 +89,8 @@ export type Database = {
           description: string
           id: string
           images: string[] | null
+          is_active: boolean
+          logo_url: string | null
           promotions: string | null
           status: string
           whatsapp: string
@@ -101,6 +103,8 @@ export type Database = {
           description: string
           id?: string
           images?: string[] | null
+          is_active?: boolean
+          logo_url?: string | null
           promotions?: string | null
           status?: string
           whatsapp: string
@@ -113,6 +117,8 @@ export type Database = {
           description?: string
           id?: string
           images?: string[] | null
+          is_active?: boolean
+          logo_url?: string | null
           promotions?: string | null
           status?: string
           whatsapp?: string
