@@ -5,12 +5,14 @@ import { toast } from "sonner";
 import {
   Users, MousePointerClick, Star, MessageCircle, Trash2, LogOut,
   BarChart3, TrendingUp, Clock, RefreshCw, Handshake, CheckCircle, XCircle,
-  ChefHat, Video, Link2
+  ChefHat, Video, Link2, Package, Tag
 } from "lucide-react";
 import AdminRecipesTab from "@/components/admin/AdminRecipesTab";
 import AdminVideosTab from "@/components/admin/AdminVideosTab";
 import AdminAffiliateTab from "@/components/admin/AdminAffiliateTab";
 import AdminPartnersTab from "@/components/admin/AdminPartnersTab";
+import AdminProductsTab from "@/components/admin/AdminProductsTab";
+import AdminCategoriesTab from "@/components/admin/AdminCategoriesTab";
 
 interface PartnerApplication {
   id: string;
@@ -42,7 +44,7 @@ interface AnalyticsEvent {
   created_at: string;
 }
 
-type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "recipes" | "videos" | "affiliates";
+type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -173,6 +175,8 @@ export default function AdminDashboardPage() {
           { id: "clicks", label: "Cliques", icon: <MousePointerClick size={14} /> },
           { id: "messages", label: "Sugestões", icon: <MessageCircle size={14} /> },
           { id: "partners", label: "Parceiros", icon: <Handshake size={14} /> },
+          { id: "products", label: "Produtos", icon: <Package size={14} /> },
+          { id: "categories", label: "Categorias", icon: <Tag size={14} /> },
           { id: "recipes", label: "Receitas", icon: <ChefHat size={14} /> },
           { id: "videos", label: "Vídeos", icon: <Video size={14} /> },
           { id: "affiliates", label: "Afiliados", icon: <Link2 size={14} /> },
@@ -293,6 +297,8 @@ export default function AdminDashboardPage() {
         )}
 
         {tab === "partners" && <AdminPartnersTab partners={partners as any} onRefresh={loadData} />}
+        {tab === "products" && <AdminProductsTab onRefresh={loadData} />}
+        {tab === "categories" && <AdminCategoriesTab onRefresh={loadData} />}
 
         {tab === "recipes" && <AdminRecipesTab recipes={dbRecipes} onRefresh={loadData} />}
         {tab === "videos" && <AdminVideosTab videos={dbVideos} onRefresh={loadData} />}
