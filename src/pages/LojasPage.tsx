@@ -1,13 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Store, StoreCategory, StoreProduct, stores, categoryLabels, getAllCategories } from "@/data/stores";
-import { ShoppingBag, MessageCircle, MapPin, ChevronRight, ArrowLeft } from "lucide-react";
+import { ShoppingBag, MessageCircle, MapPin, ChevronRight, ArrowLeft, Store as StoreIcon } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
 import { BackButton } from "@/components/BackButton";
+
+interface DbPartner {
+  id: string;
+  business_name: string;
+  business_type: string;
+  address: string;
+  description: string;
+  whatsapp: string;
+  promotions: string | null;
+  logo_url: string | null;
+  is_active: boolean;
+}
 
 export default function LojasPage() {
   const [activeCategory, setActiveCategory] = useState<StoreCategory | "todas">("todas");
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [dbPartners, setDbPartners] = useState<DbPartner[]>([]);
   const categories = getAllCategories();
+
+  useEffect(() => {
+    supabase
+      .from("partner_applications")
+      .select("id, business_name, business_type, address, description, whatsapp, promotions, logo_url, is_active")
+      .eq("status", "approved")
+      .eq("is_active", true)
+      .then(({ data }) => { if (data) setDbPartners(data as DbPartner[]); });
+  }, []);
 
   const filteredStores = activeCategory === "todas"
     ? stores
