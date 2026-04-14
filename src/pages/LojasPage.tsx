@@ -72,13 +72,43 @@ export default function LojasPage() {
 
       {/* Store list */}
       <div className="max-w-sm mx-auto flex flex-col gap-3">
+        {/* DB Partners */}
+        {dbPartners.filter(() => activeCategory === "todas").map((p, i) => (
+          <div
+            key={`db-${p.id}`}
+            className="animate-slide-up rounded-2xl border border-border p-4 bg-card shadow-sm"
+            style={{ animationDelay: `${i * 60}ms` }}
+          >
+            <div className="flex items-center gap-3">
+              {p.logo_url ? (
+                <img src={p.logo_url} alt={p.business_name} className="w-12 h-12 rounded-xl object-cover border border-border shrink-0" loading="lazy" />
+              ) : (
+                <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center border border-border shrink-0">
+                  <StoreIcon size={20} className="text-muted-foreground" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-bold text-foreground truncate">{p.business_name}</h3>
+                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{p.description}</p>
+                {p.address && (
+                  <div className="flex items-center gap-1 mt-1.5 text-[11px] text-primary font-semibold">
+                    <MapPin size={11} /> {p.business_type}
+                  </div>
+                )}
+              </div>
+              <ChevronRight size={18} className="text-muted-foreground shrink-0" />
+            </div>
+          </div>
+        ))}
+
+        {/* Hardcoded stores */}
         {filteredStores.length > 0 ? (
           filteredStores.map((store, i) => (
             <button
               key={store.id}
               onClick={() => setSelectedStore(store)}
               className="animate-slide-up text-left w-full"
-              style={{ animationDelay: `${i * 60}ms` }}
+              style={{ animationDelay: `${(i + dbPartners.length) * 60}ms` }}
             >
               <div className={`rounded-2xl border p-4 bg-card shadow-sm transition-all active:scale-[0.98] ${store.highlighted ? "border-secondary/50 ring-1 ring-secondary/20" : "border-border"}`}>
                 {store.highlighted && (
@@ -87,7 +117,11 @@ export default function LojasPage() {
                   </span>
                 )}
                 <div className="flex items-center gap-3">
-                  <span className="text-4xl">{store.emoji}</span>
+                  {store.logo ? (
+                    <img src={store.logo} alt={store.name} className="w-12 h-12 rounded-xl object-cover border border-border shrink-0" loading="lazy" />
+                  ) : (
+                    <span className="text-4xl">{store.emoji}</span>
+                  )}
                   <div className="flex-1 min-w-0">
                     <h3 className="text-base font-bold text-foreground truncate">{store.name}</h3>
                     <p className="text-xs text-muted-foreground mt-0.5">{store.description}</p>
@@ -101,7 +135,7 @@ export default function LojasPage() {
               </div>
             </button>
           ))
-        ) : (
+        ) : dbPartners.length === 0 ? (
           <div className="text-center py-12 animate-slide-up">
             <span className="text-5xl block mb-3">🏗️</span>
             <p className="text-foreground font-bold text-lg">
