@@ -145,7 +145,7 @@ export default function LojasPage() {
               Em breve teremos mais opções para você!
             </p>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
