@@ -1,4 +1,4 @@
-import { Home, UtensilsCrossed, Beer, ChefHat, Phone, Star, Info, Handshake, Rocket } from "lucide-react";
+import { Home, UtensilsCrossed, Beer, ChefHat, Phone, Star, Info, Rocket } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
@@ -22,7 +22,6 @@ const items = [
   { title: "Contato", url: "/contato", icon: Phone, emoji: "📞" },
   { title: "Avaliar app", url: "/avaliar", icon: Star, emoji: "⭐" },
   { title: "Sobre o app", url: "/sobre", icon: Info, emoji: "ℹ️" },
-  { title: "Área do Parceiro", url: "/parceiros", icon: Handshake, emoji: "🤝" },
   { title: "Quero ser parceiro", url: "/seja-parceiro", icon: Rocket, emoji: "🚀" },
 ];
 
@@ -44,27 +43,24 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => {
-                const isActive = location.pathname === item.url;
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <NavLink
-                        to={item.url}
-                        end
-                        className="hover:bg-sidebar-accent/50 px-3 py-2.5 rounded-xl transition-colors"
-                        activeClassName="bg-sidebar-accent text-primary font-bold"
-                        onClick={handleClick}
-                      >
-                        <item.icon className="mr-3 h-5 w-5" />
-                        <span className="text-sm font-semibold">
-                          {item.emoji} {item.title}
-                        </span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
+                      end
+                      className="hover:bg-sidebar-accent/50 px-3 py-2.5 rounded-xl transition-colors"
+                      activeClassName="bg-sidebar-accent text-primary font-bold"
+                      onClick={handleClick}
+                    >
+                      <item.icon className="mr-3 h-5 w-5" />
+                      <span className="text-sm font-semibold">
+                        {item.emoji} {item.title}
+                      </span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Store, StoreCategory, StoreProduct, stores, categoryLabels, getAllCategories } from "@/data/stores";
-import { ShoppingBag, MessageCircle, MapPin, ChevronRight, ArrowLeft, Store as StoreIcon } from "lucide-react";
+import { ShoppingBag, MessageCircle, MapPin, ChevronRight, ArrowLeft, Store as StoreIcon, Flame, Handshake } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
 import { BackButton } from "@/components/BackButton";
@@ -18,6 +19,7 @@ interface DbPartner {
 }
 
 export default function LojasPage() {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<StoreCategory | "todas">("todas");
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [dbPartners, setDbPartners] = useState<DbPartner[]>([]);
@@ -32,9 +34,32 @@ export default function LojasPage() {
       .then(({ data }) => { if (data) setDbPartners(data as DbPartner[]); });
   }, []);
 
+  // Map business_type to StoreCategory
+  const mapBusinessType = (type: string): StoreCategory | null => {
+    const map: Record<string, StoreCategory> = {
+      "distribuidora": "bebidas",
+      "lanchonete": "lanchonetes",
+      "restaurante": "restaurantes",
+      "pizzaria": "pizzarias",
+      "café": "cafes",
+      "doces": "doces",
+      "bebidas": "bebidas",
+    };
+    return map[type.toLowerCase()] || null;
+  };
+
   const filteredStores = activeCategory === "todas"
     ? stores
     : stores.filter((s) => s.category === activeCategory);
+
+  const filteredDbPartners = activeCategory === "todas"
+    ? dbPartners
+    : dbPartners.filter((p) => mapBusinessType(p.business_type) === activeCategory);
+
+  // Highlighted stores (hardcoded + db)
+  const highlightedStores = stores.filter(s => s.highlighted);
+
+  const hasResults = filteredStores.length > 0 || filteredDbPartners.length > 0;
 
   if (selectedStore) {
     return <StoreDetail store={selectedStore} onBack={() => setSelectedStore(null)} />;
@@ -48,6 +73,46 @@ export default function LojasPage() {
         <h1 className="text-2xl font-black text-foreground">Explorar Lojas 🛍️</h1>
         <p className="text-muted-foreground text-sm mt-1">Descubra parceiros perto de você</p>
       </div>
+
+      {/* Parceiros em destaque */}
+      {activeCategory === "todas" && highlightedStores.length > 0 && (
+        <div className="max-w-sm mx-auto mb-6 animate-slide-up">
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Flame size={14} className="text-secondary" /> Parceiros em destaque
+          </h2>
+          <div className="flex flex-col gap-3">
+            {highlightedStores.map((store) => (
+              <button
+                key={store.id}
+                onClick={() => setSelectedStore(store)}
+                className="text-left w-full"
+              >
+                <div className="rounded-2xl border-2 border-secondary/40 p-4 bg-card shadow-md transition-all active:scale-[0.98]">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Flame size={12} className="text-secondary" />
+                    <span className="text-[10px] font-black text-secondary uppercase tracking-wide">Destaque</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {store.logo ? (
+                      <img src={store.logo} alt={store.name} className="w-12 h-12 rounded-xl object-cover border border-border shrink-0" loading="lazy" />
+                    ) : (
+                      <span className="text-4xl">{store.emoji}</span>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-bold text-foreground truncate">{store.name}</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{store.description?.split("\n")[0]}</p>
+                      {store.offer && (
+                        <p className="text-[11px] font-bold text-secondary mt-1">{store.offer}</p>
+                      )}
+                    </div>
+                    <ChevronRight size={18} className="text-secondary shrink-0" />
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Category bar */}
       <div className="max-w-sm mx-auto mb-5 overflow-x-auto scrollbar-hide">
@@ -73,7 +138,7 @@ export default function LojasPage() {
       {/* Store list */}
       <div className="max-w-sm mx-auto flex flex-col gap-3">
         {/* DB Partners */}
-        {dbPartners.filter(() => activeCategory === "todas").map((p, i) => (
+        {filteredDbPartners.map((p, i) => (
           <div
             key={`db-${p.id}`}
             className="animate-slide-up rounded-2xl border border-border p-4 bg-card shadow-sm"
@@ -102,50 +167,57 @@ export default function LojasPage() {
         ))}
 
         {/* Hardcoded stores */}
-        {filteredStores.length > 0 ? (
-          filteredStores.map((store, i) => (
-            <button
-              key={store.id}
-              onClick={() => setSelectedStore(store)}
-              className="animate-slide-up text-left w-full"
-              style={{ animationDelay: `${(i + dbPartners.length) * 60}ms` }}
-            >
-              <div className={`rounded-2xl border p-4 bg-card shadow-sm transition-all active:scale-[0.98] ${store.highlighted ? "border-secondary/50 ring-1 ring-secondary/20" : "border-border"}`}>
-                {store.highlighted && (
-                  <span className="inline-block mb-2 text-[10px] font-black bg-secondary/15 text-secondary px-2.5 py-0.5 rounded-full">
-                    🔥 PARCEIRO DESTAQUE
-                  </span>
+        {filteredStores.map((store, i) => (
+          <button
+            key={store.id}
+            onClick={() => setSelectedStore(store)}
+            className="animate-slide-up text-left w-full"
+            style={{ animationDelay: `${(i + filteredDbPartners.length) * 60}ms` }}
+          >
+            <div className={`rounded-2xl border p-4 bg-card shadow-sm transition-all active:scale-[0.98] ${store.highlighted ? "border-secondary/50 ring-1 ring-secondary/20" : "border-border"}`}>
+              {store.highlighted && (
+                <span className="inline-block mb-2 text-[10px] font-black bg-secondary/15 text-secondary px-2.5 py-0.5 rounded-full">
+                  🔥 PARCEIRO DESTAQUE
+                </span>
+              )}
+              <div className="flex items-center gap-3">
+                {store.logo ? (
+                  <img src={store.logo} alt={store.name} className="w-12 h-12 rounded-xl object-cover border border-border shrink-0" loading="lazy" />
+                ) : (
+                  <span className="text-4xl">{store.emoji}</span>
                 )}
-                <div className="flex items-center gap-3">
-                  {store.logo ? (
-                    <img src={store.logo} alt={store.name} className="w-12 h-12 rounded-xl object-cover border border-border shrink-0" loading="lazy" />
-                  ) : (
-                    <span className="text-4xl">{store.emoji}</span>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-bold text-foreground truncate">{store.name}</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">{store.description}</p>
-                    <div className="flex items-center gap-1 mt-1.5 text-[11px] text-primary font-semibold">
-                      <MapPin size={11} />
-                      {categoryLabels[store.category].emoji} {categoryLabels[store.category].label}
-                    </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-bold text-foreground truncate">{store.name}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">{store.description?.split("\n")[0]}</p>
+                  <div className="flex items-center gap-1 mt-1.5 text-[11px] text-primary font-semibold">
+                    <MapPin size={11} />
+                    {categoryLabels[store.category].emoji} {categoryLabels[store.category].label}
                   </div>
-                  <ChevronRight size={18} className="text-muted-foreground shrink-0" />
                 </div>
+                <ChevronRight size={18} className="text-muted-foreground shrink-0" />
               </div>
-            </button>
-          ))
-        ) : dbPartners.length === 0 ? (
+            </div>
+          </button>
+        ))}
+
+        {/* Empty category message */}
+        {!hasResults && (
           <div className="text-center py-12 animate-slide-up">
-            <span className="text-5xl block mb-3">🏗️</span>
+            <span className="text-5xl block mb-3">⚠️</span>
             <p className="text-foreground font-bold text-lg">
-              Ainda estamos adicionando novas lojas na sua região 😄
+              Ainda não temos parceiros nesta categoria 😔
             </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Em breve teremos mais opções para você!
+            <p className="text-sm text-muted-foreground mt-2 mb-4">
+              Quer indicar um parceiro? 🤝
             </p>
+            <button
+              onClick={() => navigate("/seja-parceiro")}
+              className="gradient-primary text-primary-foreground font-bold text-sm py-3 px-6 rounded-2xl shadow-md active:scale-95 transition-transform inline-flex items-center gap-2"
+            >
+              <Handshake size={16} /> Quero indicar um parceiro 🚀
+            </button>
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );

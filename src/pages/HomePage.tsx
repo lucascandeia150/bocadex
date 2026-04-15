@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, ShoppingBag, Star, Mail, Sparkles, Zap, ArrowRight, Shuffle, X, Clock, DollarSign, ChefHat, Wine, Plus, Beer, UtensilsCrossed, ExternalLink, ShoppingCart } from "lucide-react";
 import { getRandomFood, getPairedDrink, getComboPhrase, getDrinkContextPhrase, getRandomDrink, allItems, drinks } from "@/data/foods";
 import type { Food } from "@/data/foods";
 import { FoodActions } from "@/components/FoodActions";
-import { PartnerBanner } from "@/components/PartnerBanner";
 import { RecipeModal } from "@/components/RecipeModal";
 import { AdBanner } from "@/components/AdBanner";
 import logo from "@/assets/logo.png";
@@ -39,18 +38,8 @@ export default function HomePage({ onChoose }: HomePageProps) {
   const [personalMessage, setPersonalMessage] = useState("");
   const [smartTip, setSmartTip] = useState("");
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchFocused, setSearchFocused] = useState(false);
   const [selectedFood, setSelectedFood] = useState<Food | null>(null);
   const [recipeOpen, setRecipeOpen] = useState(false);
-
-  const searchResults = searchQuery.trim()
-    ? allItems.filter((item) => {
-        const q = searchQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const name = item.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        return name.includes(q);
-      }).slice(0, 5)
-    : [];
 
   const reset = () => { setStep("home"); setResult(null); setPairedDrink(null); setPersonalMessage(""); setSmartTip(""); setDrinkPhrase(""); };
 
@@ -82,9 +71,6 @@ export default function HomePage({ onChoose }: HomePageProps) {
     }
 
     setStep("result");
-
-    // Track suggestion
-    const foodName = selectedMode === "bebida" ? undefined : selectedMode === "comida" ? undefined : undefined;
     trackAnalyticsEvent("suggestion_generated", { mode: selectedMode });
   };
 
@@ -143,12 +129,12 @@ export default function HomePage({ onChoose }: HomePageProps) {
     );
   }
 
-  // Home screen
+  // Home screen — clean and focused
   return (
     <div className="px-4 pt-8 pb-12">
       {/* Hero */}
       <div className="text-center mb-8 animate-bounce-in">
-        <div className="w-32 h-32 mx-auto mb-5 rounded-3xl bg-card shadow-xl border border-border/50 flex items-center justify-center p-2">
+        <div className="w-36 h-36 mx-auto mb-5 rounded-3xl bg-card shadow-xl border border-border/50 flex items-center justify-center p-2">
           <img src={logo} alt="EscolheAí" className="w-full h-full object-contain" />
         </div>
         <h1 className="text-[1.7rem] font-black text-foreground leading-snug tracking-tight">
@@ -157,9 +143,12 @@ export default function HomePage({ onChoose }: HomePageProps) {
         <p className="text-secondary font-extrabold text-lg mt-3">
           A gente escolhe por você! 🍽️
         </p>
+        <p className="text-muted-foreground text-sm mt-2 max-w-xs mx-auto">
+          Sugestões de comida, bebida e combos. Descubra parceiros locais e peça pelo WhatsApp!
+        </p>
       </div>
 
-      {/* CTA principal - Decide por mim */}
+      {/* CTA principal */}
       <div className="max-w-sm mx-auto flex flex-col gap-3 mb-8 animate-slide-up" style={{ animationDelay: "50ms" }}>
         <button onClick={decidirPorMim}
           className="gradient-primary text-primary-foreground font-black text-xl py-6 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-3 relative overflow-hidden">
@@ -171,16 +160,8 @@ export default function HomePage({ onChoose }: HomePageProps) {
         </button>
       </div>
 
-      {/* Destaques */}
-      <div className="max-w-sm mx-auto mb-10 animate-slide-up" style={{ animationDelay: "100ms" }}>
-        <h2 className="text-lg font-black text-foreground mb-3 flex items-center gap-2">
-          <Sparkles size={20} className="text-secondary" /> Destaques do dia 🔥
-        </h2>
-        <PartnerBanner />
-      </div>
-
-      {/* Navegação */}
-      <div className="max-w-sm mx-auto animate-slide-up" style={{ animationDelay: "150ms" }}>
+      {/* Navegação rápida */}
+      <div className="max-w-sm mx-auto animate-slide-up" style={{ animationDelay: "100ms" }}>
         <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">Explorar</h2>
         <div className="flex flex-col gap-3">
           <NavButton icon={<ShoppingBag size={22} />} label="Explorar Lojas" emoji="🛍️" onClick={() => navigate("/lojas")} />
@@ -203,17 +184,17 @@ export default function HomePage({ onChoose }: HomePageProps) {
       </div>
 
       {/* CTA Seja Parceiro */}
-      <div className="max-w-sm mx-auto mt-8 animate-slide-up" style={{ animationDelay: "200ms" }}>
+      <div className="max-w-sm mx-auto mt-8 animate-slide-up" style={{ animationDelay: "150ms" }}>
         <button
           onClick={() => navigate("/seja-parceiro")}
           className="w-full gradient-primary text-primary-foreground font-black text-base py-4 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
         >
-          🚀 Quero ser parceiro
+          🤝 Quero ser parceiro
         </button>
       </div>
 
       {/* Indicação de parceiro */}
-      <div className="max-w-sm mx-auto mt-4 animate-slide-up" style={{ animationDelay: "250ms" }}>
+      <div className="max-w-sm mx-auto mt-4 animate-slide-up" style={{ animationDelay: "200ms" }}>
         <PartnerReferralCard />
       </div>
 
@@ -248,7 +229,6 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
   const isBebidaOnly = mode === "bebida";
   const isCombo = mode === "combo" && pairedDrink;
 
-  // Determine partner store based on suggestion type
   const getPartnerStore = () => {
     if (isBebidaOnly || result.tag === "parceiro" && result.type === "bebida") {
       return stores.find(s => s.id === "e-pra-ja");
@@ -256,7 +236,6 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
     if (result.id === "biscoito-nata" || result.tag === "parceiro") {
       return stores.find(s => s.id === "biscoito-da-tete");
     }
-    // For combos, show drink partner
     return null;
   };
 
@@ -344,7 +323,7 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
         <p className="text-sm font-bold text-primary">{smartTip}</p>
       </div>
 
-      {/* Affiliate CTA - Fazer em casa */}
+      {/* Affiliate CTA */}
       {!isBebidaOnly && (
         <div className="w-full max-w-sm animate-slide-up">
           <p className="text-xs text-muted-foreground text-center mb-2">Quer fazer em casa? 👇</p>
@@ -393,7 +372,6 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
         </div>
       )}
 
-      {/* If combo, show drink partner too */}
       {isCombo && drinkPartner && !mainPartner && (
         <div className="w-full max-w-sm animate-slide-up">
           <div className="bg-card border-2 border-secondary/30 rounded-2xl p-4 shadow-sm">
@@ -413,7 +391,6 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
         </div>
       )}
 
-      {/* For combos: show both partners if food has a partner too */}
       {isCombo && foodPartner && drinkPartner && (
         <div className="w-full max-w-sm animate-slide-up">
           <div className="bg-accent/40 rounded-xl p-3 text-center space-y-1">
@@ -426,15 +403,9 @@ function ResultScreen({ result, pairedDrink, drinkPhrase, personalMessage, smart
         </div>
       )}
 
-      {!isBebidaOnly && !mainPartner && (
-        <div className="w-full max-w-sm animate-slide-up"><FoodActions food={result} smartTip="" /></div>
-      )}
+      <div className="w-full max-w-sm animate-slide-up"><FoodActions food={result} smartTip="" /></div>
 
-      {!isBebidaOnly && mainPartner && (
-        <div className="w-full max-w-sm animate-slide-up"><FoodActions food={result} smartTip="" /></div>
-      )}
-
-      {/* More options monetized */}
+      {/* More options */}
       <div className="w-full max-w-sm animate-slide-up">
         <p className="text-xs text-muted-foreground text-center mb-2">Quer ver mais opções? 👇</p>
         <button
