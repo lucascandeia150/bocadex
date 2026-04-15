@@ -1,4 +1,4 @@
-import { Home, UtensilsCrossed, Beer, ChefHat, Phone, Star, Info, Rocket } from "lucide-react";
+import { Home, UtensilsCrossed, ChefHat, Phone, Star, Info, Rocket, Search } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
@@ -17,8 +17,9 @@ import {
 const items = [
   { title: "Início", url: "/", icon: Home, emoji: "🏠" },
   { title: "Explorar lojas", url: "/lojas", icon: UtensilsCrossed, emoji: "🍽️" },
-  { title: "Distribuidoras", url: "/bebidas", icon: Beer, emoji: "🍺" },
+  { title: "Sugestão do dia", url: "/descobrir", icon: Rocket, emoji: "🎲" },
   { title: "Receitas", url: "/receitas", icon: ChefHat, emoji: "🍳" },
+  { title: "Buscar", url: "/buscar", icon: Search, emoji: "🔍" },
   { title: "Contato", url: "/contato", icon: Phone, emoji: "📞" },
   { title: "Avaliar app", url: "/avaliar", icon: Star, emoji: "⭐" },
   { title: "Sobre o app", url: "/sobre", icon: Info, emoji: "ℹ️" },
