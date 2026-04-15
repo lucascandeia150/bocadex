@@ -51,7 +51,7 @@ export default function AppLayout() {
               <Route path="/contato" element={<ContatoPage />} />
               <Route path="/avaliar" element={<AvaliarPage />} />
               <Route path="/sobre" element={<SobrePage />} />
-              <Route path="/parceiros" element={<ParceirosPage />} />
+              {/* parceiros page removed - integrated into /lojas */}
               <Route path="/seja-parceiro" element={<SejaParceiroPage />} />
               <Route path="/admin" element={<AdminLoginPage />} />
               <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
