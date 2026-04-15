@@ -1,4 +1,4 @@
-import { Home, UtensilsCrossed, Beer, ChefHat, Phone, Star, Info, Rocket } from "lucide-react";
+import { Home, UtensilsCrossed, ChefHat, Phone, Star, Info, Rocket, Search } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
