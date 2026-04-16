@@ -49,7 +49,7 @@ export interface Store {
   reviews?: StoreReview[];
 }
 
-export type StoreCategory = "lanchonetes" | "pizzarias" | "restaurantes" | "cafes" | "doces" | "bebidas";
+export type StoreCategory = "lanchonetes" | "pizzarias" | "restaurantes" | "cafes" | "doces" | "distribuidoras" | "drogarias";
 
 export const categoryLabels: Record<StoreCategory, { label: string; emoji: string }> = {
   lanchonetes: { label: "Lanchonetes", emoji: "🍔" },
@@ -57,7 +57,8 @@ export const categoryLabels: Record<StoreCategory, { label: string; emoji: strin
   restaurantes: { label: "Restaurantes", emoji: "🍽️" },
   cafes: { label: "Cafés", emoji: "☕" },
   doces: { label: "Doces", emoji: "🍪" },
-  bebidas: { label: "Bebidas", emoji: "🍻" },
+  distribuidoras: { label: "Distribuidoras", emoji: "🍺" },
+  drogarias: { label: "Drogarias", emoji: "💊" },
 };
 
 export const stores: Store[] = [
@@ -147,7 +148,8 @@ export const stores: Store[] = [
     id: "e-pra-ja",
     name: "É Pra Já",
     emoji: "🍺",
-    category: "bebidas",
+    logo: "https://lh3.googleusercontent.com/p/AF1QipOkePjx4cLoPlcCLblmAymndL9f_yEO5SQ7IWZY=s680-w680-h510",
+    category: "distribuidoras",
     description: "Tudo que você precisa em um só lugar: bebidas, snacks e mais 😋\n⚠️ Não fazemos entrega",
     whatsapp: "557327998060801",
     address: "Rua Donadilson da Rocha Barros, R. Marcos Aurélio Castro - São Francisco, Serra - ES, 29175-207",
@@ -332,7 +334,8 @@ export const stores: Store[] = [
     id: "pj-distribuidora",
     name: "PJ Distribuidora",
     emoji: "🍺",
-    category: "bebidas",
+    logo: "https://lh3.googleusercontent.com/p/AF1QipP2swDe_TwvvH0LZVtG5h87UjMizqKpqhqSh3PF=s680-w680-h510",
+    category: "distribuidoras",
     description: "Distribuidora completa com bebidas geladas e variedade pra você! 🍺\n⚠️ Não fazemos entrega",
     whatsapp: "5527997451821",
     address: "R. Santa Lúcia - São Francisco, Serra - ES, 29175-222 (Próximo ao campo de futebol Arena São Francisco)",
