@@ -5,6 +5,9 @@ import biscoitoDoceLeite from "@/assets/stores/biscoito-doce-leite.jpg";
 import coxinhaImg from "@/assets/stores/coxinha.jpg";
 import maravilhaImg from "@/assets/stores/maravilha.jpg";
 import amstelImg from "@/assets/stores/amstel.jpg";
+import logoEPraJa from "@/assets/logo-e-pra-ja.jpg";
+import logoPjDistribuidora from "@/assets/logo-pj-distribuidora.jpg";
+import logoBiscoitosDaTete from "@/assets/logo-biscoitos-da-tete.jpg";
 
 export interface StoreReview {
   text: string;
@@ -66,6 +69,7 @@ export const stores: Store[] = [
     id: "biscoito-da-tete",
     name: "Biscoito da Tetê",
     emoji: "🍪",
+    logo: logoBiscoitosDaTete,
     category: "doces",
     description: "🤤 Biscoitos caseiros que derretem na boca! Feitos com carinho e ingredientes selecionados 😋",
     whatsapp: "5573998719117",
@@ -148,7 +152,7 @@ export const stores: Store[] = [
     id: "e-pra-ja",
     name: "É Pra Já",
     emoji: "🍺",
-    logo: "https://lh3.googleusercontent.com/p/AF1QipOkePjx4cLoPlcCLblmAymndL9f_yEO5SQ7IWZY=s680-w680-h510",
+    logo: logoEPraJa,
     category: "distribuidoras",
     description: "Tudo que você precisa em um só lugar: bebidas, snacks e mais 😋\n⚠️ Não fazemos entrega",
     whatsapp: "557327998060801",
@@ -334,7 +338,7 @@ export const stores: Store[] = [
     id: "pj-distribuidora",
     name: "PJ Distribuidora",
     emoji: "🍺",
-    logo: "https://lh3.googleusercontent.com/p/AF1QipP2swDe_TwvvH0LZVtG5h87UjMizqKpqhqSh3PF=s680-w680-h510",
+    logo: logoPjDistribuidora,
     category: "distribuidoras",
     description: "Distribuidora completa com bebidas geladas e variedade pra você! 🍺\n⚠️ Não fazemos entrega",
     whatsapp: "5527997451821",
