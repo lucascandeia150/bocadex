@@ -70,6 +70,7 @@ export const stores: Store[] = [
     name: "Biscoito da Tetê",
     emoji: "🍪",
     logo: logoBiscoitosDaTete,
+    category: "doces",
     description: "🤤 Biscoitos caseiros que derretem na boca! Feitos com carinho e ingredientes selecionados 😋",
     whatsapp: "5573998719117",
     highlighted: true,
