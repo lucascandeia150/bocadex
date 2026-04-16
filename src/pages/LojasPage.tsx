@@ -37,13 +37,13 @@ export default function LojasPage() {
   // Map business_type to StoreCategory
   const mapBusinessType = (type: string): StoreCategory | null => {
     const map: Record<string, StoreCategory> = {
-      "distribuidora": "bebidas",
+      "distribuidora": "distribuidoras",
       "lanchonete": "lanchonetes",
       "restaurante": "restaurantes",
       "pizzaria": "pizzarias",
       "café": "cafes",
       "doces": "doces",
-      "bebidas": "bebidas",
+      "bebidas": "distribuidoras",
     };
     return map[type.toLowerCase()] || null;
   };
