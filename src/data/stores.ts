@@ -5,6 +5,9 @@ import biscoitoDoceLeite from "@/assets/stores/biscoito-doce-leite.jpg";
 import coxinhaImg from "@/assets/stores/coxinha.jpg";
 import maravilhaImg from "@/assets/stores/maravilha.jpg";
 import amstelImg from "@/assets/stores/amstel.jpg";
+import logoEPraJa from "@/assets/logo-e-pra-ja.jpg";
+import logoPjDistribuidora from "@/assets/logo-pj-distribuidora.jpg";
+import logoBiscoitosDaTete from "@/assets/logo-biscoitos-da-tete.jpg";
 
 export interface StoreReview {
   text: string;
