@@ -77,6 +77,54 @@ export type Database = {
         }
         Relationships: []
       }
+      courier_applications: {
+        Row: {
+          availability: string
+          average_fee: number | null
+          city_neighborhood: string
+          created_at: string
+          full_name: string
+          has_experience: boolean
+          id: string
+          notes: string | null
+          phone: string
+          service_area: string
+          status: string
+          transport_type: string
+          updated_at: string
+        }
+        Insert: {
+          availability: string
+          average_fee?: number | null
+          city_neighborhood: string
+          created_at?: string
+          full_name: string
+          has_experience?: boolean
+          id?: string
+          notes?: string | null
+          phone: string
+          service_area: string
+          status?: string
+          transport_type: string
+          updated_at?: string
+        }
+        Update: {
+          availability?: string
+          average_fee?: number | null
+          city_neighborhood?: string
+          created_at?: string
+          full_name?: string
+          has_experience?: boolean
+          id?: string
+          notes?: string | null
+          phone?: string
+          service_area?: string
+          status?: string
+          transport_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       couriers: {
         Row: {
           created_at: string
@@ -225,6 +273,7 @@ export type Database = {
           logo_url: string | null
           promotions: string | null
           status: string
+          uses_app_courier: boolean
           whatsapp: string
         }
         Insert: {
@@ -239,6 +288,7 @@ export type Database = {
           logo_url?: string | null
           promotions?: string | null
           status?: string
+          uses_app_courier?: boolean
           whatsapp: string
         }
         Update: {
@@ -253,6 +303,7 @@ export type Database = {
           logo_url?: string | null
           promotions?: string | null
           status?: string
+          uses_app_courier?: boolean
           whatsapp?: string
         }
         Relationships: []

@@ -15,6 +15,7 @@ interface Partner {
   logo_url: string | null;
   status: string;
   is_active: boolean;
+  uses_app_courier?: boolean;
   created_at: string;
 }
 
@@ -31,6 +32,7 @@ const emptyForm = {
   whatsapp: "",
   promotions: "",
   logo_url: "",
+  uses_app_courier: false,
 };
 
 export default function AdminPartnersTab({ partners, onRefresh }: Props) {
@@ -50,6 +52,7 @@ export default function AdminPartnersTab({ partners, onRefresh }: Props) {
       whatsapp: p.whatsapp,
       promotions: p.promotions || "",
       logo_url: p.logo_url || "",
+      uses_app_courier: !!p.uses_app_courier,
     });
     setLogoPreview(p.logo_url || null);
   };
@@ -85,6 +88,7 @@ export default function AdminPartnersTab({ partners, onRefresh }: Props) {
       whatsapp: form.whatsapp,
       promotions: form.promotions || null,
       logo_url: form.logo_url || null,
+      uses_app_courier: form.uses_app_courier,
     };
 
     if (editing) {
@@ -176,6 +180,16 @@ export default function AdminPartnersTab({ partners, onRefresh }: Props) {
           <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descrição" rows={2} className="w-full px-3 py-2 rounded-xl border border-border bg-background text-sm text-foreground resize-none" />
           <input value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} placeholder="WhatsApp (com DDD e país)" className="w-full px-3 py-2 rounded-xl border border-border bg-background text-sm text-foreground" />
           <input value={form.promotions} onChange={(e) => setForm({ ...form, promotions: e.target.value })} placeholder="Promoção (opcional)" className="w-full px-3 py-2 rounded-xl border border-border bg-background text-sm text-foreground" />
+
+          <label className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.uses_app_courier}
+              onChange={(e) => setForm({ ...form, uses_app_courier: e.target.checked })}
+              className="w-4 h-4 accent-primary"
+            />
+            <span className="text-xs font-bold text-foreground">🚚 Utiliza entregador do app?</span>
+          </label>
 
           <div className="flex gap-2">
             <button onClick={save} className="flex items-center gap-1 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold">

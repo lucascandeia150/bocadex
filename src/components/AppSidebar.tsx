@@ -1,4 +1,4 @@
-import { Home, UtensilsCrossed, ChefHat, Phone, Star, Info, Rocket, Search } from "lucide-react";
+import { Home, UtensilsCrossed, ChefHat, Phone, Star, Info, Rocket, Search, Truck } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
@@ -24,6 +24,7 @@ const items = [
   { title: "Avaliar app", url: "/avaliar", icon: Star, emoji: "⭐" },
   { title: "Sobre o app", url: "/sobre", icon: Info, emoji: "ℹ️" },
   { title: "Quero ser parceiro", url: "/seja-parceiro", icon: Rocket, emoji: "🚀" },
+  { title: "Seja um Entregador", url: "/seja-entregador", icon: Truck, emoji: "🚚" },
 ];
 
 export function AppSidebar() {
