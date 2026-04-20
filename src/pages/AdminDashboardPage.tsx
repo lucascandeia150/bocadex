@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import {
   Users, MousePointerClick, Star, MessageCircle, Trash2, LogOut,
   BarChart3, TrendingUp, Clock, RefreshCw, Handshake, CheckCircle, XCircle,
-  ChefHat, Video, Link2, Package, Tag
+  ChefHat, Video, Link2, Package, Tag, Truck
 } from "lucide-react";
 import AdminRecipesTab from "@/components/admin/AdminRecipesTab";
 import AdminVideosTab from "@/components/admin/AdminVideosTab";
@@ -13,6 +13,7 @@ import AdminAffiliateTab from "@/components/admin/AdminAffiliateTab";
 import AdminPartnersTab from "@/components/admin/AdminPartnersTab";
 import AdminProductsTab from "@/components/admin/AdminProductsTab";
 import AdminCategoriesTab from "@/components/admin/AdminCategoriesTab";
+import AdminDeliveriesTab from "@/components/admin/AdminDeliveriesTab";
 
 interface PartnerApplication {
   id: string;
@@ -44,7 +45,7 @@ interface AnalyticsEvent {
   created_at: string;
 }
 
-type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates";
+type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates" | "deliveries";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
