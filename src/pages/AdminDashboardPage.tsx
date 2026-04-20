@@ -181,6 +181,7 @@ export default function AdminDashboardPage() {
           { id: "recipes", label: "Receitas", icon: <ChefHat size={14} /> },
           { id: "videos", label: "Vídeos", icon: <Video size={14} /> },
           { id: "affiliates", label: "Afiliados", icon: <Link2 size={14} /> },
+          { id: "deliveries", label: "Entregas", icon: <Truck size={14} /> },
         ] as { id: Tab; label: string; icon: React.ReactNode }[]).map((t) => (
           <button
             key={t.id}
@@ -304,6 +305,7 @@ export default function AdminDashboardPage() {
         {tab === "recipes" && <AdminRecipesTab recipes={dbRecipes} onRefresh={loadData} />}
         {tab === "videos" && <AdminVideosTab videos={dbVideos} onRefresh={loadData} />}
         {tab === "affiliates" && <AdminAffiliateTab links={dbAffiliateLinks} onRefresh={loadData} />}
+        {tab === "deliveries" && <AdminDeliveriesTab />}
       </div>
     </div>
   );
