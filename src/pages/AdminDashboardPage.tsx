@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import {
   Users, MousePointerClick, Star, MessageCircle, Trash2, LogOut,
   BarChart3, TrendingUp, Clock, RefreshCw, Handshake, CheckCircle, XCircle,
-  ChefHat, Video, Link2, Package, Tag
+  ChefHat, Video, Link2, Package, Tag, Truck
 } from "lucide-react";
 import AdminRecipesTab from "@/components/admin/AdminRecipesTab";
 import AdminVideosTab from "@/components/admin/AdminVideosTab";
@@ -13,6 +13,7 @@ import AdminAffiliateTab from "@/components/admin/AdminAffiliateTab";
 import AdminPartnersTab from "@/components/admin/AdminPartnersTab";
 import AdminProductsTab from "@/components/admin/AdminProductsTab";
 import AdminCategoriesTab from "@/components/admin/AdminCategoriesTab";
+import AdminDeliveriesTab from "@/components/admin/AdminDeliveriesTab";
 
 interface PartnerApplication {
   id: string;
@@ -44,7 +45,7 @@ interface AnalyticsEvent {
   created_at: string;
 }
 
-type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates";
+type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates" | "deliveries";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -180,6 +181,7 @@ export default function AdminDashboardPage() {
           { id: "recipes", label: "Receitas", icon: <ChefHat size={14} /> },
           { id: "videos", label: "Vídeos", icon: <Video size={14} /> },
           { id: "affiliates", label: "Afiliados", icon: <Link2 size={14} /> },
+          { id: "deliveries", label: "Entregas", icon: <Truck size={14} /> },
         ] as { id: Tab; label: string; icon: React.ReactNode }[]).map((t) => (
           <button
             key={t.id}
@@ -303,6 +305,7 @@ export default function AdminDashboardPage() {
         {tab === "recipes" && <AdminRecipesTab recipes={dbRecipes} onRefresh={loadData} />}
         {tab === "videos" && <AdminVideosTab videos={dbVideos} onRefresh={loadData} />}
         {tab === "affiliates" && <AdminAffiliateTab links={dbAffiliateLinks} onRefresh={loadData} />}
+        {tab === "deliveries" && <AdminDeliveriesTab />}
       </div>
     </div>
   );

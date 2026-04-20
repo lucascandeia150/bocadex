@@ -77,6 +77,117 @@ export type Database = {
         }
         Relationships: []
       }
+      couriers: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          phone: string
+          updated_at: string
+          vehicle: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          phone: string
+          updated_at?: string
+          vehicle?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          phone?: string
+          updated_at?: string
+          vehicle?: string
+        }
+        Relationships: []
+      }
+      deliveries: {
+        Row: {
+          courier_id: string | null
+          courier_payout: number
+          created_at: string
+          delivery_address: string
+          fee: number
+          id: string
+          notes: string | null
+          order_description: string
+          partner_id: string | null
+          partner_name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          courier_id?: string | null
+          courier_payout?: number
+          created_at?: string
+          delivery_address: string
+          fee?: number
+          id?: string
+          notes?: string | null
+          order_description: string
+          partner_id?: string | null
+          partner_name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          courier_id?: string | null
+          courier_payout?: number
+          created_at?: string
+          delivery_address?: string
+          fee?: number
+          id?: string
+          notes?: string | null
+          order_description?: string
+          partner_id?: string | null
+          partner_name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deliveries_courier_id_fkey"
+            columns: ["courier_id"]
+            isOneToOne: false
+            referencedRelation: "couriers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deliveries_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partner_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_settings: {
+        Row: {
+          default_courier_payout: number
+          default_fee: number
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          default_courier_payout?: number
+          default_fee?: number
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          default_courier_payout?: number
+          default_fee?: number
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       feedbacks: {
         Row: {
           comment: string | null
