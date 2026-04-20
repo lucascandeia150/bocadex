@@ -14,6 +14,7 @@ import AdminPartnersTab from "@/components/admin/AdminPartnersTab";
 import AdminProductsTab from "@/components/admin/AdminProductsTab";
 import AdminCategoriesTab from "@/components/admin/AdminCategoriesTab";
 import AdminDeliveriesTab from "@/components/admin/AdminDeliveriesTab";
+import AdminCourierApplicationsTab from "@/components/admin/AdminCourierApplicationsTab";
 
 interface PartnerApplication {
   id: string;
@@ -45,7 +46,7 @@ interface AnalyticsEvent {
   created_at: string;
 }
 
-type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates" | "deliveries";
+type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates" | "deliveries" | "couriers";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -182,6 +183,7 @@ export default function AdminDashboardPage() {
           { id: "videos", label: "Vídeos", icon: <Video size={14} /> },
           { id: "affiliates", label: "Afiliados", icon: <Link2 size={14} /> },
           { id: "deliveries", label: "Entregas", icon: <Truck size={14} /> },
+          { id: "couriers", label: "Entregadores", icon: <Truck size={14} /> },
         ] as { id: Tab; label: string; icon: React.ReactNode }[]).map((t) => (
           <button
             key={t.id}
@@ -306,6 +308,7 @@ export default function AdminDashboardPage() {
         {tab === "videos" && <AdminVideosTab videos={dbVideos} onRefresh={loadData} />}
         {tab === "affiliates" && <AdminAffiliateTab links={dbAffiliateLinks} onRefresh={loadData} />}
         {tab === "deliveries" && <AdminDeliveriesTab />}
+        {tab === "couriers" && <AdminCourierApplicationsTab />}
       </div>
     </div>
   );
