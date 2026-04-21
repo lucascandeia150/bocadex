@@ -57,6 +57,8 @@ export default function AppLayout() {
               {/* parceiros page removed - integrated into /lojas */}
               <Route path="/seja-parceiro" element={<SejaParceiroPage />} />
               <Route path="/seja-entregador" element={<SejaEntregadorPage />} />
+              <Route path="/portal/loja" element={<PortalLojaPage />} />
+              <Route path="/portal/entregador" element={<PortalEntregadorPage />} />
               <Route path="/admin" element={<AdminLoginPage />} />
               <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
               <Route path="*" element={<NotFound />} />
