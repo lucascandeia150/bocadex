@@ -127,6 +127,7 @@ export type Database = {
       }
       couriers: {
         Row: {
+          access_pin: string | null
           created_at: string
           id: string
           is_active: boolean
@@ -136,6 +137,7 @@ export type Database = {
           vehicle: string
         }
         Insert: {
+          access_pin?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
@@ -145,6 +147,7 @@ export type Database = {
           vehicle?: string
         }
         Update: {
+          access_pin?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
@@ -262,6 +265,7 @@ export type Database = {
       }
       partner_applications: {
         Row: {
+          access_pin: string | null
           address: string
           business_name: string
           business_type: string
@@ -277,6 +281,7 @@ export type Database = {
           whatsapp: string
         }
         Insert: {
+          access_pin?: string | null
           address: string
           business_name: string
           business_type: string
@@ -292,6 +297,7 @@ export type Database = {
           whatsapp: string
         }
         Update: {
+          access_pin?: string | null
           address?: string
           business_name?: string
           business_type?: string
@@ -445,12 +451,123 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      courier_list_deliveries: {
+        Args: { _pin: string }
+        Returns: {
+          courier_id: string
+          created_at: string
+          delivery_address: string
+          fee: number
+          id: string
+          notes: string
+          order_description: string
+          partner_id: string
+          partner_name: string
+          partner_whatsapp: string
+          status: string
+        }[]
+      }
+      courier_login: {
+        Args: { _pin: string }
+        Returns: {
+          id: string
+          is_active: boolean
+          name: string
+          phone: string
+          vehicle: string
+        }[]
+      }
+      courier_update_delivery: {
+        Args: { _action: string; _delivery_id: string; _pin: string }
+        Returns: {
+          courier_id: string | null
+          courier_payout: number
+          created_at: string
+          delivery_address: string
+          fee: number
+          id: string
+          notes: string | null
+          order_description: string
+          partner_id: string | null
+          partner_name: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deliveries"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      generate_access_pin: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      partner_create_delivery: {
+        Args: {
+          _delivery_address: string
+          _fee: number
+          _notes: string
+          _order_description: string
+          _pin: string
+        }
+        Returns: {
+          courier_id: string | null
+          courier_payout: number
+          created_at: string
+          delivery_address: string
+          fee: number
+          id: string
+          notes: string | null
+          order_description: string
+          partner_id: string | null
+          partner_name: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deliveries"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      partner_list_deliveries: {
+        Args: { _pin: string }
+        Returns: {
+          courier_id: string | null
+          courier_payout: number
+          created_at: string
+          delivery_address: string
+          fee: number
+          id: string
+          notes: string | null
+          order_description: string
+          partner_id: string | null
+          partner_name: string
+          status: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "deliveries"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      partner_login: {
+        Args: { _pin: string }
+        Returns: {
+          address: string
+          business_name: string
+          id: string
+          whatsapp: string
+        }[]
       }
     }
     Enums: {

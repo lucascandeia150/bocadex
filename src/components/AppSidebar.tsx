@@ -25,6 +25,8 @@ const items = [
   { title: "Sobre o app", url: "/sobre", icon: Info, emoji: "ℹ️" },
   { title: "Quero ser parceiro", url: "/seja-parceiro", icon: Rocket, emoji: "🚀" },
   { title: "Seja um Entregador", url: "/seja-entregador", icon: Truck, emoji: "🚚" },
+  { title: "Portal Loja", url: "/portal/loja", icon: UtensilsCrossed, emoji: "🏪" },
+  { title: "Portal Entregador", url: "/portal/entregador", icon: Truck, emoji: "🛵" },
 ];
 
 export function AppSidebar() {

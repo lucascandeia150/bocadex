@@ -20,6 +20,8 @@ import ReceitasPage from "./ReceitasPage";
 import ParceirosPage from "./ParceirosPage";
 import SejaParceiroPage from "./SejaParceiroPage";
 import SejaEntregadorPage from "./SejaEntregadorPage";
+import PortalLojaPage from "./PortalLojaPage";
+import PortalEntregadorPage from "./PortalEntregadorPage";
 import AdminLoginPage from "./AdminLoginPage";
 import AdminDashboardPage from "./AdminDashboardPage";
 import NotFound from "./NotFound";
@@ -55,6 +57,8 @@ export default function AppLayout() {
               {/* parceiros page removed - integrated into /lojas */}
               <Route path="/seja-parceiro" element={<SejaParceiroPage />} />
               <Route path="/seja-entregador" element={<SejaEntregadorPage />} />
+              <Route path="/portal/loja" element={<PortalLojaPage />} />
+              <Route path="/portal/entregador" element={<PortalEntregadorPage />} />
               <Route path="/admin" element={<AdminLoginPage />} />
               <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
               <Route path="*" element={<NotFound />} />

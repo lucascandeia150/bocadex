@@ -9,6 +9,7 @@ interface Courier {
   phone: string;
   vehicle: string;
   is_active: boolean;
+  access_pin?: string | null;
 }
 
 interface Delivery {
@@ -338,6 +339,11 @@ export default function AdminDeliveriesTab() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-foreground truncate">{c.name}</p>
                 <p className="text-xs text-muted-foreground flex items-center gap-1"><Phone size={10} /> {c.phone}</p>
+                {c.access_pin && (
+                  <p className="text-[10px] text-muted-foreground">
+                    PIN: <span className="font-black text-primary tracking-widest">{c.access_pin}</span>
+                  </p>
+                )}
               </div>
               <button
                 onClick={() => toggleCourier(c.id, c.is_active)}
