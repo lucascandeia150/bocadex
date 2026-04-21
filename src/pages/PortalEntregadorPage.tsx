@@ -230,7 +230,7 @@ function DeliveryCard({
             href={`https://wa.me/${wa}?text=${encodeURIComponent("Olá! Sou o entregador do pedido " + d.order_description)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-green-600 text-white font-bold text-xs py-2 rounded-lg active:scale-95 text-center"
+            className="flex-1 bg-secondary text-secondary-foreground font-bold text-xs py-2 rounded-lg active:scale-95 text-center"
           >
             <MessageCircle size={12} className="inline mr-1" /> Falar com a loja
           </a>
