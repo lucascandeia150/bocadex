@@ -9,6 +9,7 @@ interface Courier {
   phone: string;
   vehicle: string;
   is_active: boolean;
+  access_pin?: string | null;
 }
 
 interface Delivery {
