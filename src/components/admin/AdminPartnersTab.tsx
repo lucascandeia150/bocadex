@@ -16,6 +16,7 @@ interface Partner {
   status: string;
   is_active: boolean;
   uses_app_courier?: boolean;
+  access_pin?: string | null;
   created_at: string;
 }
 
