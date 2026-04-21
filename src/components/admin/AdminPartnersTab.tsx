@@ -254,6 +254,22 @@ export default function AdminPartnersTab({ partners, onRefresh }: Props) {
               <Trash2 size={14} />
             </button>
           </div>
+
+          {p.status === "approved" && p.access_pin && (
+            <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-xl px-3 py-2">
+              <div className="text-[10px] text-muted-foreground">
+                PIN portal: <span className="font-black text-primary text-sm tracking-widest ml-1">{p.access_pin}</span>
+              </div>
+              <a
+                href={`https://wa.me/${p.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Seu acesso ao portal EscolheAí:\nhttps://escolheai.today/portal/loja\nPIN: ${p.access_pin}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] font-bold text-primary"
+              >
+                Enviar
+              </a>
+            </div>
+          )}
         </div>
       ))}
 
