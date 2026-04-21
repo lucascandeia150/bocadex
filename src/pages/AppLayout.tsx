@@ -20,6 +20,8 @@ import ReceitasPage from "./ReceitasPage";
 import ParceirosPage from "./ParceirosPage";
 import SejaParceiroPage from "./SejaParceiroPage";
 import SejaEntregadorPage from "./SejaEntregadorPage";
+import PortalLojaPage from "./PortalLojaPage";
+import PortalEntregadorPage from "./PortalEntregadorPage";
 import AdminLoginPage from "./AdminLoginPage";
 import AdminDashboardPage from "./AdminDashboardPage";
 import NotFound from "./NotFound";
