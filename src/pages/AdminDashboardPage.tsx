@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import {
   Users, MousePointerClick, Star, MessageCircle, Trash2, LogOut,
   BarChart3, TrendingUp, Clock, RefreshCw, Handshake, CheckCircle, XCircle,
-  ChefHat, Video, Link2, Package, Tag, Truck
+  ChefHat, Video, Link2, Package, Tag, Truck, Percent
 } from "lucide-react";
 import AdminRecipesTab from "@/components/admin/AdminRecipesTab";
 import AdminVideosTab from "@/components/admin/AdminVideosTab";
@@ -15,6 +15,7 @@ import AdminProductsTab from "@/components/admin/AdminProductsTab";
 import AdminCategoriesTab from "@/components/admin/AdminCategoriesTab";
 import AdminDeliveriesTab from "@/components/admin/AdminDeliveriesTab";
 import AdminCourierApplicationsTab from "@/components/admin/AdminCourierApplicationsTab";
+import AdminFeesTab from "@/components/admin/AdminFeesTab";
 
 interface PartnerApplication {
   id: string;
@@ -46,7 +47,7 @@ interface AnalyticsEvent {
   created_at: string;
 }
 
-type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates" | "deliveries" | "couriers";
+type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates" | "deliveries" | "couriers" | "fees";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -184,6 +185,7 @@ export default function AdminDashboardPage() {
           { id: "affiliates", label: "Afiliados", icon: <Link2 size={14} /> },
           { id: "deliveries", label: "Entregas", icon: <Truck size={14} /> },
           { id: "couriers", label: "Entregadores", icon: <Truck size={14} /> },
+          { id: "fees", label: "Taxas", icon: <Percent size={14} /> },
         ] as { id: Tab; label: string; icon: React.ReactNode }[]).map((t) => (
           <button
             key={t.id}
@@ -309,6 +311,7 @@ export default function AdminDashboardPage() {
         {tab === "affiliates" && <AdminAffiliateTab links={dbAffiliateLinks} onRefresh={loadData} />}
         {tab === "deliveries" && <AdminDeliveriesTab />}
         {tab === "couriers" && <AdminCourierApplicationsTab />}
+        {tab === "fees" && <AdminFeesTab />}
       </div>
     </div>
   );

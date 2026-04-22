@@ -160,6 +160,7 @@ export type Database = {
       }
       deliveries: {
         Row: {
+          app_fee: number
           courier_id: string | null
           courier_payout: number
           created_at: string
@@ -168,12 +169,14 @@ export type Database = {
           id: string
           notes: string | null
           order_description: string
+          order_value: number
           partner_id: string | null
           partner_name: string
           status: string
           updated_at: string
         }
         Insert: {
+          app_fee?: number
           courier_id?: string | null
           courier_payout?: number
           created_at?: string
@@ -182,12 +185,14 @@ export type Database = {
           id?: string
           notes?: string | null
           order_description: string
+          order_value?: number
           partner_id?: string | null
           partner_name: string
           status?: string
           updated_at?: string
         }
         Update: {
+          app_fee?: number
           courier_id?: string | null
           courier_payout?: number
           created_at?: string
@@ -196,6 +201,7 @@ export type Database = {
           id?: string
           notes?: string | null
           order_description?: string
+          order_value?: number
           partner_id?: string | null
           partner_name?: string
           status?: string
@@ -480,6 +486,7 @@ export type Database = {
       courier_update_delivery: {
         Args: { _action: string; _delivery_id: string; _pin: string }
         Returns: {
+          app_fee: number
           courier_id: string | null
           courier_payout: number
           created_at: string
@@ -488,6 +495,7 @@ export type Database = {
           id: string
           notes: string | null
           order_description: string
+          order_value: number
           partner_id: string | null
           partner_name: string
           status: string
@@ -508,38 +516,74 @@ export type Database = {
         }
         Returns: boolean
       }
-      partner_create_delivery: {
-        Args: {
-          _delivery_address: string
-          _fee: number
-          _notes: string
-          _order_description: string
-          _pin: string
-        }
-        Returns: {
-          courier_id: string | null
-          courier_payout: number
-          created_at: string
-          delivery_address: string
-          fee: number
-          id: string
-          notes: string | null
-          order_description: string
-          partner_id: string | null
-          partner_name: string
-          status: string
-          updated_at: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "deliveries"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      partner_create_delivery:
+        | {
+            Args: {
+              _delivery_address: string
+              _fee: number
+              _notes: string
+              _order_description: string
+              _pin: string
+            }
+            Returns: {
+              app_fee: number
+              courier_id: string | null
+              courier_payout: number
+              created_at: string
+              delivery_address: string
+              fee: number
+              id: string
+              notes: string | null
+              order_description: string
+              order_value: number
+              partner_id: string | null
+              partner_name: string
+              status: string
+              updated_at: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "deliveries"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              _delivery_address: string
+              _fee: number
+              _notes: string
+              _order_description: string
+              _order_value?: number
+              _pin: string
+            }
+            Returns: {
+              app_fee: number
+              courier_id: string | null
+              courier_payout: number
+              created_at: string
+              delivery_address: string
+              fee: number
+              id: string
+              notes: string | null
+              order_description: string
+              order_value: number
+              partner_id: string | null
+              partner_name: string
+              status: string
+              updated_at: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "deliveries"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       partner_list_deliveries: {
         Args: { _pin: string }
         Returns: {
+          app_fee: number
           courier_id: string | null
           courier_payout: number
           created_at: string
@@ -548,6 +592,7 @@ export type Database = {
           id: string
           notes: string | null
           order_description: string
+          order_value: number
           partner_id: string | null
           partner_name: string
           status: string
