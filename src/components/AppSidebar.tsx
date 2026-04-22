@@ -1,4 +1,4 @@
-import { Home, UtensilsCrossed, ChefHat, Phone, Star, Info, Rocket, Search, Truck, Settings } from "lucide-react";
+import { Home, UtensilsCrossed, ChefHat, Phone, Star, Info, Rocket, Search, Truck, Settings, KeyRound } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
@@ -42,6 +42,11 @@ export function AppSidebar() {
   const handleAdminClick = () => {
     handleClick();
     navigate("/admin");
+  };
+
+  const handlePartnerAccessClick = () => {
+    handleClick();
+    navigate("/acesso-parceiro");
   };
 
   return (
@@ -105,6 +110,14 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <div className="mt-auto border-t border-sidebar-border">
+          <button
+            onClick={handlePartnerAccessClick}
+            className="w-full flex items-center gap-2 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/30 transition-colors border-b border-sidebar-border"
+            aria-label="Acesso parceiro"
+          >
+            <KeyRound className="h-3.5 w-3.5" />
+            <span className="text-[11px] font-semibold">🔑 Acesso parceiro</span>
+          </button>
           <button
             onClick={handleAdminClick}
             className="w-full flex items-center gap-2 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/30 transition-colors"
