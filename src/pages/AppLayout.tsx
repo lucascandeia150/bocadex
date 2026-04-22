@@ -25,6 +25,8 @@ import PortalEntregadorPage from "./PortalEntregadorPage";
 import AcessoParceiroPage from "./AcessoParceiroPage";
 import AdminLoginPage from "./AdminLoginPage";
 import AdminDashboardPage from "./AdminDashboardPage";
+import DescobrirHubPage from "./DescobrirHubPage";
+import TrabalhePage from "./TrabalhePage";
 import NotFound from "./NotFound";
 
 export default function AppLayout() {
@@ -47,6 +49,8 @@ export default function AppLayout() {
               <Route path="/" element={<HomePage onChoose={handleChoose} />} />
               <Route path="/lojas" element={<LojasPage />} />
               <Route path="/loja/:id" element={<LojaDetalhePage />} />
+              <Route path="/descobrir-hub" element={<DescobrirHubPage />} />
+              <Route path="/trabalhe" element={<TrabalhePage />} />
               <Route path="/descobrir" element={<DescobrirPage />} />
               <Route path="/bebidas" element={<BebidasPage />} />
               <Route path="/receitas" element={<ReceitasPage />} />
