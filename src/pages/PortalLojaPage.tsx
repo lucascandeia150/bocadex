@@ -175,6 +175,12 @@ export default function PortalLojaPage() {
         💡 O pagamento da entrega é combinado diretamente entre loja e entregador.
       </div>
 
+      {partner.uses_app_courier && (
+        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 text-xs text-foreground">
+          💡 Ao utilizar entregadores do app EscolheAí, será aplicada uma <b>taxa de 8%</b> sobre o valor do pedido.
+        </div>
+      )}
+
       <div className="flex gap-2">
         <button
           onClick={() => setTab("list")}
@@ -198,7 +204,28 @@ export default function PortalLojaPage() {
           <Field label="Pedido / produto" value={orderDesc} onChange={setOrderDesc} />
           <Field label="Endereço de entrega" value={address} onChange={setAddress} />
           <Field label="Observações (opcional)" value={notes} onChange={setNotes} />
+          <NumField
+            label={partner.uses_app_courier ? "Valor do pedido (R$) *" : "Valor do pedido (R$)"}
+            value={orderValue}
+            onChange={setOrderValue}
+          />
           <NumField label="Valor da entrega (R$)" value={fee} onChange={setFee} />
+
+          {partner.uses_app_courier && orderValue > 0 && (
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-xs space-y-1">
+              <p className="font-bold text-foreground">Resumo</p>
+              <div className="flex justify-between text-muted-foreground">
+                <span>Valor do pedido</span><b className="text-foreground">R$ {orderValue.toFixed(2)}</b>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>Taxa do app (8%)</span><b className="text-primary">R$ {(orderValue * 0.08).toFixed(2)}</b>
+              </div>
+              <p className="text-[10px] text-muted-foreground italic pt-1">
+                Apenas referência. A cobrança será feita posteriormente pelo app.
+              </p>
+            </div>
+          )}
+
           <button
             disabled={loading}
             onClick={submit}
