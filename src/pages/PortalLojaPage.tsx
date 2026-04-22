@@ -8,6 +8,7 @@ interface Partner {
   business_name: string;
   address: string;
   whatsapp: string;
+  uses_app_courier?: boolean;
 }
 
 interface Delivery {
@@ -44,6 +45,7 @@ export default function PortalLojaPage() {
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [fee, setFee] = useState<number>(0);
+  const [orderValue, setOrderValue] = useState<number>(0);
 
   useEffect(() => {
     const saved = localStorage.getItem(PIN_KEY);
@@ -65,7 +67,14 @@ export default function PortalLojaPage() {
       return;
     }
     const p = data[0] as Partner;
-    setPartner(p);
+    // fetch uses_app_courier flag (not exposed by RPC)
+    const { data: pa } = await supabase
+      .from("partner_applications")
+      .select("uses_app_courier")
+      .eq("id", p.id)
+      .maybeSingle();
+    const merged = { ...p, uses_app_courier: !!pa?.uses_app_courier };
+    setPartner(merged);
     setAddress(p.address);
     localStorage.setItem(PIN_KEY, code);
     loadDeliveries(code);
@@ -91,6 +100,16 @@ export default function PortalLojaPage() {
       toast.error("Preencha pedido e endereço");
       return;
     }
+    if (partner?.uses_app_courier && (!orderValue || orderValue <= 0)) {
+      toast.error("Informe o valor do pedido (necessário para a taxa de 8%)");
+      return;
+    }
+    if (partner?.uses_app_courier) {
+      const ok = window.confirm(
+        `Este pedido utilizará entregador parceiro.\n\nSerá aplicada taxa de 8% sobre o valor do pedido (R$ ${(orderValue * 0.08).toFixed(2)}).\n\nDeseja continuar?`
+      );
+      if (!ok) return;
+    }
     setLoading(true);
     const { error } = await supabase.rpc("partner_create_delivery", {
       _pin: pin,
@@ -98,11 +117,12 @@ export default function PortalLojaPage() {
       _delivery_address: address.trim(),
       _notes: notes.trim(),
       _fee: fee,
+      _order_value: orderValue,
     });
     setLoading(false);
     if (error) { toast.error("Erro ao enviar pedido"); return; }
     toast.success("Pedido enviado ✅");
-    setOrderDesc(""); setNotes(""); setFee(0);
+    setOrderDesc(""); setNotes(""); setFee(0); setOrderValue(0);
     setAddress(partner?.address || "");
     setTab("list");
     loadDeliveries(pin);
