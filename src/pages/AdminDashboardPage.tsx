@@ -49,7 +49,7 @@ interface AnalyticsEvent {
   created_at: string;
 }
 
-type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates" | "deliveries" | "couriers" | "fees";
+type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates" | "deliveries" | "couriers" | "fees" | "versions" | "tiles";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -188,6 +188,8 @@ export default function AdminDashboardPage() {
           { id: "deliveries", label: "Entregas", icon: <Truck size={14} /> },
           { id: "couriers", label: "Entregadores", icon: <Truck size={14} /> },
           { id: "fees", label: "Taxas", icon: <Percent size={14} /> },
+          { id: "tiles", label: "Home", icon: <LayoutGrid size={14} /> },
+          { id: "versions", label: "Versões", icon: <GitBranch size={14} /> },
         ] as { id: Tab; label: string; icon: React.ReactNode }[]).map((t) => (
           <button
             key={t.id}
