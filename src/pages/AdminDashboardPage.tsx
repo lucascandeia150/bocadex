@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import {
   Users, MousePointerClick, Star, MessageCircle, Trash2, LogOut,
   BarChart3, TrendingUp, Clock, RefreshCw, Handshake, CheckCircle, XCircle,
-  ChefHat, Video, Link2, Package, Tag, Truck, Percent
+  ChefHat, Video, Link2, Package, Tag, Truck, Percent, GitBranch, LayoutGrid
 } from "lucide-react";
 import AdminRecipesTab from "@/components/admin/AdminRecipesTab";
 import AdminVideosTab from "@/components/admin/AdminVideosTab";
@@ -16,6 +16,8 @@ import AdminCategoriesTab from "@/components/admin/AdminCategoriesTab";
 import AdminDeliveriesTab from "@/components/admin/AdminDeliveriesTab";
 import AdminCourierApplicationsTab from "@/components/admin/AdminCourierApplicationsTab";
 import AdminFeesTab from "@/components/admin/AdminFeesTab";
+import AdminVersionsTab from "@/components/admin/AdminVersionsTab";
+import AdminHomeTilesTab from "@/components/admin/AdminHomeTilesTab";
 
 interface PartnerApplication {
   id: string;
@@ -47,7 +49,7 @@ interface AnalyticsEvent {
   created_at: string;
 }
 
-type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates" | "deliveries" | "couriers" | "fees";
+type Tab = "overview" | "feedbacks" | "clicks" | "messages" | "partners" | "products" | "categories" | "recipes" | "videos" | "affiliates" | "deliveries" | "couriers" | "fees" | "versions" | "tiles";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -186,6 +188,8 @@ export default function AdminDashboardPage() {
           { id: "deliveries", label: "Entregas", icon: <Truck size={14} /> },
           { id: "couriers", label: "Entregadores", icon: <Truck size={14} /> },
           { id: "fees", label: "Taxas", icon: <Percent size={14} /> },
+          { id: "tiles", label: "Home", icon: <LayoutGrid size={14} /> },
+          { id: "versions", label: "Versões", icon: <GitBranch size={14} /> },
         ] as { id: Tab; label: string; icon: React.ReactNode }[]).map((t) => (
           <button
             key={t.id}
@@ -312,6 +316,8 @@ export default function AdminDashboardPage() {
         {tab === "deliveries" && <AdminDeliveriesTab />}
         {tab === "couriers" && <AdminCourierApplicationsTab />}
         {tab === "fees" && <AdminFeesTab />}
+        {tab === "tiles" && <AdminHomeTilesTab />}
+        {tab === "versions" && <AdminVersionsTab />}
       </div>
     </div>
   );

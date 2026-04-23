@@ -56,6 +56,30 @@ export type Database = {
         }
         Relationships: []
       }
+      app_versions: {
+        Row: {
+          changelog: string
+          created_at: string
+          id: string
+          is_current: boolean
+          version: string
+        }
+        Insert: {
+          changelog?: string
+          created_at?: string
+          id?: string
+          is_current?: boolean
+          version: string
+        }
+        Update: {
+          changelog?: string
+          created_at?: string
+          id?: string
+          is_current?: boolean
+          version?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -266,6 +290,48 @@ export type Database = {
           id?: string
           options?: string | null
           rating?: number
+        }
+        Relationships: []
+      }
+      home_tiles: {
+        Row: {
+          created_at: string
+          display_order: number
+          emoji: string
+          fg: string
+          gradient: string
+          icon: string
+          id: string
+          is_active: boolean
+          label: string
+          route: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          emoji?: string
+          fg?: string
+          gradient?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          route: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          emoji?: string
+          fg?: string
+          gradient?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          route?: string
+          updated_at?: string
         }
         Relationships: []
       }

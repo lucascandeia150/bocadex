@@ -2,6 +2,7 @@ import { Home, UtensilsCrossed, Phone, Star, Info, Rocket, Search, Truck, Settin
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
+import { useAppVersion } from "@/hooks/useAppVersion";
 
 import {
   Sidebar,
@@ -41,6 +42,7 @@ const otherItems = [
 export function AppSidebar() {
   const { setOpenMobile, isMobile } = useSidebar();
   const navigate = useNavigate();
+  const { version, isNew, markSeen } = useAppVersion();
 
   const handleClick = () => {
     if (isMobile) setOpenMobile(false);
@@ -56,7 +58,22 @@ export function AppSidebar() {
       <SidebarContent>
         <div className="p-4 flex items-center gap-3 border-b border-sidebar-border">
           <img src={logo} alt="EscolheAí" className="w-10 h-10 rounded-xl" />
-          <span className="text-lg font-black text-sidebar-foreground">EscolheAí</span>
+          <div className="flex flex-col flex-1">
+            <span className="text-lg font-black text-sidebar-foreground leading-tight">EscolheAí</span>
+            {version && (
+              <button
+                onClick={markSeen}
+                className="flex items-center gap-1.5 text-[10px] text-muted-foreground hover:text-foreground self-start"
+              >
+                <span>v{version.version}</span>
+                {isNew && (
+                  <span className="px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold animate-pulse">
+                    NOVO
+                  </span>
+                )}
+              </button>
+            )}
+          </div>
         </div>
 
         <SidebarGroup>
