@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, MapPin, MessageCircle, Package, ShoppingBag, Store as StoreIcon } from "lucide-react";
+import { ArrowLeft, MapPin, MessageCircle, Package, ShoppingBag, Store as StoreIcon, ShoppingCart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
+import { ProductOrderModal } from "@/components/ProductOrderModal";
 
 interface Partner {
   id: string;
@@ -31,6 +32,7 @@ export default function ParceiroDetalhePage() {
   const [partner, setPartner] = useState<Partner | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [orderProduct, setOrderProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -166,15 +168,12 @@ export default function ParceiroDetalhePage() {
                     )}
                     <button
                       onClick={() =>
-                        openWhatsApp(
-                          `Olá! Tenho interesse em "${p.name}" (vi no EscolheAí) 😄`,
-                          "partner_product",
-                        )
+                        setOrderProduct(p)
                       }
                       className="w-full mt-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
                     >
-                      <MessageCircle size={16} />
-                      Pedir via WhatsApp 💬
+                      <ShoppingCart size={16} />
+                      Pedir
                     </button>
                   </div>
                 </div>
@@ -195,6 +194,21 @@ export default function ParceiroDetalhePage() {
           </button>
         </div>
       </div>
+
+      {orderProduct && (
+        <ProductOrderModal
+          open={!!orderProduct}
+          onClose={() => setOrderProduct(null)}
+          storeName={partner.business_name}
+          whatsapp={partner.whatsapp}
+          productName={orderProduct.name}
+          hasDelivery={partner.uses_app_courier}
+          onSent={() => {
+            trackAnalyticsEvent("partner_click", { partner_name: partner.business_name, source: "order_modal" });
+            trackAnalyticsEvent("whatsapp_click", { source: "order_modal" });
+          }}
+        />
+      )}
     </div>
   );
 }
