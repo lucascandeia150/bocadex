@@ -316,6 +316,8 @@ export default function AdminDashboardPage() {
         {tab === "deliveries" && <AdminDeliveriesTab />}
         {tab === "couriers" && <AdminCourierApplicationsTab />}
         {tab === "fees" && <AdminFeesTab />}
+        {tab === "tiles" && <AdminHomeTilesTab />}
+        {tab === "versions" && <AdminVersionsTab />}
       </div>
     </div>
   );
