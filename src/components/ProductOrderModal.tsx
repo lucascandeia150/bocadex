@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X, MessageCircle, Package, Bike, AlertTriangle } from "lucide-react";
 
-interface OrderModalProps {
+interface ProductOrderModalProps {
   open: boolean;
   onClose: () => void;
   storeName: string;
@@ -13,7 +13,7 @@ interface OrderModalProps {
 
 type Mode = "retirar" | "entrega";
 
-export function OrderModal({ open, onClose, storeName, whatsapp, productName, hasDelivery, onSent }: OrderModalProps) {
+export function ProductOrderModal({ open, onClose, storeName, whatsapp, productName, hasDelivery, onSent }: ProductOrderModalProps) {
   const [mode, setMode] = useState<Mode>(hasDelivery ? "entrega" : "retirar");
   const [address, setAddress] = useState("");
   const [name, setName] = useState("");
