@@ -1,7 +1,9 @@
 import logo from "@/assets/logo.png";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, Search, Compass, Briefcase } from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import { Sparkles } from "lucide-react";
 import type { Food } from "@/data/foods";
+import { useHomeTiles } from "@/hooks/useHomeTiles";
 
 interface HomePageProps {
   onChoose: (food: Food) => void;
@@ -9,41 +11,7 @@ interface HomePageProps {
 
 export default function HomePage({ onChoose }: HomePageProps) {
   const navigate = useNavigate();
-
-  const tiles = [
-    {
-      label: "Explorar lojas",
-      emoji: "🛍️",
-      icon: ShoppingBag,
-      to: "/lojas",
-      gradient: "gradient-primary",
-      fg: "text-primary-foreground",
-    },
-    {
-      label: "Buscar",
-      emoji: "🔍",
-      icon: Search,
-      to: "/buscar",
-      gradient: "gradient-secondary",
-      fg: "text-secondary-foreground",
-    },
-    {
-      label: "Descobrir",
-      emoji: "🍽️",
-      icon: Compass,
-      to: "/descobrir-hub",
-      gradient: "gradient-warm",
-      fg: "text-primary-foreground",
-    },
-    {
-      label: "Trabalhe com a gente",
-      emoji: "🤝",
-      icon: Briefcase,
-      to: "/trabalhe",
-      gradient: "bg-card border border-border",
-      fg: "text-foreground",
-    },
-  ];
+  const { tiles } = useHomeTiles();
 
   return (
     <div className="flex flex-col items-center px-5 pt-6 pb-10 relative overflow-hidden">
@@ -70,11 +38,11 @@ export default function HomePage({ onChoose }: HomePageProps) {
       {/* Navigation grid */}
       <div className="grid grid-cols-2 gap-3 w-full max-w-md relative z-10 animate-button-pop">
         {tiles.map((t) => {
-          const Icon = t.icon;
+          const Icon = (LucideIcons as Record<string, unknown>)[t.icon] as React.ComponentType<{ size?: number; className?: string }> | undefined ?? Sparkles;
           return (
             <button
-              key={t.label}
-              onClick={() => navigate(t.to)}
+              key={t.id}
+              onClick={() => navigate(t.route)}
               className={`${t.gradient} ${t.fg} aspect-square rounded-2xl shadow-lg active:scale-95 transition-transform flex flex-col items-center justify-center gap-2 p-3 hover:shadow-xl`}
             >
               <span className="text-3xl leading-none">{t.emoji}</span>
