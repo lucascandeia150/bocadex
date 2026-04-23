@@ -139,9 +139,10 @@ export default function LojasPage() {
       <div className="max-w-sm mx-auto flex flex-col gap-3">
         {/* DB Partners */}
         {filteredDbPartners.map((p, i) => (
-          <div
+          <button
             key={`db-${p.id}`}
-            className="animate-slide-up rounded-2xl border border-border p-4 bg-card shadow-sm"
+            onClick={() => navigate(`/parceiro/${p.id}`)}
+            className="animate-slide-up text-left w-full rounded-2xl border border-border p-4 bg-card shadow-sm transition-all active:scale-[0.98]"
             style={{ animationDelay: `${i * 60}ms` }}
           >
             <div className="flex items-center gap-3">
@@ -163,7 +164,7 @@ export default function LojasPage() {
               </div>
               <ChevronRight size={18} className="text-muted-foreground shrink-0" />
             </div>
-          </div>
+          </button>
         ))}
 
         {/* Hardcoded stores */}
