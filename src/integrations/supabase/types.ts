@@ -443,6 +443,36 @@ export type Database = {
           },
         ]
       }
+      ratings: {
+        Row: {
+          comment: string | null
+          courier_id: string
+          created_at: string
+          delivery_id: string
+          id: string
+          partner_id: string
+          stars: number
+        }
+        Insert: {
+          comment?: string | null
+          courier_id: string
+          created_at?: string
+          delivery_id: string
+          id?: string
+          partner_id: string
+          stars: number
+        }
+        Update: {
+          comment?: string | null
+          courier_id?: string
+          created_at?: string
+          delivery_id?: string
+          id?: string
+          partner_id?: string
+          stars?: number
+        }
+        Relationships: []
+      }
       recipes: {
         Row: {
           created_at: string
@@ -547,6 +577,13 @@ export type Database = {
           name: string
           phone: string
           vehicle: string
+        }[]
+      }
+      courier_rating_stats: {
+        Args: { _courier_id: string }
+        Returns: {
+          avg_stars: number
+          total_ratings: number
         }[]
       }
       courier_update_delivery: {
@@ -679,6 +716,29 @@ export type Database = {
           id: string
           whatsapp: string
         }[]
+      }
+      partner_rate_courier: {
+        Args: {
+          _comment?: string
+          _delivery_id: string
+          _pin: string
+          _stars: number
+        }
+        Returns: {
+          comment: string | null
+          courier_id: string
+          created_at: string
+          delivery_id: string
+          id: string
+          partner_id: string
+          stars: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ratings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {
