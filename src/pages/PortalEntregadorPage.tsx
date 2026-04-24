@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X } from "lucide-react";
+import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock } from "lucide-react";
 
 interface Courier {
   id: string;
