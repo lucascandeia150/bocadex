@@ -195,6 +195,60 @@ export default function PortalEntregadorPage() {
         💡 O pagamento da entrega é combinado diretamente com a loja.
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setTab("active")}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 ${tab === "active" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+        >
+          <Package size={12} /> Ativos
+        </button>
+        <button
+          onClick={() => setTab("history")}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 ${tab === "history" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+        >
+          <History size={12} /> Histórico
+        </button>
+      </div>
+
+      {tab === "history" && (
+        <div className="space-y-2">
+          <div className="bg-card rounded-2xl border border-border p-3 flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-muted-foreground">Sua avaliação</p>
+              <div className="flex items-center gap-1">
+                <Star size={16} className="fill-yellow-500 text-yellow-500" />
+                <p className="text-base font-black text-foreground">{stats.avg.toFixed(1)}</p>
+                <p className="text-[10px] text-muted-foreground">({stats.total})</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-muted-foreground">Entregas concluídas</p>
+              <p className="text-base font-black text-foreground">{history.length}</p>
+            </div>
+          </div>
+          {history.length === 0 && (
+            <p className="text-center text-muted-foreground text-sm py-6">Nenhuma entrega concluída ainda 📭</p>
+          )}
+          {history.map((h) => (
+            <div key={h.id} className="bg-card rounded-2xl border border-border p-3 space-y-1">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-black text-foreground truncate">{h.partner_name}</p>
+                  <p className="text-xs text-muted-foreground">{h.order_description}</p>
+                </div>
+                <span className="text-sm font-black text-primary whitespace-nowrap">R$ {Number(h.fee).toFixed(2)}</span>
+              </div>
+              <p className="text-xs text-muted-foreground flex items-start gap-1">
+                <MapPin size={10} className="mt-0.5 shrink-0" /> {h.delivery_address}
+              </p>
+              <p className="text-[10px] text-muted-foreground">{new Date(h.created_at).toLocaleString("pt-BR")}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === "active" && <>
       <div className="grid grid-cols-2 gap-2">
         <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
           <div className="flex items-center gap-2">
@@ -244,6 +298,7 @@ export default function PortalEntregadorPage() {
           ))}
         </div>
       </div>
+      </>}
     </div>
   );
 }
