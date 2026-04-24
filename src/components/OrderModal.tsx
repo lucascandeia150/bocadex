@@ -14,6 +14,7 @@ export function OrderModal({ food, open, onOpenChange }: OrderModalProps) {
     <ProductOrderModal
       open={open}
       onClose={() => onOpenChange(false)}
+      partnerId=""
       storeName="EscolheAí"
       whatsapp={ESCOLHE_AI_WHATSAPP}
       productName={food.name}
