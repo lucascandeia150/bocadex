@@ -302,3 +302,18 @@ function NumField({ label, value, onChange }: { label: string; value: number; on
     </div>
   );
 }
+
+function StatBox({ label, count, color }: { label: string; count: number; color: "blue" | "orange" | "green" | "primary" }) {
+  const colorMap = {
+    blue: "bg-blue-500/10 border-blue-500/30 text-blue-600",
+    orange: "bg-orange-500/10 border-orange-500/30 text-orange-600",
+    green: "bg-green-500/10 border-green-500/30 text-green-600",
+    primary: "bg-primary/10 border-primary/30 text-primary",
+  };
+  return (
+    <div className={`border rounded-xl p-2 text-center ${colorMap[color]}`}>
+      <p className="text-lg font-black text-foreground">{count}</p>
+      <p className="text-[9px] font-bold uppercase tracking-wide">{label}</p>
+    </div>
+  );
+}
