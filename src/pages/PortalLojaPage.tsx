@@ -181,6 +181,15 @@ export default function PortalLojaPage() {
         </div>
       )}
 
+      {deliveries.length > 0 && (
+        <div className="grid grid-cols-4 gap-2">
+          <StatBox label="Aguard." count={deliveries.filter(d => d.status === "disponivel").length} color="blue" />
+          <StatBox label="Aceitos" count={deliveries.filter(d => d.status === "aceita" || d.status === "em_andamento").length} color="orange" />
+          <StatBox label="Final." count={deliveries.filter(d => d.status === "concluida").length} color="green" />
+          <StatBox label="Total" count={deliveries.length} color="primary" />
+        </div>
+      )}
+
       <div className="flex gap-2">
         <button
           onClick={() => setTab("list")}
@@ -290,6 +299,21 @@ function NumField({ label, value, onChange }: { label: string; value: number; on
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full bg-muted rounded-xl px-3 py-2 text-sm mt-1"
       />
+    </div>
+  );
+}
+
+function StatBox({ label, count, color }: { label: string; count: number; color: "blue" | "orange" | "green" | "primary" }) {
+  const colorMap = {
+    blue: "bg-blue-500/10 border-blue-500/30 text-blue-600",
+    orange: "bg-orange-500/10 border-orange-500/30 text-orange-600",
+    green: "bg-green-500/10 border-green-500/30 text-green-600",
+    primary: "bg-primary/10 border-primary/30 text-primary",
+  };
+  return (
+    <div className={`border rounded-xl p-2 text-center ${colorMap[color]}`}>
+      <p className="text-lg font-black text-foreground">{count}</p>
+      <p className="text-[9px] font-bold uppercase tracking-wide">{label}</p>
     </div>
   );
 }

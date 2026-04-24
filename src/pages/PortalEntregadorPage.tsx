@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X } from "lucide-react";
+import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock } from "lucide-react";
 
 interface Courier {
   id: string;
@@ -156,6 +156,23 @@ export default function PortalEntregadorPage() {
         💡 O pagamento da entrega é combinado diretamente com a loja.
       </div>
 
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
+          <div className="flex items-center gap-2">
+            <Package size={16} className="text-orange-600" />
+            <p className="text-[10px] font-bold text-orange-600 uppercase">Disponíveis</p>
+          </div>
+          <p className="text-2xl font-black text-foreground mt-1">{deliveries.filter((d) => d.status === "disponivel").length}</p>
+        </div>
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3">
+          <div className="flex items-center gap-2">
+            <Clock size={16} className="text-blue-600" />
+            <p className="text-[10px] font-bold text-blue-600 uppercase">Em andamento</p>
+          </div>
+          <p className="text-2xl font-black text-foreground mt-1">{deliveries.filter((d) => d.courier_id === courier.id && d.status !== "concluida").length}</p>
+        </div>
+      </div>
+
       {mine.length > 0 && (
         <div>
           <h2 className="text-xs font-black text-foreground mb-2">🚚 Em andamento ({mine.length})</h2>
@@ -206,23 +223,27 @@ function DeliveryCard({
   accepted?: boolean;
 }) {
   const wa = d.partner_whatsapp?.replace(/\D/g, "");
+  const borderClass = accepted
+    ? "border-blue-500/40 bg-blue-500/5"
+    : "border-orange-500/40 bg-orange-500/5";
   return (
-    <div className="bg-card rounded-2xl border border-border p-3 space-y-2">
+    <div className={`rounded-2xl border-2 p-3 space-y-2 ${borderClass}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <p className="text-sm font-black text-foreground truncate">{d.partner_name}</p>
           <p className="text-xs text-muted-foreground">{d.order_description}</p>
         </div>
-        <span className="text-sm font-black text-primary whitespace-nowrap">R$ {Number(d.fee).toFixed(2)}</span>
+        <span className="text-base font-black text-primary whitespace-nowrap bg-primary/10 px-2 py-1 rounded-lg">R$ {Number(d.fee).toFixed(2)}</span>
       </div>
-      <p className="text-xs text-foreground flex items-start gap-1">
-        <MapPin size={12} className="mt-0.5 shrink-0" /> {d.delivery_address}
-      </p>
+      <div className="bg-card border border-border rounded-xl p-2 flex items-start gap-2">
+        <MapPin size={14} className="mt-0.5 shrink-0 text-primary" />
+        <p className="text-xs font-bold text-foreground leading-snug">{d.delivery_address}</p>
+      </div>
       {d.notes && <p className="text-xs text-muted-foreground italic">"{d.notes}"</p>}
       <div className="flex flex-wrap gap-2 pt-1">
         {!accepted && onAccept && (
-          <button onClick={onAccept} className="flex-1 bg-primary text-primary-foreground font-bold text-xs py-2 rounded-lg active:scale-95">
-            <Check size={12} className="inline mr-1" /> Aceitar
+          <button onClick={onAccept} className="flex-1 bg-primary text-primary-foreground font-black text-sm py-3 rounded-xl active:scale-95 shadow-lg shadow-primary/20">
+            <Check size={16} className="inline mr-1" /> Aceitar
           </button>
         )}
         {accepted && wa && (
@@ -230,19 +251,19 @@ function DeliveryCard({
             href={`https://wa.me/${wa}?text=${encodeURIComponent("Olá! Sou o entregador do pedido " + d.order_description)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-secondary text-secondary-foreground font-bold text-xs py-2 rounded-lg active:scale-95 text-center"
+            className="flex-1 bg-green-500 text-white font-black text-sm py-3 rounded-xl active:scale-95 text-center shadow-lg shadow-green-500/20"
           >
-            <MessageCircle size={12} className="inline mr-1" /> Falar com a loja
+            <MessageCircle size={16} className="inline mr-1" /> Falar com a loja
           </a>
         )}
         {accepted && onFinish && (
-          <button onClick={onFinish} className="flex-1 bg-primary text-primary-foreground font-bold text-xs py-2 rounded-lg active:scale-95">
-            <Check size={12} className="inline mr-1" /> Finalizar
+          <button onClick={onFinish} className="flex-1 bg-primary text-primary-foreground font-black text-sm py-3 rounded-xl active:scale-95 shadow-lg shadow-primary/20">
+            <Check size={16} className="inline mr-1" /> Finalizar
           </button>
         )}
         {accepted && onRelease && (
-          <button onClick={onRelease} className="px-3 bg-muted text-muted-foreground font-bold text-xs py-2 rounded-lg active:scale-95">
-            <X size={12} />
+          <button onClick={onRelease} className="px-4 bg-destructive/10 text-destructive font-black text-sm py-3 rounded-xl active:scale-95">
+            <X size={16} />
           </button>
         )}
       </div>
