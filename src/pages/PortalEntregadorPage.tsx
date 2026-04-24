@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock } from "lucide-react";
+import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock, History, Star } from "lucide-react";
 
 interface Courier {
   id: string;
@@ -33,6 +33,9 @@ export default function PortalEntregadorPage() {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
   const [newCount, setNewCount] = useState(0);
+  const [tab, setTab] = useState<"active" | "history">("active");
+  const [history, setHistory] = useState<any[]>([]);
+  const [stats, setStats] = useState<{ avg: number; total: number }>({ avg: 0, total: 0 });
 
   useEffect(() => {
     const saved = localStorage.getItem(PIN_KEY);
