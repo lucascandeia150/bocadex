@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut } from "lucide-react";
+import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X } from "lucide-react";
 
 interface Partner {
   id: string;
@@ -39,6 +39,10 @@ export default function PortalLojaPage() {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<"list" | "new">("list");
+  const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
+  const [rateModal, setRateModal] = useState<Delivery | null>(null);
+  const [stars, setStars] = useState(5);
+  const [comment, setComment] = useState("");
 
   // form
   const [orderDesc, setOrderDesc] = useState("");
