@@ -81,6 +81,42 @@ export default function PortalEntregadorPage() {
 
   const refresh = () => loadDeliveries(pin, true);
 
+  const loadHistory = async (courierId: string) => {
+    const { data } = await supabase
+      .from("deliveries")
+      .select("id, partner_name, order_description, delivery_address, fee, status, created_at")
+      .eq("courier_id", courierId)
+      .eq("status", "concluida")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    setHistory(data || []);
+
+    const { data: s } = await supabase.rpc("courier_rating_stats", { _courier_id: courierId });
+    if (s && s.length > 0) {
+      setStats({ avg: Number(s[0].avg_stars) || 0, total: Number(s[0].total_ratings) || 0 });
+    }
+  };
+
+  // Realtime: novos pedidos disponíveis e mudanças
+  useEffect(() => {
+    if (!courier || !pin) return;
+    const channel = supabase
+      .channel("courier-deliveries")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "deliveries" }, (payload) => {
+        const d: any = payload.new;
+        if (d.status === "disponivel") {
+          toast.success("📦 Novo pedido disponível!");
+          loadDeliveries(pin, false);
+        }
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "deliveries" }, () => {
+        loadDeliveries(pin, false);
+      })
+      .subscribe();
+    loadHistory(courier.id);
+    return () => { supabase.removeChannel(channel); };
+  }, [courier, pin]);
+
   const logout = () => {
     localStorage.removeItem(PIN_KEY);
     setCourier(null);
