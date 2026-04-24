@@ -181,6 +181,15 @@ export default function PortalLojaPage() {
         </div>
       )}
 
+      {deliveries.length > 0 && (
+        <div className="grid grid-cols-4 gap-2">
+          <StatBox label="Aguard." count={deliveries.filter(d => d.status === "disponivel").length} color="blue" />
+          <StatBox label="Aceitos" count={deliveries.filter(d => d.status === "aceita" || d.status === "em_andamento").length} color="orange" />
+          <StatBox label="Final." count={deliveries.filter(d => d.status === "concluida").length} color="green" />
+          <StatBox label="Total" count={deliveries.length} color="primary" />
+        </div>
+      )}
+
       <div className="flex gap-2">
         <button
           onClick={() => setTab("list")}
