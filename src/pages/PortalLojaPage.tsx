@@ -89,7 +89,48 @@ export default function PortalLojaPage() {
     const { data, error } = await supabase.rpc("partner_list_deliveries", { _pin: code });
     setLoading(false);
     if (error) { toast.error("Erro ao carregar pedidos"); return; }
-    setDeliveries((data as Delivery[]) || []);
+    const list = (data as Delivery[]) || [];
+    setDeliveries(list);
+    // load ratings already done
+    const ids = list.filter((d) => d.status === "concluida").map((d) => d.id);
+    if (ids.length > 0) {
+      const { data: rs } = await supabase.from("ratings").select("delivery_id").in("delivery_id", ids);
+      setRatedIds(new Set((rs || []).map((r: any) => r.delivery_id)));
+    }
+  };
+
+  // Realtime: atualizar pedidos da loja
+  useEffect(() => {
+    if (!partner || !pin) return;
+    const channel = supabase
+      .channel("partner-deliveries")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "deliveries", filter: `partner_id=eq.${partner.id}` }, (payload: any) => {
+        const oldStatus = payload.old?.status;
+        const newStatus = payload.new?.status;
+        if (oldStatus !== newStatus) {
+          if (newStatus === "em_andamento") toast.success("🛵 Entregador a caminho!");
+          else if (newStatus === "concluida") toast.success("✅ Pedido finalizado!");
+        }
+        loadDeliveries(pin);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [partner, pin]);
+
+  const submitRating = async () => {
+    if (!rateModal) return;
+    const { error } = await supabase.rpc("partner_rate_courier", {
+      _pin: pin,
+      _delivery_id: rateModal.id,
+      _stars: stars,
+      _comment: comment.trim(),
+    });
+    if (error) { toast.error(error.message || "Erro ao avaliar"); return; }
+    toast.success("Avaliação enviada ⭐");
+    setRatedIds((prev) => new Set([...prev, rateModal.id]));
+    setRateModal(null);
+    setStars(5);
+    setComment("");
   };
 
   const logout = () => {
