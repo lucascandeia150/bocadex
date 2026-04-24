@@ -309,9 +309,58 @@ export default function PortalLojaPage() {
                 {d.notes && <p className="text-xs text-muted-foreground italic">"{d.notes}"</p>}
                 <p className="text-xs text-foreground">Taxa: <b>R$ {Number(d.fee).toFixed(2)}</b></p>
                 <p className="text-[10px] text-muted-foreground">{new Date(d.created_at).toLocaleString("pt-BR")}</p>
+                {d.status === "concluida" && d.courier_id && (
+                  ratedIds.has(d.id) ? (
+                    <div className="flex items-center gap-1 text-xs text-green-600 font-bold">
+                      <Star size={12} className="fill-green-600" /> Avaliado
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => { setRateModal(d); setStars(5); setComment(""); }}
+                      className="w-full mt-1 bg-yellow-500/10 border border-yellow-500/30 text-yellow-700 font-bold text-xs py-2 rounded-xl active:scale-95 flex items-center justify-center gap-1"
+                    >
+                      <Star size={12} /> Avaliar entregador
+                    </button>
+                  )
+                )}
               </div>
             );
           })}
+        </div>
+      )}
+
+      {rateModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={() => setRateModal(null)}>
+          <div className="bg-card rounded-2xl border border-border p-5 w-full max-w-md space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-black text-foreground">Avaliar entregador</h3>
+              <button onClick={() => setRateModal(null)} className="p-1 rounded-lg bg-muted">
+                <X size={14} />
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground">{rateModal.order_description}</p>
+            <div className="flex justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button key={n} onClick={() => setStars(n)} className="active:scale-90 transition-transform">
+                  <Star size={36} className={n <= stars ? "fill-yellow-500 text-yellow-500" : "text-muted-foreground"} />
+                </button>
+              ))}
+            </div>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Comentário (opcional)"
+              maxLength={300}
+              rows={3}
+              className="w-full bg-muted rounded-xl px-3 py-2 text-sm resize-none"
+            />
+            <button
+              onClick={submitRating}
+              className="w-full bg-primary text-primary-foreground font-black py-3 rounded-xl active:scale-95"
+            >
+              Enviar avaliação
+            </button>
+          </div>
         </div>
       )}
     </div>
