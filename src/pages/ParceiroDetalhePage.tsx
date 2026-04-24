@@ -199,9 +199,11 @@ export default function ParceiroDetalhePage() {
         <ProductOrderModal
           open={!!orderProduct}
           onClose={() => setOrderProduct(null)}
+          partnerId={partner.id}
           storeName={partner.business_name}
           whatsapp={partner.whatsapp}
           productName={orderProduct.name}
+          unitPrice={orderProduct.price_min}
           hasDelivery={partner.uses_app_courier}
           onSent={() => {
             trackAnalyticsEvent("partner_click", { partner_name: partner.business_name, source: "order_modal" });
