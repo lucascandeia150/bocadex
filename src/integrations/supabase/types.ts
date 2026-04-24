@@ -611,6 +611,38 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      customer_create_delivery: {
+        Args: {
+          _customer_name: string
+          _customer_phone: string
+          _delivery_address: string
+          _order_description: string
+          _order_value?: number
+          _partner_id: string
+        }
+        Returns: {
+          app_fee: number
+          courier_id: string | null
+          courier_payout: number
+          created_at: string
+          delivery_address: string
+          fee: number
+          id: string
+          notes: string | null
+          order_description: string
+          order_value: number
+          partner_id: string | null
+          partner_name: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deliveries"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       generate_access_pin: { Args: never; Returns: string }
       has_role: {
         Args: {
