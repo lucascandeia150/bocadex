@@ -156,6 +156,23 @@ export default function PortalEntregadorPage() {
         💡 O pagamento da entrega é combinado diretamente com a loja.
       </div>
 
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
+          <div className="flex items-center gap-2">
+            <Package size={16} className="text-orange-600" />
+            <p className="text-[10px] font-bold text-orange-600 uppercase">Disponíveis</p>
+          </div>
+          <p className="text-2xl font-black text-foreground mt-1">{deliveries.filter((d) => d.status === "disponivel").length}</p>
+        </div>
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3">
+          <div className="flex items-center gap-2">
+            <Clock size={16} className="text-blue-600" />
+            <p className="text-[10px] font-bold text-blue-600 uppercase">Em andamento</p>
+          </div>
+          <p className="text-2xl font-black text-foreground mt-1">{deliveries.filter((d) => d.courier_id === courier.id && d.status !== "concluida").length}</p>
+        </div>
+      </div>
+
       {mine.length > 0 && (
         <div>
           <h2 className="text-xs font-black text-foreground mb-2">🚚 Em andamento ({mine.length})</h2>
