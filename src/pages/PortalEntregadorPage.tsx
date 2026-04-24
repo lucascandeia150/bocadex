@@ -223,23 +223,27 @@ function DeliveryCard({
   accepted?: boolean;
 }) {
   const wa = d.partner_whatsapp?.replace(/\D/g, "");
+  const borderClass = accepted
+    ? "border-blue-500/40 bg-blue-500/5"
+    : "border-orange-500/40 bg-orange-500/5";
   return (
-    <div className="bg-card rounded-2xl border border-border p-3 space-y-2">
+    <div className={`rounded-2xl border-2 p-3 space-y-2 ${borderClass}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <p className="text-sm font-black text-foreground truncate">{d.partner_name}</p>
           <p className="text-xs text-muted-foreground">{d.order_description}</p>
         </div>
-        <span className="text-sm font-black text-primary whitespace-nowrap">R$ {Number(d.fee).toFixed(2)}</span>
+        <span className="text-base font-black text-primary whitespace-nowrap bg-primary/10 px-2 py-1 rounded-lg">R$ {Number(d.fee).toFixed(2)}</span>
       </div>
-      <p className="text-xs text-foreground flex items-start gap-1">
-        <MapPin size={12} className="mt-0.5 shrink-0" /> {d.delivery_address}
-      </p>
+      <div className="bg-card border border-border rounded-xl p-2 flex items-start gap-2">
+        <MapPin size={14} className="mt-0.5 shrink-0 text-primary" />
+        <p className="text-xs font-bold text-foreground leading-snug">{d.delivery_address}</p>
+      </div>
       {d.notes && <p className="text-xs text-muted-foreground italic">"{d.notes}"</p>}
       <div className="flex flex-wrap gap-2 pt-1">
         {!accepted && onAccept && (
-          <button onClick={onAccept} className="flex-1 bg-primary text-primary-foreground font-bold text-xs py-2 rounded-lg active:scale-95">
-            <Check size={12} className="inline mr-1" /> Aceitar
+          <button onClick={onAccept} className="flex-1 bg-primary text-primary-foreground font-black text-sm py-3 rounded-xl active:scale-95 shadow-lg shadow-primary/20">
+            <Check size={16} className="inline mr-1" /> Aceitar
           </button>
         )}
         {accepted && wa && (
@@ -247,19 +251,19 @@ function DeliveryCard({
             href={`https://wa.me/${wa}?text=${encodeURIComponent("Olá! Sou o entregador do pedido " + d.order_description)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-secondary text-secondary-foreground font-bold text-xs py-2 rounded-lg active:scale-95 text-center"
+            className="flex-1 bg-green-500 text-white font-black text-sm py-3 rounded-xl active:scale-95 text-center shadow-lg shadow-green-500/20"
           >
-            <MessageCircle size={12} className="inline mr-1" /> Falar com a loja
+            <MessageCircle size={16} className="inline mr-1" /> Falar com a loja
           </a>
         )}
         {accepted && onFinish && (
-          <button onClick={onFinish} className="flex-1 bg-primary text-primary-foreground font-bold text-xs py-2 rounded-lg active:scale-95">
-            <Check size={12} className="inline mr-1" /> Finalizar
+          <button onClick={onFinish} className="flex-1 bg-primary text-primary-foreground font-black text-sm py-3 rounded-xl active:scale-95 shadow-lg shadow-primary/20">
+            <Check size={16} className="inline mr-1" /> Finalizar
           </button>
         )}
         {accepted && onRelease && (
-          <button onClick={onRelease} className="px-3 bg-muted text-muted-foreground font-bold text-xs py-2 rounded-lg active:scale-95">
-            <X size={12} />
+          <button onClick={onRelease} className="px-4 bg-destructive/10 text-destructive font-black text-sm py-3 rounded-xl active:scale-95">
+            <X size={16} />
           </button>
         )}
       </div>
