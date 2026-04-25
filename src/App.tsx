@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { CartProvider } from "@/contexts/CartContext";
 import AppLayout from "./pages/AppLayout";
 import NotFound from "./pages/NotFound";
 
@@ -13,11 +14,13 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/*" element={<AppLayout />} />
-        </Routes>
-      </BrowserRouter>
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/*" element={<AppLayout />} />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
