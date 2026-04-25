@@ -269,7 +269,7 @@ export default function LojaDetalhePage() {
                     </div>
                     <div className="flex flex-col gap-3">
                       {grouped[cat].map((product, i) => (
-                        <ProductCard key={product.id} product={product} store={store} openWhatsApp={openWhatsApp} index={i} />
+                        <ProductCard key={product.id} product={product} store={store} openWhatsApp={openWhatsApp} onOrder={setOrderProduct} index={i} />
                       ))}
                     </div>
                   </div>
