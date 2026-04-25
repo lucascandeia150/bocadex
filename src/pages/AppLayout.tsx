@@ -3,6 +3,7 @@ import { InstallPrompt } from "@/components/InstallPrompt";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { AdBanner } from "@/components/AdBanner";
 import { AppSidebar } from "@/components/AppSidebar";
+import { CartFab } from "@/components/CartFab";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useHistory } from "@/hooks/useHistory";
 import type { Food } from "@/data/foods";
