@@ -278,7 +278,7 @@ export default function LojaDetalhePage() {
             ) : (
               <div className="flex flex-col gap-3">
                 {store.products.map((product, i) => (
-                  <ProductCard key={product.id} product={product} store={store} openWhatsApp={openWhatsApp} index={i} />
+                  <ProductCard key={product.id} product={product} store={store} openWhatsApp={openWhatsApp} onOrder={setOrderProduct} index={i} />
                 ))}
               </div>
             );
