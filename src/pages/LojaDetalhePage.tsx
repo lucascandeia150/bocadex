@@ -1,5 +1,6 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { stores, getProductsByCategory, productCategoryLabels, ProductCategory } from "@/data/stores";
 import { ArrowLeft, MessageCircle, Star, Flame, ShoppingBag, X, ChevronLeft, ChevronRight, Camera, MapPin, ShoppingCart } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
@@ -111,6 +112,45 @@ export default function LojaDetalhePage() {
   const [fullscreenIdx, setFullscreenIdx] = useState<number | null>(null);
   const [orderProduct, setOrderProduct] = useState<StoreProduct | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [dbCheck, setDbCheck] = useState<"idle" | "checking" | "found" | "notfound">(
+    store ? "found" : "idle"
+  );
+
+  // UUID heurístico — IDs do banco são UUIDs; legacy são slugs.
+  const isUuid = !!id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+  useEffect(() => {
+    if (store || !id) return;
+    if (!isUuid) {
+      setDbCheck("notfound");
+      return;
+    }
+    setDbCheck("checking");
+    supabase
+      .from("partner_applications")
+      .select("id")
+      .eq("id", id)
+      .eq("status", "approved")
+      .eq("is_active", true)
+      .maybeSingle()
+      .then(({ data }) => {
+        setDbCheck(data ? "found" : "notfound");
+      });
+  }, [id, store, isUuid]);
+
+  // Redireciona parceiros do banco para a página dedicada
+  if (!store && dbCheck === "found" && id) {
+    return <Navigate to={`/parceiro/${id}`} replace />;
+  }
+
+  if (!store && (dbCheck === "checking" || dbCheck === "idle")) {
+    return (
+      <div className="px-4 pt-12 text-center animate-slide-up">
+        <span className="text-4xl block mb-3">⏳</span>
+        <p className="text-muted-foreground text-sm">Carregando loja…</p>
+      </div>
+    );
+  }
 
   if (!store) {
     return (
