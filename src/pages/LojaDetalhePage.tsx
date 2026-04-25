@@ -109,6 +109,7 @@ export default function LojaDetalhePage() {
   const navigate = useNavigate();
   const store = stores.find((s) => s.id === id);
   const [fullscreenIdx, setFullscreenIdx] = useState<number | null>(null);
+  const [orderProduct, setOrderProduct] = useState<StoreProduct | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   if (!store) {
