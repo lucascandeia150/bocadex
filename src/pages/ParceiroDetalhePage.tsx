@@ -167,13 +167,18 @@ export default function ParceiroDetalhePage() {
                       </p>
                     )}
                     <button
-                      onClick={() =>
-                        setOrderProduct(p)
-                      }
+                      onClick={() => setOrderProduct(p)}
                       className="w-full mt-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
                     >
                       <ShoppingCart size={16} />
-                      Pedir
+                      Pedir agora
+                    </button>
+                    <button
+                      onClick={() => openWhatsApp(`Olá! Vi a ${partner.business_name} no EscolheAí e me interessei pelo ${p.name} 😄`, "product_card")}
+                      className="w-full mt-2 bg-background border-2 border-border hover:bg-accent text-foreground font-bold py-2.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-xs"
+                    >
+                      <MessageCircle size={14} />
+                      Falar com a loja
                     </button>
                   </div>
                 </div>
