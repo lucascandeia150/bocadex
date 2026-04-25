@@ -90,7 +90,7 @@ function ProductCard({ product, store, openWhatsApp, onOrder, index }: { product
           className="w-full mt-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
         >
           <ShoppingCart size={16} />
-          Pedir agora
+          🛒 Pedir agora
         </button>
         <button
           onClick={() => openWhatsApp(product.whatsappMessage)}
