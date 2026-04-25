@@ -59,7 +59,7 @@ const productImageMap: Record<string, string> = {
 
 import type { Store, StoreProduct } from "@/data/stores";
 
-function ProductCard({ product, store, openWhatsApp, index }: { product: StoreProduct; store: Store; openWhatsApp: (msg: string) => void; index: number }) {
+function ProductCard({ product, store, openWhatsApp, onOrder, index }: { product: StoreProduct; store: Store; openWhatsApp: (msg: string) => void; onOrder: (product: StoreProduct) => void; index: number }) {
   const productImg = product.image || productImageMap[product.id];
   return (
     <div
@@ -86,11 +86,18 @@ function ProductCard({ product, store, openWhatsApp, index }: { product: StorePr
           </div>
         </div>
         <button
-          onClick={() => openWhatsApp(product.whatsappMessage)}
+          onClick={() => onOrder(product)}
           className="w-full mt-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
         >
-          <MessageCircle size={16} />
-          Pedir via WhatsApp 💬
+          <ShoppingCart size={16} />
+          Pedir agora
+        </button>
+        <button
+          onClick={() => openWhatsApp(product.whatsappMessage)}
+          className="w-full mt-2 bg-background border-2 border-border hover:bg-accent text-foreground font-bold py-2.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-xs"
+        >
+          <MessageCircle size={14} />
+          Falar com a loja
         </button>
       </div>
     </div>
