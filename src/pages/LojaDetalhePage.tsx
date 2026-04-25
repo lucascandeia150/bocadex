@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import { stores, getProductsByCategory, productCategoryLabels, ProductCategory } from "@/data/stores";
-import { ArrowLeft, MessageCircle, Star, Flame, ShoppingBag, X, ChevronLeft, ChevronRight, Camera, MapPin } from "lucide-react";
+import { ArrowLeft, MessageCircle, Star, Flame, ShoppingBag, X, ChevronLeft, ChevronRight, Camera, MapPin, ShoppingCart } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
+import { ProductOrderModal } from "@/components/ProductOrderModal";
 
 import teteBanner from "@/assets/partner/tete-banner.jpg";
 import teteFlocos from "@/assets/partner/tete-flocos.jpg";
@@ -58,7 +59,7 @@ const productImageMap: Record<string, string> = {
 
 import type { Store, StoreProduct } from "@/data/stores";
 
-function ProductCard({ product, store, openWhatsApp, index }: { product: StoreProduct; store: Store; openWhatsApp: (msg: string) => void; index: number }) {
+function ProductCard({ product, store, openWhatsApp, onOrder, index }: { product: StoreProduct; store: Store; openWhatsApp: (msg: string) => void; onOrder: (product: StoreProduct) => void; index: number }) {
   const productImg = product.image || productImageMap[product.id];
   return (
     <div
@@ -85,11 +86,18 @@ function ProductCard({ product, store, openWhatsApp, index }: { product: StorePr
           </div>
         </div>
         <button
-          onClick={() => openWhatsApp(product.whatsappMessage)}
+          onClick={() => onOrder(product)}
           className="w-full mt-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
         >
-          <MessageCircle size={16} />
-          Pedir via WhatsApp 💬
+          <ShoppingCart size={16} />
+          Pedir agora
+        </button>
+        <button
+          onClick={() => openWhatsApp(product.whatsappMessage)}
+          className="w-full mt-2 bg-background border-2 border-border hover:bg-accent text-foreground font-bold py-2.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-xs"
+        >
+          <MessageCircle size={14} />
+          Falar com a loja
         </button>
       </div>
     </div>
@@ -101,6 +109,7 @@ export default function LojaDetalhePage() {
   const navigate = useNavigate();
   const store = stores.find((s) => s.id === id);
   const [fullscreenIdx, setFullscreenIdx] = useState<number | null>(null);
+  const [orderProduct, setOrderProduct] = useState<StoreProduct | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   if (!store) {
@@ -260,7 +269,7 @@ export default function LojaDetalhePage() {
                     </div>
                     <div className="flex flex-col gap-3">
                       {grouped[cat].map((product, i) => (
-                        <ProductCard key={product.id} product={product} store={store} openWhatsApp={openWhatsApp} index={i} />
+                        <ProductCard key={product.id} product={product} store={store} openWhatsApp={openWhatsApp} onOrder={setOrderProduct} index={i} />
                       ))}
                     </div>
                   </div>
@@ -269,7 +278,7 @@ export default function LojaDetalhePage() {
             ) : (
               <div className="flex flex-col gap-3">
                 {store.products.map((product, i) => (
-                  <ProductCard key={product.id} product={product} store={store} openWhatsApp={openWhatsApp} index={i} />
+                  <ProductCard key={product.id} product={product} store={store} openWhatsApp={openWhatsApp} onOrder={setOrderProduct} index={i} />
                 ))}
               </div>
             );
@@ -372,6 +381,24 @@ export default function LojaDetalhePage() {
             {fullscreenIdx + 1} / {gallery.length}
           </p>
         </div>
+      )}
+
+      {orderProduct && (
+        <ProductOrderModal
+          open={!!orderProduct}
+          onClose={() => setOrderProduct(null)}
+          partnerId="legacy"
+          storeName={store.name}
+          whatsapp={store.whatsapp}
+          productName={orderProduct.name}
+          unitPrice={orderProduct.priceMin}
+          hasDelivery={false}
+          onSent={() => {
+            trackEvent("click_pedir_produto", { store: store.id });
+            trackAnalyticsEvent("partner_click", { partner_name: store.name, source: "order_modal" });
+            trackAnalyticsEvent("whatsapp_click", { source: "order_modal" });
+          }}
+        />
       )}
     </div>
   );
