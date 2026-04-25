@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import { stores, getProductsByCategory, productCategoryLabels, ProductCategory } from "@/data/stores";
-import { ArrowLeft, MessageCircle, Star, Flame, ShoppingBag, X, ChevronLeft, ChevronRight, Camera, MapPin } from "lucide-react";
+import { ArrowLeft, MessageCircle, Star, Flame, ShoppingBag, X, ChevronLeft, ChevronRight, Camera, MapPin, ShoppingCart } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
+import { ProductOrderModal } from "@/components/ProductOrderModal";
 
 import teteBanner from "@/assets/partner/tete-banner.jpg";
 import teteFlocos from "@/assets/partner/tete-flocos.jpg";
