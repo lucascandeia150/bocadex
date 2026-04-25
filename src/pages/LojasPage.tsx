@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Store, StoreCategory, StoreProduct, stores, categoryLabels, getAllCategories } from "@/data/stores";
-import { ShoppingBag, MessageCircle, MapPin, ChevronRight, ArrowLeft, Store as StoreIcon, Flame, Handshake } from "lucide-react";
+import { StoreCategory, stores, categoryLabels, getAllCategories } from "@/data/stores";
+import { ShoppingBag, Flame, Handshake } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { trackEvent } from "@/lib/analytics";
 import { BackButton } from "@/components/BackButton";
+import { CardParceiro } from "@/components/CardParceiro";
 
 interface DbPartner {
   id: string;
@@ -21,7 +21,6 @@ interface DbPartner {
 export default function LojasPage() {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<StoreCategory | "todas">("todas");
-  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [dbPartners, setDbPartners] = useState<DbPartner[]>([]);
   const categories = getAllCategories();
 
@@ -61,10 +60,6 @@ export default function LojasPage() {
 
   const hasResults = filteredStores.length > 0 || filteredDbPartners.length > 0;
 
-  if (selectedStore) {
-    return <StoreDetail store={selectedStore} onBack={() => setSelectedStore(null)} />;
-  }
-
   return (
     <div className="px-4 pt-6 pb-10">
       <BackButton />
@@ -81,34 +76,21 @@ export default function LojasPage() {
             <Flame size={14} className="text-secondary" /> Parceiros em destaque
           </h2>
           <div className="flex flex-col gap-3">
-            {highlightedStores.map((store) => (
-              <button
+            {highlightedStores.map((store, i) => (
+              <CardParceiro
                 key={store.id}
-                onClick={() => setSelectedStore(store)}
-                className="text-left w-full"
-              >
-                <div className="rounded-2xl border-2 border-secondary/40 p-4 bg-card shadow-md transition-all active:scale-[0.98]">
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <Flame size={12} className="text-secondary" />
-                    <span className="text-[10px] font-black text-secondary uppercase tracking-wide">Destaque</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {store.logo ? (
-                      <img src={store.logo} alt={store.name} className="w-12 h-12 rounded-xl object-cover border border-border shrink-0" loading="lazy" />
-                    ) : (
-                      <span className="text-4xl">{store.emoji}</span>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-bold text-foreground truncate">{store.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{store.description?.split("\n")[0]}</p>
-                      {store.offer && (
-                        <p className="text-[11px] font-bold text-secondary mt-1">{store.offer}</p>
-                      )}
-                    </div>
-                    <ChevronRight size={18} className="text-secondary shrink-0" />
-                  </div>
-                </div>
-              </button>
+                index={i}
+                variant="highlight"
+                partner={{
+                  id: store.id,
+                  name: store.name,
+                  description: store.description,
+                  logo: store.logo,
+                  emoji: store.emoji,
+                  offer: store.offer,
+                  highlighted: true,
+                }}
+              />
             ))}
           </div>
         </div>
@@ -139,66 +121,34 @@ export default function LojasPage() {
       <div className="max-w-sm mx-auto flex flex-col gap-3">
         {/* DB Partners */}
         {filteredDbPartners.map((p, i) => (
-          <button
+          <CardParceiro
             key={`db-${p.id}`}
-            onClick={() => navigate(`/parceiro/${p.id}`)}
-            className="animate-slide-up text-left w-full rounded-2xl border border-border p-4 bg-card shadow-sm transition-all active:scale-[0.98]"
-            style={{ animationDelay: `${i * 60}ms` }}
-          >
-            <div className="flex items-center gap-3">
-              {p.logo_url ? (
-                <img src={p.logo_url} alt={p.business_name} className="w-12 h-12 rounded-xl object-cover border border-border shrink-0" loading="lazy" />
-              ) : (
-                <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center border border-border shrink-0">
-                  <StoreIcon size={20} className="text-muted-foreground" />
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <h3 className="text-base font-bold text-foreground truncate">{p.business_name}</h3>
-                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{p.description}</p>
-                {p.address && (
-                  <div className="flex items-center gap-1 mt-1.5 text-[11px] text-primary font-semibold">
-                    <MapPin size={11} /> {p.business_type}
-                  </div>
-                )}
-              </div>
-              <ChevronRight size={18} className="text-muted-foreground shrink-0" />
-            </div>
-          </button>
+            index={i}
+            partner={{
+              id: p.id,
+              business_name: p.business_name,
+              description: p.description,
+              logo_url: p.logo_url,
+              business_type: p.business_type,
+            }}
+          />
         ))}
 
         {/* Hardcoded stores */}
         {filteredStores.map((store, i) => (
-          <button
+          <CardParceiro
             key={store.id}
-            onClick={() => setSelectedStore(store)}
-            className="animate-slide-up text-left w-full"
-            style={{ animationDelay: `${(i + filteredDbPartners.length) * 60}ms` }}
-          >
-            <div className={`rounded-2xl border p-4 bg-card shadow-sm transition-all active:scale-[0.98] ${store.highlighted ? "border-secondary/50 ring-1 ring-secondary/20" : "border-border"}`}>
-              {store.highlighted && (
-                <span className="inline-block mb-2 text-[10px] font-black bg-secondary/15 text-secondary px-2.5 py-0.5 rounded-full">
-                  🔥 PARCEIRO DESTAQUE
-                </span>
-              )}
-              <div className="flex items-center gap-3">
-                {store.logo ? (
-                  <img src={store.logo} alt={store.name} className="w-12 h-12 rounded-xl object-cover border border-border shrink-0" loading="lazy" />
-                ) : (
-                  <span className="text-4xl">{store.emoji}</span>
-                )}
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-bold text-foreground truncate">{store.name}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">{store.description?.split("\n")[0]}</p>
-                  <div className="flex items-center gap-1 mt-1.5 text-[11px] text-primary font-semibold">
-                    <MapPin size={11} />
-                    {categoryLabels[store.category].emoji} {categoryLabels[store.category].label}
-                  </div>
-                </div>
-                <ChevronRight size={18} className="text-muted-foreground shrink-0" />
-              </div>
-            </div>
-          </button>
+            index={i + filteredDbPartners.length}
+            partner={{
+              id: store.id,
+              name: store.name,
+              description: store.description,
+              logo: store.logo,
+              emoji: store.emoji,
+              category: `${categoryLabels[store.category].emoji} ${categoryLabels[store.category].label}`,
+              highlighted: store.highlighted,
+            }}
+          />
         ))}
 
         {/* Empty category message */}
@@ -239,68 +189,3 @@ function CategoryChip({ label, emoji, active, onClick }: { label: string; emoji:
   );
 }
 
-function StoreDetail({ store, onBack }: { store: Store; onBack: () => void }) {
-  const openWhatsApp = (product: StoreProduct) => {
-    trackEvent("click_pedir_produto", { store: store.id, product: product.id });
-    const message = encodeURIComponent(product.whatsappMessage);
-    window.open(`https://wa.me/${store.whatsapp}?text=${message}`, "_blank");
-  };
-
-  return (
-    <div className="px-4 pt-6 pb-24">
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 text-sm font-semibold text-primary mb-4 active:scale-95 transition-transform"
-      >
-        <ArrowLeft size={16} /> Voltar
-      </button>
-
-      <div className="max-w-sm mx-auto animate-slide-up">
-        <div className="text-center mb-5">
-          <span className="text-6xl block mb-2">{store.emoji}</span>
-          <h1 className="text-xl font-black text-foreground">{store.name}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{store.description}</p>
-          {store.highlighted && (
-            <span className="inline-block mt-2 text-xs font-bold bg-secondary/15 text-secondary px-3 py-1 rounded-full">
-              🔥 Parceiro local
-            </span>
-          )}
-        </div>
-
-        <h2 className="text-base font-bold text-foreground mb-3">Produtos disponíveis</h2>
-
-        <div className="flex flex-col gap-3">
-          {store.products.map((product) => (
-            <div key={product.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-              {product.image && (
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-40 object-cover rounded-xl mb-3"
-                  loading="lazy"
-                />
-              )}
-              <div className="flex items-start gap-3">
-                <span className="text-4xl">{product.emoji}</span>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-bold text-foreground">{product.name}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">{product.description}</p>
-                  <p className="text-sm font-semibold text-primary mt-1">
-                    R${product.priceMin} - R${product.priceMax}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => openWhatsApp(product)}
-                className="w-full mt-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
-              >
-                <MessageCircle size={16} />
-                Falar com a loja 💬
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
