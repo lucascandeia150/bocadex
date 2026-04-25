@@ -382,6 +382,24 @@ export default function LojaDetalhePage() {
           </p>
         </div>
       )}
+
+      {orderProduct && (
+        <ProductOrderModal
+          open={!!orderProduct}
+          onClose={() => setOrderProduct(null)}
+          partnerId="legacy"
+          storeName={store.name}
+          whatsapp={store.whatsapp}
+          productName={orderProduct.name}
+          unitPrice={orderProduct.priceMin}
+          hasDelivery={false}
+          onSent={() => {
+            trackEvent("click_pedir_produto", { store: store.id });
+            trackAnalyticsEvent("partner_click", { partner_name: store.name, source: "order_modal" });
+            trackAnalyticsEvent("whatsapp_click", { source: "order_modal" });
+          }}
+        />
+      )}
     </div>
   );
 }
