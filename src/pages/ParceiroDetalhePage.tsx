@@ -208,11 +208,11 @@ export default function ParceiroDetalhePage() {
           storeName={partner.business_name}
           whatsapp={partner.whatsapp}
           productName={orderProduct.name}
+          productId={orderProduct.id}
           unitPrice={orderProduct.price_min}
           hasDelivery={partner.uses_app_courier}
           onSent={() => {
-            trackAnalyticsEvent("partner_click", { partner_name: partner.business_name, source: "order_modal" });
-            trackAnalyticsEvent("whatsapp_click", { source: "order_modal" });
+            trackAnalyticsEvent("partner_click", { partner_name: partner.business_name, source: "add_to_cart" });
           }}
         />
       )}
