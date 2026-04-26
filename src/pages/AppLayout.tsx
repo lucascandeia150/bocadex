@@ -4,6 +4,7 @@ import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { AdBanner } from "@/components/AdBanner";
 import { AppSidebar } from "@/components/AppSidebar";
 import { CartFab } from "@/components/CartFab";
+import { BottomNav } from "@/components/BottomNav";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useHistory } from "@/hooks/useHistory";
 import type { Food } from "@/data/foods";
@@ -30,6 +31,8 @@ import AdminDashboardPage from "./AdminDashboardPage";
 import DescobrirHubPage from "./DescobrirHubPage";
 import TrabalhePage from "./TrabalhePage";
 import CarrinhoPage from "./CarrinhoPage";
+import PedidosPage from "./PedidosPage";
+import PerfilPage from "./PerfilPage";
 import NotFound from "./NotFound";
 
 export default function AppLayout() {
@@ -47,12 +50,14 @@ export default function AppLayout() {
             <span className="text-base font-black text-foreground ml-auto">EscolheAí</span>
           </header>
 
-          <main className="flex-1 pb-8">
+          <main className="flex-1 pb-24">
             <Routes>
               <Route path="/" element={<HomePage onChoose={handleChoose} />} />
               <Route path="/lojas" element={<LojasPage />} />
               <Route path="/loja/:id" element={<LojaDetalhePage />} />
               <Route path="/carrinho" element={<CarrinhoPage />} />
+              <Route path="/pedidos" element={<PedidosPage />} />
+              <Route path="/perfil" element={<PerfilPage />} />
               <Route path="/parceiro/:id" element={<ParceiroDetalhePage />} />
               <Route path="/descobrir-hub" element={<DescobrirHubPage />} />
               <Route path="/trabalhe" element={<TrabalhePage />} />
@@ -76,7 +81,7 @@ export default function AppLayout() {
             </Routes>
           </main>
 
-          <div className="fixed bottom-0 left-0 right-0 z-40 max-w-lg mx-auto">
+          <div className="fixed bottom-14 left-0 right-0 z-40 max-w-lg mx-auto">
             <AdBanner placement="bottom" />
           </div>
         </div>
@@ -84,6 +89,7 @@ export default function AppLayout() {
       <CartFab />
       <WhatsAppFloat />
       <InstallPrompt />
+      <BottomNav />
     </SidebarProvider>
   );
 }
