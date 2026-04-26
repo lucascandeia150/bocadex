@@ -104,12 +104,18 @@ export default function PortalLojaPage() {
     if (!partner || !pin) return;
     const channel = supabase
       .channel("partner-deliveries")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "deliveries", filter: `partner_id=eq.${partner.id}` }, () => {
+        toast.success("📦 Novo pedido recebido!");
+        loadDeliveries(pin);
+      })
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "deliveries", filter: `partner_id=eq.${partner.id}` }, (payload: any) => {
         const oldStatus = payload.old?.status;
         const newStatus = payload.new?.status;
         if (oldStatus !== newStatus) {
-          if (newStatus === "em_andamento") toast.success("🛵 Entregador a caminho!");
-          else if (newStatus === "concluida") toast.success("✅ Pedido finalizado!");
+          if (newStatus === "aceita") toast.success("✅ Pedido aceito pelo entregador");
+          else if (newStatus === "em_andamento") toast.success("🛵 Saiu para entrega!");
+          else if (newStatus === "concluida") toast.success("🎉 Pedido finalizado!");
+          else if (newStatus === "cancelada") toast.error("❌ Pedido cancelado");
         }
         loadDeliveries(pin);
       })

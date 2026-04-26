@@ -105,11 +105,18 @@ export default function PortalEntregadorPage() {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "deliveries" }, (payload) => {
         const d: any = payload.new;
         if (d.status === "disponivel") {
-          toast.success("📦 Novo pedido disponível!");
+          toast.success("🚀 Nova entrega disponível!");
           loadDeliveries(pin, false);
         }
       })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "deliveries" }, () => {
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "deliveries" }, (payload: any) => {
+        const oldStatus = payload.old?.status;
+        const newStatus = payload.new?.status;
+        const mine = payload.new?.courier_id === courier.id;
+        if (mine && oldStatus !== newStatus) {
+          if (newStatus === "concluida") toast.success("🎉 Entrega finalizada!");
+          else if (newStatus === "cancelada") toast.error("❌ Pedido cancelado");
+        }
         loadDeliveries(pin, false);
       })
       .subscribe();
