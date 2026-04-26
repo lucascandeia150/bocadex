@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Percent, RefreshCw, Store } from "lucide-react";
+import { Percent, RefreshCw, Store, Save } from "lucide-react";
+import { toast } from "sonner";
 
 interface Delivery {
   id: string;
@@ -24,19 +25,52 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
 export default function AdminFeesTab() {
   const [loading, setLoading] = useState(false);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
+  const [feePercent, setFeePercent] = useState<number>(8);
+  const [settingsId, setSettingsId] = useState<string | null>(null);
+  const [savingPct, setSavingPct] = useState(false);
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("deliveries")
-      .select("id, partner_id, partner_name, order_description, order_value, app_fee, status, created_at")
-      .gt("app_fee", 0)
-      .order("created_at", { ascending: false });
-    setDeliveries((data as Delivery[]) || []);
+    const [delRes, setRes] = await Promise.all([
+      supabase
+        .from("deliveries")
+        .select("id, partner_id, partner_name, order_description, order_value, app_fee, status, created_at")
+        .gt("app_fee", 0)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("delivery_settings")
+        .select("id, app_fee_percent")
+        .limit(1)
+        .maybeSingle(),
+    ]);
+    setDeliveries((delRes.data as Delivery[]) || []);
+    if (setRes.data) {
+      setSettingsId((setRes.data as { id: string }).id);
+      setFeePercent(Number((setRes.data as { app_fee_percent: number }).app_fee_percent ?? 8));
+    }
     setLoading(false);
   };
 
   useEffect(() => { load(); }, []);
+
+  const savePercent = async () => {
+    if (!settingsId) {
+      toast.error("Configurações não encontradas");
+      return;
+    }
+    if (feePercent < 0 || feePercent > 100) {
+      toast.error("Porcentagem deve estar entre 0 e 100");
+      return;
+    }
+    setSavingPct(true);
+    const { error } = await supabase
+      .from("delivery_settings")
+      .update({ app_fee_percent: feePercent })
+      .eq("id", settingsId);
+    setSavingPct(false);
+    if (error) { toast.error("Erro ao salvar"); return; }
+    toast.success(`Taxa salva: ${feePercent}%`);
+  };
 
   const totals = useMemo(() => {
     const totalOrders = deliveries.reduce((a, d) => a + Number(d.order_value || 0), 0);
@@ -64,11 +98,38 @@ export default function AdminFeesTab() {
     <div className="space-y-3 animate-slide-up">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-black text-foreground flex items-center gap-2">
-          <Percent size={16} className="text-primary" /> Taxas de entrega (8%)
+          <Percent size={16} className="text-primary" /> Taxas de entrega ({feePercent}%)
         </h3>
         <button onClick={load} className="p-2 rounded-xl bg-muted">
           <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
         </button>
+      </div>
+
+      {/* Configuração da porcentagem */}
+      <div className="bg-card border border-border rounded-2xl p-3 space-y-2">
+        <p className="text-xs font-bold text-foreground">Porcentagem da taxa do app</p>
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            min={0}
+            max={100}
+            step={0.5}
+            value={feePercent}
+            onChange={(e) => setFeePercent(Number(e.target.value))}
+            className="flex-1 bg-muted rounded-xl px-3 py-2 text-sm font-bold"
+          />
+          <span className="text-sm font-black text-muted-foreground">%</span>
+          <button
+            onClick={savePercent}
+            disabled={savingPct}
+            className="flex items-center gap-1 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold disabled:opacity-60"
+          >
+            <Save size={12} /> {savingPct ? "..." : "Salvar"}
+          </button>
+        </div>
+        <p className="text-[10px] text-muted-foreground">
+          Aplicada automaticamente em pedidos de lojas que usam entregador do app.
+        </p>
       </div>
 
       <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-xs text-foreground">
@@ -124,7 +185,7 @@ export default function AdminFeesTab() {
               </div>
               <div className="flex items-center justify-between text-xs pt-1">
                 <span className="text-muted-foreground">Pedido: <b className="text-foreground">R$ {Number(d.order_value).toFixed(2)}</b></span>
-                <span className="text-primary font-black">Taxa 8%: R$ {Number(d.app_fee).toFixed(2)}</span>
+                <span className="text-primary font-black">Taxa: R$ {Number(d.app_fee).toFixed(2)}</span>
               </div>
               <p className="text-[10px] text-muted-foreground">{new Date(d.created_at).toLocaleString("pt-BR")}</p>
             </div>
