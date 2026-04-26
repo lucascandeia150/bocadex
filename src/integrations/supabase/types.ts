@@ -189,6 +189,7 @@ export type Database = {
           courier_payout: number
           created_at: string
           delivery_address: string
+          delivery_code: string | null
           fee: number
           id: string
           notes: string | null
@@ -205,6 +206,7 @@ export type Database = {
           courier_payout?: number
           created_at?: string
           delivery_address: string
+          delivery_code?: string | null
           fee?: number
           id?: string
           notes?: string | null
@@ -221,6 +223,7 @@ export type Database = {
           courier_payout?: number
           created_at?: string
           delivery_address?: string
+          delivery_code?: string | null
           fee?: number
           id?: string
           notes?: string | null
@@ -565,6 +568,7 @@ export type Database = {
           courier_id: string
           created_at: string
           delivery_address: string
+          delivery_code: string
           fee: number
           id: string
           notes: string
@@ -593,13 +597,19 @@ export type Database = {
         }[]
       }
       courier_update_delivery: {
-        Args: { _action: string; _delivery_id: string; _pin: string }
+        Args: {
+          _action: string
+          _code?: string
+          _delivery_id: string
+          _pin: string
+        }
         Returns: {
           app_fee: number
           courier_id: string | null
           courier_payout: number
           created_at: string
           delivery_address: string
+          delivery_code: string | null
           fee: number
           id: string
           notes: string | null
@@ -632,6 +642,7 @@ export type Database = {
           courier_payout: number
           created_at: string
           delivery_address: string
+          delivery_code: string | null
           fee: number
           id: string
           notes: string | null
@@ -650,6 +661,7 @@ export type Database = {
         }
       }
       generate_access_pin: { Args: never; Returns: string }
+      generate_delivery_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -672,6 +684,7 @@ export type Database = {
               courier_payout: number
               created_at: string
               delivery_address: string
+              delivery_code: string | null
               fee: number
               id: string
               notes: string | null
@@ -704,6 +717,7 @@ export type Database = {
               courier_payout: number
               created_at: string
               delivery_address: string
+              delivery_code: string | null
               fee: number
               id: string
               notes: string | null
@@ -729,6 +743,7 @@ export type Database = {
           courier_payout: number
           created_at: string
           delivery_address: string
+          delivery_code: string | null
           fee: number
           id: string
           notes: string | null

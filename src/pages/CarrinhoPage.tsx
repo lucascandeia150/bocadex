@@ -116,10 +116,17 @@ export default function CarrinhoPage() {
     }
 
     toast.success("Pedido enviado! Procurando entregador...");
-    openWa(buildWaMessage("✅ Pedido criado no app — entregador a caminho."));
+    const code = (data as { delivery_code?: string } | null)?.delivery_code;
+    const extra = code
+      ? `✅ Pedido criado no app — entregador a caminho.\n🔐 Código de entrega: ${code}\n(informe ao entregador na entrega)`
+      : "✅ Pedido criado no app — entregador a caminho.";
+    openWa(buildWaMessage(extra));
+    if (code) {
+      toast.success(`🔐 Seu código de entrega: ${code}`, { duration: 8000 });
+    }
     trackAnalyticsEvent("partner_click", { partner_name: partnerName ?? "", source: "cart_order" });
     clear();
-    navigate(-1);
+    navigate("/pedidos?tab=historico");
   };
 
   if (items.length === 0) {

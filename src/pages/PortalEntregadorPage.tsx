@@ -22,6 +22,7 @@ interface Delivery {
   courier_id: string | null;
   partner_whatsapp: string | null;
   created_at: string;
+  delivery_code: string | null;
 }
 
 const PIN_KEY = "escolheai_courier_pin";
@@ -36,6 +37,9 @@ export default function PortalEntregadorPage() {
   const [tab, setTab] = useState<"active" | "history">("active");
   const [history, setHistory] = useState<any[]>([]);
   const [stats, setStats] = useState<{ avg: number; total: number }>({ avg: 0, total: 0 });
+  const [finishingId, setFinishingId] = useState<string | null>(null);
+  const [codeInput, setCodeInput] = useState("");
+  const [finishLoading, setFinishLoading] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem(PIN_KEY);
@@ -131,14 +135,38 @@ export default function PortalEntregadorPage() {
     setDeliveries([]);
   };
 
-  const action = async (id: string, act: "accept" | "finish" | "release") => {
+  const action = async (id: string, act: "accept" | "release") => {
     const { error } = await supabase.rpc("courier_update_delivery", {
       _pin: pin,
       _delivery_id: id,
       _action: act,
     });
     if (error) { toast.error(error.message || "Erro"); return; }
-    toast.success(act === "accept" ? "Aceito ✅" : act === "finish" ? "Finalizado ✅" : "Liberado");
+    toast.success(act === "accept" ? "Aceito ✅" : "Liberado");
+    loadDeliveries(pin, true);
+  };
+
+  const confirmFinish = async () => {
+    if (!finishingId) return;
+    if (codeInput.length !== 4) {
+      toast.error("Digite o código de 4 dígitos");
+      return;
+    }
+    setFinishLoading(true);
+    const { error } = await supabase.rpc("courier_update_delivery", {
+      _pin: pin,
+      _delivery_id: finishingId,
+      _action: "finish",
+      _code: codeInput,
+    });
+    setFinishLoading(false);
+    if (error) {
+      toast.error(error.message?.includes("Código") ? "Código inválido" : (error.message || "Erro"));
+      return;
+    }
+    toast.success("Entrega confirmada ✅");
+    setFinishingId(null);
+    setCodeInput("");
     loadDeliveries(pin, true);
   };
 
@@ -281,7 +309,7 @@ export default function PortalEntregadorPage() {
               <DeliveryCard
                 key={d.id}
                 d={d}
-                onFinish={() => action(d.id, "finish")}
+                onFinish={() => { setFinishingId(d.id); setCodeInput(""); }}
                 onRelease={() => action(d.id, "release")}
                 accepted
               />
@@ -306,6 +334,44 @@ export default function PortalEntregadorPage() {
         </div>
       </div>
       </>}
+
+      {finishingId && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-4" onClick={() => !finishLoading && setFinishingId(null)}>
+          <div className="bg-card rounded-2xl border border-border p-5 w-full max-w-sm space-y-4 animate-slide-up" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center space-y-1">
+              <div className="text-3xl">🔐</div>
+              <h3 className="text-base font-black text-foreground">Confirmar entrega</h3>
+              <p className="text-xs text-muted-foreground">Peça ao cliente o código de 4 dígitos.</p>
+            </div>
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={4}
+              value={codeInput}
+              onChange={(e) => setCodeInput(e.target.value.replace(/\D/g, ""))}
+              placeholder="0000"
+              autoFocus
+              className="w-full text-center text-3xl font-black tracking-[0.5em] bg-muted rounded-xl px-3 py-3 text-foreground"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => setFinishingId(null)}
+                disabled={finishLoading}
+                className="flex-1 bg-muted text-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmFinish}
+                disabled={finishLoading || codeInput.length !== 4}
+                className="flex-1 bg-primary text-primary-foreground font-black py-3 rounded-xl active:scale-95 disabled:opacity-50"
+              >
+                {finishLoading ? "Validando..." : "Confirmar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
