@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Save, Trash2, Eye, EyeOff, Pencil, Upload, Store, CheckCircle, XCircle, Image } from "lucide-react";
+import { Plus, Save, Trash2, Eye, EyeOff, Pencil, Upload, Store, CheckCircle, XCircle, Image, Star } from "lucide-react";
 
 interface Partner {
   id: string;
@@ -15,6 +15,7 @@ interface Partner {
   logo_url: string | null;
   status: string;
   is_active: boolean;
+  is_featured?: boolean;
   uses_app_courier?: boolean;
   access_pin?: string | null;
   created_at: string;
@@ -112,6 +113,16 @@ export default function AdminPartnersTab({ partners, onRefresh }: Props) {
     const { error } = await supabase.from("partner_applications").update({ is_active: !currentActive }).eq("id", id);
     if (error) { toast.error("Erro ao atualizar"); return; }
     toast.success(!currentActive ? "Ativado ✅" : "Desativado");
+    onRefresh();
+  };
+
+  const toggleFeatured = async (id: string, currentFeatured: boolean) => {
+    const { error } = await supabase
+      .from("partner_applications")
+      .update({ is_featured: !currentFeatured })
+      .eq("id", id);
+    if (error) { toast.error("Erro ao atualizar"); return; }
+    toast.success(!currentFeatured ? "Em destaque ⭐" : "Removido do destaque");
     onRefresh();
   };
 
@@ -230,6 +241,11 @@ export default function AdminPartnersTab({ partners, onRefresh }: Props) {
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${p.is_active ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
                 {p.is_active ? "Ativo" : "Inativo"}
               </span>
+              {p.is_featured && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 flex items-center gap-1">
+                  <Star size={10} fill="currentColor" /> Destaque
+                </span>
+              )}
             </div>
           </div>
 
@@ -239,6 +255,17 @@ export default function AdminPartnersTab({ partners, onRefresh }: Props) {
             </button>
             <button onClick={() => toggleActive(p.id, p.is_active)} className="p-2 rounded-xl bg-muted text-muted-foreground active:scale-90 transition-transform">
               {p.is_active ? <EyeOff size={14} /> : <Eye size={14} />}
+            </button>
+            <button
+              onClick={() => toggleFeatured(p.id, !!p.is_featured)}
+              title={p.is_featured ? "Remover destaque" : "Marcar como destaque"}
+              className={`p-2 rounded-xl active:scale-90 transition-transform ${
+                p.is_featured
+                  ? "bg-yellow-100 text-yellow-700"
+                  : "bg-muted text-muted-foreground"
+              }`}
+            >
+              <Star size={14} fill={p.is_featured ? "currentColor" : "none"} />
             </button>
             {p.status === "pending" && (
               <>
