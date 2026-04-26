@@ -4,6 +4,7 @@ import * as LucideIcons from "lucide-react";
 import { Sparkles } from "lucide-react";
 import type { Food } from "@/data/foods";
 import { useHomeTiles } from "@/hooks/useHomeTiles";
+import { HomeConversion } from "@/components/HomeConversion";
 
 interface HomePageProps {
   onChoose: (food: Food) => void;
@@ -34,6 +35,9 @@ export default function HomePage({ onChoose }: HomePageProps) {
       <p className="text-muted-foreground text-xs text-center max-w-xs mb-6 animate-text-reveal-delayed relative z-10">
         Descubra onde comer, beber e pedir. Tudo num só lugar! 🍽️
       </p>
+
+      {/* Seções de conversão (promoções, lojas abertas, pedidos rápidos) */}
+      <HomeConversion />
 
       {/* Navigation grid */}
       <div className="grid grid-cols-2 gap-3 w-full max-w-md relative z-10 animate-button-pop">
