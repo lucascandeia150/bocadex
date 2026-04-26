@@ -87,7 +87,7 @@ export default function CarrinhoPage() {
     }
 
     setSubmitting(true);
-    const { error } = await supabase.rpc("customer_create_delivery", {
+    const { data, error } = await supabase.rpc("customer_create_delivery", {
       _partner_id: partnerId,
       _order_description: buildOrderDescription(),
       _delivery_address: address.trim(),
@@ -100,6 +100,19 @@ export default function CarrinhoPage() {
     if (error) {
       toast.error(error.message || "Não foi possível criar o pedido");
       return;
+    }
+
+    // Salva ID do pedido localmente para mostrar no histórico
+    try {
+      const newId = (data as { id?: string } | null)?.id;
+      if (newId) {
+        const raw = localStorage.getItem("escolheai_order_ids");
+        const ids: string[] = raw ? JSON.parse(raw) : [];
+        ids.unshift(newId);
+        localStorage.setItem("escolheai_order_ids", JSON.stringify(ids.slice(0, 50)));
+      }
+    } catch {
+      // ignore
     }
 
     toast.success("Pedido enviado! Procurando entregador...");
