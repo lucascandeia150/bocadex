@@ -39,10 +39,10 @@ interface Partner {
 }
 
 const STATUSES = [
-  { id: "disponivel", label: "Disponível", color: "bg-blue-500/10 text-blue-600" },
-  { id: "aceita", label: "Aceita", color: "bg-yellow-500/10 text-yellow-600" },
-  { id: "em_andamento", label: "Em andamento", color: "bg-orange-500/10 text-orange-600" },
-  { id: "concluida", label: "Concluída", color: "bg-green-500/10 text-green-600" },
+  { id: "disponivel", label: "Aguardando", color: "bg-blue-500/10 text-blue-600" },
+  { id: "aceita", label: "Em preparo", color: "bg-yellow-500/10 text-yellow-600" },
+  { id: "em_andamento", label: "Saiu para entrega", color: "bg-orange-500/10 text-orange-600" },
+  { id: "concluida", label: "Finalizado", color: "bg-green-500/10 text-green-600" },
   { id: "cancelada", label: "Cancelada", color: "bg-red-500/10 text-red-600" },
 ];
 

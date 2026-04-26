@@ -250,18 +250,21 @@ export type Database = {
       }
       delivery_settings: {
         Row: {
+          app_fee_percent: number
           default_courier_payout: number
           default_fee: number
           id: string
           updated_at: string
         }
         Insert: {
+          app_fee_percent?: number
           default_courier_payout?: number
           default_fee?: number
           id?: string
           updated_at?: string
         }
         Update: {
+          app_fee_percent?: number
           default_courier_payout?: number
           default_fee?: number
           id?: string
@@ -346,6 +349,7 @@ export type Database = {
           id: string
           images: string[] | null
           is_active: boolean
+          is_featured: boolean
           logo_url: string | null
           promotions: string | null
           status: string
@@ -362,6 +366,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_active?: boolean
+          is_featured?: boolean
           logo_url?: string | null
           promotions?: string | null
           status?: string
@@ -378,6 +383,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_active?: boolean
+          is_featured?: boolean
           logo_url?: string | null
           promotions?: string | null
           status?: string

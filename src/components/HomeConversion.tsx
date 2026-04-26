@@ -14,6 +14,7 @@ interface Partner {
   whatsapp: string;
   promotions: string | null;
   uses_app_courier: boolean;
+  is_featured?: boolean;
 }
 
 interface Product {
@@ -46,9 +47,10 @@ export function HomeConversion() {
     (async () => {
       const { data: pData } = await supabase
         .from("partner_applications")
-        .select("id,business_name,business_type,description,logo_url,whatsapp,promotions,uses_app_courier")
+        .select("id,business_name,business_type,description,logo_url,whatsapp,promotions,uses_app_courier,is_featured")
         .eq("status", "approved")
         .eq("is_active", true)
+        .order("is_featured", { ascending: false })
         .limit(20);
 
       const { data: prodData } = await supabase
