@@ -13,6 +13,7 @@ interface OrderRow {
   status: string;
   created_at: string;
   delivery_address: string;
+  delivery_code: string | null;
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; color: string }> = {
@@ -66,7 +67,7 @@ export default function PedidosPage() {
     (async () => {
       let query = supabase
         .from("deliveries")
-        .select("id, partner_name, order_description, order_value, status, created_at, delivery_address")
+        .select("id, partner_name, order_description, order_value, status, created_at, delivery_address, delivery_code")
         .order("created_at", { ascending: false })
         .limit(30);
       if (ids.length > 0) {
@@ -212,6 +213,13 @@ export default function PedidosPage() {
                     <p className="text-xs font-black text-primary mt-2">
                       Total: R${Number(o.order_value).toFixed(2)}
                     </p>
+                  )}
+                  {o.delivery_code && o.status !== "concluida" && o.status !== "completed" && o.status !== "delivered" && o.status !== "cancelled" && o.status !== "cancelada" && (
+                    <div className="mt-3 rounded-xl bg-primary/10 border-2 border-dashed border-primary/40 p-3 text-center">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase">🔐 Código de entrega</p>
+                      <p className="text-2xl font-black text-primary tracking-[0.4em] mt-1">{o.delivery_code}</p>
+                      <p className="text-[10px] text-muted-foreground mt-1">Informe ao entregador para finalizar</p>
+                    </div>
                   )}
                 </div>
               );
