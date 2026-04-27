@@ -1,9 +1,7 @@
 import logo from "@/assets/logo.png";
 import { useNavigate } from "react-router-dom";
-import * as LucideIcons from "lucide-react";
-import { Sparkles, Store, Briefcase, ChevronRight } from "lucide-react";
+import { Store, Briefcase, ChevronRight } from "lucide-react";
 import type { Food } from "@/data/foods";
-import { useHomeTiles } from "@/hooks/useHomeTiles";
 import { HomeConversion } from "@/components/HomeConversion";
 
 interface HomePageProps {
@@ -12,7 +10,6 @@ interface HomePageProps {
 
 export default function HomePage({ onChoose }: HomePageProps) {
   const navigate = useNavigate();
-  const { tiles } = useHomeTiles();
 
   return (
     <div className="flex flex-col items-center px-5 pt-6 pb-10 relative overflow-hidden">
@@ -37,31 +34,31 @@ export default function HomePage({ onChoose }: HomePageProps) {
       </p>
 
       {/* CTAs principais estilo iFood */}
-      <div className="grid grid-cols-2 gap-3 w-full max-w-md mb-6 relative z-10 animate-button-pop">
+      <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-8 relative z-10 animate-button-pop">
         <button
           onClick={() => navigate("/lojas")}
-          className="group bg-gradient-to-br from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] text-white rounded-2xl p-4 shadow-lg active:scale-95 transition-all flex flex-col items-start gap-2 text-left overflow-hidden relative"
+          className="group bg-gradient-to-br from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 active:scale-95 active:translate-y-0 transition-all duration-200 flex flex-col items-start gap-3 text-left overflow-hidden relative"
         >
-          <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
-            <Store size={20} strokeWidth={2.5} />
+          <div className="w-11 h-11 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center group-active:scale-90 transition-transform">
+            <Store size={22} strokeWidth={2.5} />
           </div>
           <div>
             <p className="text-sm font-black leading-tight">Explorar lojas</p>
-            <p className="text-[10px] opacity-90 font-semibold flex items-center gap-0.5">
+            <p className="text-[11px] opacity-90 font-semibold flex items-center gap-0.5 mt-0.5">
               Ver todas <ChevronRight size={10} />
             </p>
           </div>
         </button>
         <button
           onClick={() => navigate("/trabalhe")}
-          className="group bg-gradient-to-br from-[hsl(24,95%,53%)] to-[hsl(24,95%,45%)] text-white rounded-2xl p-4 shadow-lg active:scale-95 transition-all flex flex-col items-start gap-2 text-left overflow-hidden relative"
+          className="group bg-gradient-to-br from-[hsl(24,95%,53%)] to-[hsl(24,95%,45%)] text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 active:scale-95 active:translate-y-0 transition-all duration-200 flex flex-col items-start gap-3 text-left overflow-hidden relative"
         >
-          <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
-            <Briefcase size={20} strokeWidth={2.5} />
+          <div className="w-11 h-11 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center group-active:scale-90 transition-transform">
+            <Briefcase size={22} strokeWidth={2.5} />
           </div>
           <div>
             <p className="text-sm font-black leading-tight">Trabalhe com a gente</p>
-            <p className="text-[10px] opacity-90 font-semibold flex items-center gap-0.5">
+            <p className="text-[11px] opacity-90 font-semibold flex items-center gap-0.5 mt-0.5">
               Saiba mais <ChevronRight size={10} />
             </p>
           </div>
@@ -70,34 +67,6 @@ export default function HomePage({ onChoose }: HomePageProps) {
 
       {/* Seções de conversão (promoções, lojas abertas, pedidos rápidos) */}
       <HomeConversion />
-
-      {/* Navigation grid (atalhos) */}
-      {tiles.length > 0 && (
-        <div className="w-full max-w-md mt-2 mb-3 relative z-10">
-          <h2 className="text-sm font-black text-foreground mb-3 px-1 flex items-center gap-2">
-            <Sparkles size={14} className="text-primary" />
-            Atalhos
-          </h2>
-        </div>
-      )}
-      <div className="grid grid-cols-2 gap-3 w-full max-w-md relative z-10 animate-button-pop">
-        {tiles.map((t) => {
-          const Icon = (LucideIcons as Record<string, unknown>)[t.icon] as React.ComponentType<{ size?: number; className?: string }> | undefined ?? Sparkles;
-          return (
-            <button
-              key={t.id}
-              onClick={() => navigate(t.route)}
-              className={`${t.gradient} ${t.fg} aspect-square rounded-2xl shadow-lg active:scale-95 transition-transform flex flex-col items-center justify-center gap-2 p-3 hover:shadow-xl`}
-            >
-              <span className="text-3xl leading-none">{t.emoji}</span>
-              <Icon size={22} className="opacity-90" />
-              <span className="text-sm font-black text-center leading-tight px-1">
-                {t.label}
-              </span>
-            </button>
-          );
-        })}
-      </div>
 
       {/* Footer */}
       <p className="text-[10px] text-muted-foreground text-center mt-8 animate-fade-in-late relative z-10">
