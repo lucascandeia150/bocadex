@@ -750,6 +750,33 @@ export type Database = {
         }
         Returns: boolean
       }
+      partner_advance_delivery_status: {
+        Args: { _delivery_id: string; _next_status: string; _pin: string }
+        Returns: {
+          app_fee: number
+          courier_id: string | null
+          courier_payout: number
+          created_at: string
+          delivery_address: string
+          delivery_code: string | null
+          fee: number
+          id: string
+          notes: string | null
+          order_description: string
+          order_value: number
+          partner_id: string | null
+          partner_name: string
+          payment_id: string | null
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deliveries"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       partner_create_delivery:
         | {
             Args: {
