@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Flame, Store as StoreIcon, Zap, ShoppingCart, ChevronRight } from "lucide-react";
+import { Flame, Store as StoreIcon, Zap, Plus, ChevronRight, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CardParceiro } from "@/components/CardParceiro";
 import { ProductOrderModal } from "@/components/ProductOrderModal";
@@ -34,6 +34,34 @@ function priceLabel(p: Product) {
     return `R$${Number(p.price_min).toFixed(2)} – R$${Number(p.price_max).toFixed(2)}`;
   if (p.price_min) return `R$${Number(p.price_min).toFixed(2)}`;
   return "Consulte";
+}
+
+// Gradiente placeholder consistente baseado no id do produto
+const PLACEHOLDER_GRADIENTS = [
+  "from-[hsl(142,70%,55%)] to-[hsl(142,70%,40%)]",
+  "from-[hsl(24,95%,60%)] to-[hsl(24,95%,48%)]",
+  "from-[hsl(142,60%,60%)] to-[hsl(180,60%,45%)]",
+  "from-[hsl(24,90%,60%)] to-[hsl(0,80%,55%)]",
+  "from-[hsl(45,90%,60%)] to-[hsl(24,95%,53%)]",
+  "from-[hsl(160,60%,50%)] to-[hsl(142,70%,40%)]",
+];
+function gradientFor(id: string) {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return PLACEHOLDER_GRADIENTS[h % PLACEHOLDER_GRADIENTS.length];
+}
+function emojiFor(p: { name: string; description?: string }) {
+  const text = `${p.name} ${p.description || ""}`.toLowerCase();
+  if (/pizz/.test(text)) return "🍕";
+  if (/burg|hamb|x-/.test(text)) return "🍔";
+  if (/sush|jap|temaki/.test(text)) return "🍣";
+  if (/açaí|acai|sorvete|gelado/.test(text)) return "🍧";
+  if (/bebid|cerveja|drink|suco|refri|caip/.test(text)) return "🥤";
+  if (/doce|bolo|brigad|torta|sobremesa/.test(text)) return "🍰";
+  if (/salgad|coxinh|past|esfih/.test(text)) return "🥟";
+  if (/marmit|prato|comida|almoço|jantar/.test(text)) return "🍱";
+  if (/café|cafe|capp/.test(text)) return "☕";
+  return "🍽️";
 }
 
 export function HomeConversion() {
