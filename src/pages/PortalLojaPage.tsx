@@ -538,8 +538,16 @@ export default function PortalLojaPage() {
           )}
           {deliveries.map((d) => {
             const s = STATUS_LABEL[d.status] || STATUS_LABEL.disponivel;
+            const isPaidNew = d.status === "disponivel";
             return (
-              <div key={d.id} className="bg-card rounded-2xl border border-border p-3 space-y-1">
+              <div
+                key={d.id}
+                className={`bg-card rounded-2xl border p-3 space-y-1 transition-all ${
+                  isPaidNew
+                    ? "border-primary ring-2 ring-primary/30 shadow-lg shadow-primary/10 animate-pulse-once"
+                    : "border-border"
+                }`}
+              >
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-bold text-foreground flex-1">{d.order_description}</p>
                   <span className={`text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap ${s.color}`}>{s.label}</span>
@@ -550,6 +558,37 @@ export default function PortalLojaPage() {
                 {d.notes && <p className="text-xs text-muted-foreground italic">"{d.notes}"</p>}
                 <p className="text-xs text-foreground">Taxa: <b>R$ {Number(d.fee).toFixed(2)}</b></p>
                 <p className="text-[10px] text-muted-foreground">{new Date(d.created_at).toLocaleString("pt-BR")}</p>
+
+                {/* Avançar status (apenas pedidos sem entregador app vinculado) */}
+                {!d.courier_id && d.status !== "concluida" && d.status !== "cancelada" && (
+                  <div className="grid grid-cols-2 gap-1.5 pt-2">
+                    {d.status === "disponivel" && (
+                      <button
+                        onClick={() => advanceStatus(d.id, "aceita")}
+                        className="col-span-2 bg-yellow-500/15 border border-yellow-500/40 text-yellow-700 font-bold text-xs py-2 rounded-xl active:scale-95 flex items-center justify-center gap-1"
+                      >
+                        <ChefHat size={12} /> Marcar em preparo
+                      </button>
+                    )}
+                    {d.status === "aceita" && (
+                      <button
+                        onClick={() => advanceStatus(d.id, "em_andamento")}
+                        className="col-span-2 bg-orange-500/15 border border-orange-500/40 text-orange-700 font-bold text-xs py-2 rounded-xl active:scale-95 flex items-center justify-center gap-1"
+                      >
+                        <Bike size={12} /> Saiu para entrega
+                      </button>
+                    )}
+                    {d.status === "em_andamento" && (
+                      <button
+                        onClick={() => advanceStatus(d.id, "concluida")}
+                        className="col-span-2 bg-green-500/15 border border-green-500/40 text-green-700 font-bold text-xs py-2 rounded-xl active:scale-95 flex items-center justify-center gap-1"
+                      >
+                        <CheckCircle2 size={12} /> Marcar como entregue
+                      </button>
+                    )}
+                  </div>
+                )}
+
                 {d.status === "concluida" && d.courier_id && (
                   ratedIds.has(d.id) ? (
                     <div className="flex items-center gap-1 text-xs text-green-600 font-bold">
