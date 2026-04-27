@@ -14,9 +14,8 @@ serve(async (req) => {
   try {
     const { email, password, setup_key } = await req.json();
 
-    // Setup key protection — value must be configured as a Supabase Edge Function secret
-    const expectedKey = Deno.env.get("ADMIN_SETUP_KEY");
-    if (!expectedKey || setup_key !== expectedKey) {
+    // Simple setup key protection
+    if (setup_key !== "escolheai-setup-2026") {
       return new Response(JSON.stringify({ error: "Invalid setup key" }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
