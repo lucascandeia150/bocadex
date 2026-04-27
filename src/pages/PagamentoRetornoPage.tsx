@@ -95,10 +95,12 @@ export default function PagamentoRetornoPage() {
       channel = supabase
         .channel(`order-${pay.id}`)
         .on(
-          "postgres_changes",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          "postgres_changes" as any,
           { event: "*", schema: "public", table: "deliveries", filter: `payment_id=eq.${pay.id}` },
-          (payload: { new: DeliveryRow }) => {
-            if (payload.new) setDelivery(payload.new);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (payload: any) => {
+            if (payload?.new) setDelivery(payload.new as DeliveryRow);
           },
         )
         .subscribe();
