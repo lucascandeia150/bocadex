@@ -353,6 +353,7 @@ export type Database = {
           images: string[] | null
           is_active: boolean
           is_featured: boolean
+          is_open: boolean
           logo_url: string | null
           owner_name: string | null
           promotions: string | null
@@ -371,6 +372,7 @@ export type Database = {
           images?: string[] | null
           is_active?: boolean
           is_featured?: boolean
+          is_open?: boolean
           logo_url?: string | null
           owner_name?: string | null
           promotions?: string | null
@@ -389,6 +391,7 @@ export type Database = {
           images?: string[] | null
           is_active?: boolean
           is_featured?: boolean
+          is_open?: boolean
           logo_url?: string | null
           owner_name?: string | null
           promotions?: string | null
@@ -825,7 +828,11 @@ export type Database = {
         Returns: {
           address: string
           business_name: string
+          description: string
           id: string
+          is_open: boolean
+          logo_url: string
+          uses_app_courier: boolean
           whatsapp: string
         }[]
       }
@@ -848,6 +855,34 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "ratings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      partner_toggle_open: {
+        Args: { _pin: string }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          created_at: string
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_featured: boolean
+          is_open: boolean
+          logo_url: string | null
+          owner_name: string | null
+          promotions: string | null
+          status: string
+          uses_app_courier: boolean
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -902,6 +937,42 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "products"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      partner_update_store: {
+        Args: {
+          _address: string
+          _business_name: string
+          _description: string
+          _is_open: boolean
+          _logo_url: string
+          _pin: string
+          _whatsapp: string
+        }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          created_at: string
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_featured: boolean
+          is_open: boolean
+          logo_url: string | null
+          owner_name: string | null
+          promotions: string | null
+          status: string
+          uses_app_courier: boolean
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
           isOneToOne: true
           isSetofReturn: false
         }
