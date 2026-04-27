@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package } from "lucide-react";
+import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings } from "lucide-react";
 import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
+import PartnerStoreTab from "@/components/portal/PartnerStoreTab";
 
 interface Partner {
   id: string;
@@ -10,6 +11,7 @@ interface Partner {
   address: string;
   whatsapp: string;
   uses_app_courier?: boolean;
+  is_open?: boolean;
 }
 
 interface Delivery {
@@ -39,7 +41,7 @@ export default function PortalLojaPage() {
   const [partner, setPartner] = useState<Partner | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState<"list" | "new" | "products">("list");
+  const [tab, setTab] = useState<"list" | "new" | "products" | "store">("list");
   const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
   const [rateModal, setRateModal] = useState<Delivery | null>(null);
   const [stars, setStars] = useState(5);
@@ -71,14 +73,15 @@ export default function PortalLojaPage() {
       setPartner(null);
       return;
     }
-    const p = data[0] as Partner;
-    // fetch uses_app_courier flag (not exposed by RPC)
-    const { data: pa } = await supabase
-      .from("partner_applications")
-      .select("uses_app_courier")
-      .eq("id", p.id)
-      .maybeSingle();
-    const merged = { ...p, uses_app_courier: !!pa?.uses_app_courier };
+    const p = data[0] as any;
+    const merged: Partner = {
+      id: p.id,
+      business_name: p.business_name,
+      address: p.address,
+      whatsapp: p.whatsapp,
+      uses_app_courier: !!p.uses_app_courier,
+      is_open: p.is_open !== false,
+    };
     setPartner(merged);
     setAddress(p.address);
     localStorage.setItem(PIN_KEY, code);
