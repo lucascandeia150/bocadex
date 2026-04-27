@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.mp-create-preference]
 verify_jwt = false
+
+[functions.mp-refund]
+verify_jwt = false
