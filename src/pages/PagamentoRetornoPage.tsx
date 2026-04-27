@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle2, Clock, XCircle, Loader2, Home } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 
 type Status = "loading" | "approved" | "pending" | "failed" | "not_found";
 
