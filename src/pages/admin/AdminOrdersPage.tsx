@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Filter, RefreshCw, Search, Settings2 } from "lucide-react";
 import AdminDeliveriesTab from "@/components/admin/AdminDeliveriesTab";
 
@@ -127,7 +128,7 @@ export default function AdminOrdersPage() {
                 {rows.map((d) => {
                   const s = statusInfo(d.status);
                   return (
-                    <div key={d.id} className="p-3 hover:bg-muted/30 transition-colors flex items-center gap-3">
+                    <Link key={d.id} to={`/admin/dashboard/orders/${d.id}`} className="p-3 hover:bg-muted/30 transition-colors flex items-center gap-3 cursor-pointer">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="text-sm font-bold text-foreground truncate">{d.partner_name}</p>
@@ -141,7 +142,7 @@ export default function AdminOrdersPage() {
                         <p className="text-[10px] text-muted-foreground">taxa {fmt(Number(d.app_fee || 0))}</p>
                         <p className="text-[10px] text-muted-foreground">{new Date(d.created_at).toLocaleString("pt-BR")}</p>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
