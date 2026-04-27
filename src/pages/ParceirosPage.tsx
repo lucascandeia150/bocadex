@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Handshake, Upload, Send, CheckCircle } from "lucide-react";
 
 const WHATSAPP_NUMBER = "5533998669482";
 
-const businessTypes = [
+const fallbackTypes = [
   "Distribuidora",
   "Doces e Sobremesas",
   "Lanches e Hambúrgueres",
@@ -23,6 +23,7 @@ const businessTypes = [
 export default function ParceirosPage() {
   const [form, setForm] = useState({
     businessName: "",
+    ownerName: "",
     businessType: "",
     address: "",
     description: "",
@@ -32,6 +33,19 @@ export default function ParceirosPage() {
   const [images, setImages] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [categoryNames, setCategoryNames] = useState<string[]>(fallbackTypes);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("categories")
+        .select("name")
+        .order("display_order", { ascending: true });
+      if (data && data.length > 0) {
+        setCategoryNames(data.map((c) => c.name));
+      }
+    })();
+  }, []);
 
   const update = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -49,7 +63,7 @@ export default function ParceirosPage() {
   };
 
   const validate = () => {
-    const required = ["businessName", "businessType", "address", "description", "whatsapp"] as const;
+    const required = ["businessName", "ownerName", "businessType", "address", "description", "whatsapp"] as const;
     for (const field of required) {
       if (!form[field].trim()) {
         toast({ title: "Campo obrigatório", description: "Preencha todos os campos obrigatórios.", variant: "destructive" });
@@ -79,6 +93,7 @@ export default function ParceirosPage() {
       // Save to database
       const { error: dbError } = await supabase.from("partner_applications").insert({
         business_name: form.businessName,
+        owner_name: form.ownerName,
         business_type: form.businessType,
         address: form.address,
         description: form.description,
@@ -93,6 +108,7 @@ export default function ParceirosPage() {
       const msg = encodeURIComponent(
         `🤝 *Novo parceiro interessado:*\n\n` +
         `📌 *Nome:* ${form.businessName}\n` +
+        `👤 *Responsável:* ${form.ownerName}\n` +
         `🏷️ *Tipo:* ${form.businessType}\n` +
         `📍 *Endereço:* ${form.address}\n` +
         `📝 *Descrição:* ${form.description}\n` +
@@ -119,7 +135,7 @@ export default function ParceirosPage() {
         <CheckCircle className="h-16 w-16 text-primary" />
         <h2 className="text-2xl font-black">Cadastro enviado com sucesso! 🚀</h2>
         <p className="text-muted-foreground">Em breve entraremos em contato pelo WhatsApp.</p>
-        <Button onClick={() => { setSent(false); setForm({ businessName: "", businessType: "", address: "", description: "", whatsapp: "", promotions: "" }); setImages([]); }}>
+        <Button onClick={() => { setSent(false); setForm({ businessName: "", ownerName: "", businessType: "", address: "", description: "", whatsapp: "", promotions: "" }); setImages([]); }}>
           Enviar outro cadastro
         </Button>
       </div>
@@ -141,22 +157,22 @@ export default function ParceirosPage() {
         </div>
 
         <div>
+          <Label>Nome do responsável *</Label>
+          <Input placeholder="Ex: João Silva" value={form.ownerName} onChange={(e) => update("ownerName", e.target.value)} />
+        </div>
+
+        <div>
           <Label>Tipo de negócio *</Label>
-          <div className="flex flex-wrap gap-2 mt-1">
-            {businessTypes.map((type) => (
-              <button
-                key={type}
-                onClick={() => update("businessType", type)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                  form.businessType === type
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-muted text-muted-foreground border-border hover:border-primary"
-                }`}
-              >
-                {type}
-              </button>
+          <select
+            value={form.businessType}
+            onChange={(e) => update("businessType", e.target.value)}
+            className="mt-1 w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+          >
+            <option value="">Selecione uma categoria...</option>
+            {categoryNames.map((type) => (
+              <option key={type} value={type}>{type}</option>
             ))}
-          </div>
+          </select>
         </div>
 
         <div>
