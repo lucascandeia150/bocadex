@@ -134,7 +134,10 @@ Deno.serve(async (req) => {
       .update({ mp_preference_id: mpData.id })
       .eq("external_reference", externalReference);
 
-    const initPoint = mpData.init_point ?? mpData.sandbox_init_point;
+    const isTest = token.startsWith("TEST-");
+    const initPoint = isTest
+      ? (mpData.sandbox_init_point ?? mpData.init_point)
+      : (mpData.init_point ?? mpData.sandbox_init_point);
 
     return new Response(
       JSON.stringify({
@@ -142,6 +145,7 @@ Deno.serve(async (req) => {
         preference_id: mpData.id,
         init_point: initPoint,
         sandbox_init_point: mpData.sandbox_init_point,
+        is_test: isTest,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
