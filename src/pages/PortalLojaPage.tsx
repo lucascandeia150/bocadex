@@ -262,6 +262,38 @@ export default function PortalLojaPage() {
   };
 
   if (!partner) {
+    // Step: needs to link auth user to a partner via PIN
+    if (needsLink) {
+      return (
+        <div className="p-4 max-w-md mx-auto space-y-4 animate-slide-up">
+          <div className="bg-card rounded-2xl border border-border p-6 space-y-4 text-center">
+            <KeyRound className="mx-auto text-primary" size={36} />
+            <h1 className="text-lg font-black text-foreground">Vincular conta à loja</h1>
+            <p className="text-xs text-muted-foreground">Sua conta ainda não está vinculada. Informe o PIN de 6 dígitos da sua loja para vincular permanentemente.</p>
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              value={linkPin}
+              onChange={(e) => setLinkPin(e.target.value.replace(/\D/g, ""))}
+              placeholder="000000"
+              className="w-full text-center text-2xl font-black tracking-widest bg-muted rounded-xl px-3 py-3"
+            />
+            <button
+              disabled={loading || linkPin.length !== 6}
+              onClick={linkAccount}
+              className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50"
+            >
+              {loading ? "Vinculando..." : "Vincular"}
+            </button>
+            <button onClick={logout} className="text-[11px] text-muted-foreground underline">
+              Sair
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="p-4 max-w-md mx-auto space-y-4 animate-slide-up">
         <a href="/" className="inline-flex items-center gap-1 text-xs text-muted-foreground">
@@ -270,23 +302,84 @@ export default function PortalLojaPage() {
         <div className="bg-card rounded-2xl border border-border p-6 space-y-4 text-center">
           <Store className="mx-auto text-primary" size={40} />
           <h1 className="text-lg font-black text-foreground">Portal da Loja</h1>
-          <p className="text-xs text-muted-foreground">Digite o PIN de 6 dígitos fornecido pelo administrador.</p>
-          <input
-            type="text"
-            inputMode="numeric"
-            maxLength={6}
-            value={pin}
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-            placeholder="000000"
-            className="w-full text-center text-2xl font-black tracking-widest bg-muted rounded-xl px-3 py-3"
-          />
-          <button
-            disabled={loading || pin.length !== 6}
-            onClick={() => tryLogin(pin)}
-            className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50"
-          >
-            {loading ? "Entrando..." : "Entrar"}
-          </button>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setAuthMode("email")}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold ${authMode === "email" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+            >
+              <Mail size={12} className="inline mr-1" /> Email
+            </button>
+            <button
+              onClick={() => setAuthMode("pin")}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold ${authMode === "pin" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+            >
+              <KeyRound size={12} className="inline mr-1" /> PIN
+            </button>
+          </div>
+
+          {authMode === "pin" ? (
+            <>
+              <p className="text-xs text-muted-foreground">Digite o PIN de 6 dígitos fornecido pelo administrador.</p>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
+                placeholder="000000"
+                className="w-full text-center text-2xl font-black tracking-widest bg-muted rounded-xl px-3 py-3"
+              />
+              <button
+                disabled={loading || pin.length !== 6}
+                onClick={() => tryLogin(pin)}
+                className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50"
+              >
+                {loading ? "Entrando..." : "Entrar"}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setAuthTab("signin")}
+                  className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold ${authTab === "signin" ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}
+                >
+                  Entrar
+                </button>
+                <button
+                  onClick={() => setAuthTab("signup")}
+                  className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold ${authTab === "signup" ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}
+                >
+                  Criar conta
+                </button>
+              </div>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="seuemail@loja.com"
+                className="w-full bg-muted rounded-xl px-3 py-3 text-sm"
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Senha (mín. 6)"
+                className="w-full bg-muted rounded-xl px-3 py-3 text-sm"
+              />
+              <button
+                disabled={loading}
+                onClick={authTab === "signin" ? signIn : signUp}
+                className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50"
+              >
+                {loading ? "Aguarde..." : authTab === "signin" ? "Entrar" : "Criar conta"}
+              </button>
+              <p className="text-[10px] text-muted-foreground">
+                Após o primeiro login, você precisará informar o PIN da loja uma única vez para vincular sua conta.
+              </p>
+            </>
+          )}
         </div>
       </div>
     );
