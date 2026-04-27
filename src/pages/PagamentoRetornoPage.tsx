@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { CheckCircle2, Clock, XCircle, Loader2, Home, ChefHat, Bike, Package } from "lucide-react";
+import { CheckCircle2, Clock, XCircle, Loader2, Home, ChefHat, Bike, Package, CreditCard, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Status = "loading" | "approved" | "pending" | "failed" | "not_found";
@@ -117,64 +117,124 @@ export default function PagamentoRetornoPage() {
     };
   }, [ref, status]);
 
-  const renderIcon = () => {
-    if (status === "loading") return <Loader2 className="animate-spin text-primary" size={48} />;
-    if (status === "approved") return <CheckCircle2 className="text-primary" size={56} />;
-    if (status === "pending") return <Clock className="text-secondary" size={56} />;
-    return <XCircle className="text-destructive" size={56} />;
+  const heroBg =
+    status === "approved"
+      ? "from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)]"
+      : status === "pending" || status === "loading"
+      ? "from-[hsl(24,95%,53%)] to-[hsl(24,95%,45%)]"
+      : "from-[hsl(0,75%,55%)] to-[hsl(0,75%,45%)]";
+
+  const heroIcon = () => {
+    if (status === "loading") return <Loader2 className="animate-spin" size={44} />;
+    if (status === "approved") return <CheckCircle2 size={48} strokeWidth={2.5} />;
+    if (status === "pending") return <Clock size={48} strokeWidth={2.5} />;
+    return <XCircle size={48} strokeWidth={2.5} />;
   };
 
-  const renderTitle = () => {
+  const heroTitle = () => {
     if (status === "loading") return "Confirmando pagamento...";
-    if (status === "approved") return "Pagamento aprovado! 🎉";
+    if (status === "approved") return "Pagamento aprovado!";
     if (status === "pending") return "Pagamento em análise";
     if (status === "failed") return "Pagamento não aprovado";
     return "Pagamento não encontrado";
   };
 
-  const renderMsg = () => {
+  const heroMsg = () => {
     if (status === "approved")
-      return "Seu pedido foi enviado para a loja e já está disponível para os entregadores.";
+      return "Seu pedido foi enviado para a loja e já está sendo preparado.";
     if (status === "pending")
-      return "Estamos aguardando a confirmação do Mercado Pago. Pode levar alguns segundos para PIX e até alguns minutos para boleto.";
+      return "Aguardando confirmação do Mercado Pago. PIX leva alguns segundos.";
     if (status === "failed")
       return "Tente novamente ou use outra forma de pagamento.";
     if (status === "not_found")
       return "Não localizamos esse pagamento. Volte para o início.";
-    return "";
+    return "Conectando ao Mercado Pago para confirmar...";
   };
 
   return (
-    <div className="px-4 pt-12 pb-24 max-w-sm mx-auto text-center animate-slide-up">
-      <div className="flex justify-center mb-4">{renderIcon()}</div>
-      <h1 className="text-2xl font-black text-foreground">{renderTitle()}</h1>
-      <p className="text-sm text-muted-foreground mt-2">{renderMsg()}</p>
+    <div className="pb-32">
+      {/* Hero status */}
+      <div className={`bg-gradient-to-br ${heroBg} text-white px-5 pt-10 pb-16 relative overflow-hidden animate-slide-up`}>
+        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 25% 30%, rgba(255,255,255,0.4) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.3) 0%, transparent 50%)" }} />
+        <div className="relative max-w-sm mx-auto text-center">
+          <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md mx-auto flex items-center justify-center mb-3 shadow-2xl">
+            {heroIcon()}
+          </div>
+          {status === "approved" && (
+            <Sparkles size={14} className="inline-block mr-1 -mt-1 animate-pulse" />
+          )}
+          <h1 className="text-2xl font-black leading-tight">{heroTitle()}</h1>
+          <p className="text-sm opacity-95 mt-2 max-w-xs mx-auto leading-snug">{heroMsg()}</p>
+          {info?.amount != null && (
+            <div className="mt-4 inline-flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-4 py-1.5 text-sm font-black">
+              <CreditCard size={14} /> R${Number(info.amount).toFixed(2)}
+            </div>
+          )}
+        </div>
+      </div>
 
-      {info?.amount != null && (
-        <p className="mt-4 text-base font-black text-primary">
-          Valor: R${Number(info.amount).toFixed(2)}
-        </p>
-      )}
-
-      {status === "approved" && delivery && (
-        <OrderTimeline status={delivery.status} code={delivery.delivery_code} partner={delivery.partner_name} />
-      )}
-
-      <div className="mt-8 flex flex-col gap-2">
-        <button
-          onClick={() => navigate("/")}
-          className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2"
-        >
-          <Home size={16} /> Voltar para o início
-        </button>
-        {status === "approved" && (
-          <button
-            onClick={() => navigate("/pedidos?tab=historico")}
-            className="w-full bg-background border-2 border-border text-foreground font-bold py-3 rounded-2xl active:scale-95 transition-transform"
-          >
-            Ver meus pedidos
-          </button>
+      <div className="max-w-sm mx-auto px-4 -mt-10 relative z-10 space-y-4">
+        {/* Loading do delivery */}
+        {status === "approved" && !delivery && (
+          <div className="rounded-2xl bg-card border border-border shadow-lg p-5 text-center animate-slide-up">
+            <Loader2 className="animate-spin text-primary mx-auto" size={28} />
+            <p className="text-sm font-bold text-foreground mt-2">Preparando seu pedido...</p>
+            <p className="text-xs text-muted-foreground mt-1">A loja está sendo notificada agora.</p>
+          </div>
         )}
+
+        {status === "approved" && delivery && (
+          <OrderTimeline
+            status={delivery.status}
+            code={delivery.delivery_code}
+            partner={delivery.partner_name}
+          />
+        )}
+
+        {(status === "pending" || status === "loading") && (
+          <div className="rounded-2xl bg-card border border-border shadow-lg p-5 animate-slide-up">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-secondary/15 flex items-center justify-center shrink-0">
+                <Loader2 className="animate-spin text-secondary" size={18} />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-black text-foreground">Atualizando em tempo real</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Esta tela atualiza sozinha quando o pagamento confirmar.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* CTA fixo */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-40">
+        <div className="max-w-sm mx-auto space-y-2">
+          {status === "approved" ? (
+            <>
+              <button
+                onClick={() => navigate("/pedidos?tab=historico")}
+                className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-base shadow-lg"
+              >
+                <Package size={18} /> Acompanhar meus pedidos
+              </button>
+              <button
+                onClick={() => navigate("/")}
+                className="w-full bg-card border-2 border-border text-foreground font-bold py-2.5 rounded-2xl active:scale-95 transition-transform text-xs"
+              >
+                Voltar para o início
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => navigate("/")}
+              className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-black py-4 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2 text-base shadow-lg"
+            >
+              <Home size={18} /> Voltar para o início
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -189,11 +249,16 @@ function OrderTimeline({
   code: string | null;
   partner: string;
 }) {
-  const steps: { key: DeliveryStatus | "paid"; label: string; Icon: typeof Clock }[] = [
-    { key: "paid", label: "Pagamento confirmado", Icon: CheckCircle2 },
-    { key: "aceita", label: "Em preparo", Icon: ChefHat },
-    { key: "em_andamento", label: "Saiu para entrega", Icon: Bike },
-    { key: "concluida", label: "Entregue", Icon: Package },
+  const steps: {
+    key: DeliveryStatus | "paid";
+    label: string;
+    desc: string;
+    Icon: typeof Clock;
+  }[] = [
+    { key: "paid", label: "Pagamento confirmado", desc: "Seu pedido foi pago com sucesso", Icon: CheckCircle2 },
+    { key: "aceita", label: "Em preparo", desc: "A loja está preparando seu pedido", Icon: ChefHat },
+    { key: "em_andamento", label: "Saiu para entrega", desc: "O entregador está a caminho", Icon: Bike },
+    { key: "concluida", label: "Entregue", desc: "Bom apetite!", Icon: Package },
   ];
   const order: Record<string, number> = {
     disponivel: 0,
@@ -205,42 +270,82 @@ function OrderTimeline({
   };
   const currentIdx = order[status] ?? 0;
 
-  return (
-    <div className="mt-6 rounded-2xl border-2 border-primary/30 bg-primary/5 p-4 text-left">
-      <p className="text-[10px] font-bold uppercase text-muted-foreground">🏪 {partner}</p>
-      <p className="text-sm font-black text-foreground mt-0.5">Acompanhe seu pedido em tempo real</p>
+  if (status === "cancelada") {
+    return (
+      <div className="rounded-2xl border-2 border-destructive/40 bg-destructive/5 p-5 text-center animate-slide-up">
+        <XCircle className="text-destructive mx-auto mb-2" size={32} />
+        <p className="text-sm font-black text-foreground">Pedido cancelado</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Entre em contato com {partner} para mais informações.
+        </p>
+      </div>
+    );
+  }
 
-      <ol className="mt-4 space-y-3">
+  return (
+    <div className="rounded-2xl bg-card border border-border shadow-lg overflow-hidden animate-slide-up">
+      <div className="bg-gradient-to-r from-primary/10 to-secondary/10 px-4 py-3 border-b border-border">
+        <p className="text-[10px] font-black text-primary uppercase tracking-wider">Pedido em andamento</p>
+        <p className="text-sm font-black text-foreground mt-0.5 truncate">🏪 {partner}</p>
+      </div>
+
+      {/* Código de entrega — bem destacado */}
+      {code && status !== "concluida" && (
+        <div className="px-4 pt-4">
+          <div className="rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-dashed border-primary/40 p-3 text-center">
+            <p className="text-[10px] font-bold text-muted-foreground uppercase">🔐 Código de entrega</p>
+            <p className="text-3xl font-black text-primary tracking-[0.5em] mt-1 ml-2">{code}</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Informe ao entregador na entrega</p>
+          </div>
+        </div>
+      )}
+
+      {/* Timeline com linha conectora */}
+      <ol className="px-4 py-5 space-y-1">
         {steps.map((s, i) => {
           const done = i <= currentIdx;
           const active = i === currentIdx;
+          const isLast = i === steps.length - 1;
           return (
-            <li key={s.key} className="flex items-center gap-3">
+            <li key={s.key} className="flex gap-3 relative">
+              {/* Linha conectora */}
+              {!isLast && (
+                <span
+                  className={`absolute left-[18px] top-9 bottom-0 w-0.5 ${
+                    i < currentIdx ? "bg-primary" : "bg-border"
+                  }`}
+                />
+              )}
               <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                  done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                } ${active ? "ring-4 ring-primary/30 animate-pulse" : ""}`}
+                className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 z-10 transition-all ${
+                  done
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "bg-muted text-muted-foreground"
+                } ${active ? "ring-4 ring-primary/25 animate-pulse" : ""}`}
               >
-                <s.Icon size={16} />
+                <s.Icon size={16} strokeWidth={2.5} />
               </div>
-              <div className="flex-1">
-                <p className={`text-sm font-bold ${done ? "text-foreground" : "text-muted-foreground"}`}>
-                  {s.label}
-                </p>
+              <div className="flex-1 pb-5 pt-1">
+                <div className="flex items-center gap-2">
+                  <p
+                    className={`text-sm font-black ${
+                      done ? "text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {s.label}
+                  </p>
+                  {active && (
+                    <span className="text-[9px] font-black bg-primary text-primary-foreground px-2 py-0.5 rounded-full uppercase animate-pulse">
+                      Agora
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{s.desc}</p>
               </div>
-              {done && !active && <CheckCircle2 size={14} className="text-primary" />}
             </li>
           );
         })}
       </ol>
-
-      {code && status !== "concluida" && status !== "cancelada" && (
-        <div className="mt-4 rounded-xl bg-background border-2 border-dashed border-primary/40 p-3 text-center">
-          <p className="text-[10px] font-bold text-muted-foreground uppercase">🔐 Código de entrega</p>
-          <p className="text-2xl font-black text-primary tracking-[0.4em] mt-1">{code}</p>
-          <p className="text-[10px] text-muted-foreground mt-1">Informe ao entregador</p>
-        </div>
-      )}
     </div>
   );
 }
