@@ -423,35 +423,47 @@ export default function PortalLojaPage() {
         </div>
       )}
 
-      <div className="flex gap-2">
-        <button
-          onClick={() => setTab("list")}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "list" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-        >
-          📦 Pedidos
-        </button>
-        <button
-          onClick={() => setTab("new")}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "new" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-        >
-          <Plus size={12} className="inline" /> Novo
-        </button>
-        <button
-          onClick={() => setTab("products")}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "products" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-        >
-          <Package size={12} className="inline" /> Produtos
-        </button>
-        <button
-          onClick={() => setTab("store")}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "store" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-        >
-          <Settings size={12} className="inline" /> Loja
-        </button>
-        <button onClick={() => loadDeliveries(pin)} className="p-2 rounded-xl bg-muted">
-          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-        </button>
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setTab("dash")}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "dash" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+          >
+            <BarChart3 size={12} className="inline mr-1" /> Dashboard
+          </button>
+          <button
+            onClick={() => setTab("list")}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "list" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+          >
+            📦 Pedidos
+          </button>
+          <button
+            onClick={() => setTab("new")}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "new" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+          >
+            <Plus size={12} className="inline" /> Novo
+          </button>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setTab("products")}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "products" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+          >
+            <Package size={12} className="inline" /> Produtos
+          </button>
+          <button
+            onClick={() => setTab("store")}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "store" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+          >
+            <Settings size={12} className="inline" /> Loja
+          </button>
+          <button onClick={() => loadDeliveries(pin)} className="p-2 rounded-xl bg-muted">
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+          </button>
+        </div>
       </div>
+
+      {tab === "dash" && <PartnerDashboardTab deliveries={deliveries} />}
 
       {tab === "products" && <PartnerProductsTab pin={pin} />}
 
