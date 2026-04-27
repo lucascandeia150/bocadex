@@ -354,6 +354,7 @@ export type Database = {
           is_active: boolean
           is_featured: boolean
           logo_url: string | null
+          owner_name: string | null
           promotions: string | null
           status: string
           uses_app_courier: boolean
@@ -371,6 +372,7 @@ export type Database = {
           is_active?: boolean
           is_featured?: boolean
           logo_url?: string | null
+          owner_name?: string | null
           promotions?: string | null
           status?: string
           uses_app_courier?: boolean
@@ -388,6 +390,7 @@ export type Database = {
           is_active?: boolean
           is_featured?: boolean
           logo_url?: string | null
+          owner_name?: string | null
           promotions?: string | null
           status?: string
           uses_app_courier?: boolean
@@ -735,6 +738,40 @@ export type Database = {
               isSetofReturn: false
             }
           }
+      partner_create_product: {
+        Args: {
+          _category_id: string
+          _description: string
+          _image_url: string
+          _name: string
+          _pin: string
+          _price_max: number
+          _price_min: number
+        }
+        Returns: {
+          category_id: string | null
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          partner_id: string | null
+          price_max: number | null
+          price_min: number | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "products"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      partner_delete_product: {
+        Args: { _pin: string; _product_id: string }
+        Returns: undefined
+      }
       partner_list_deliveries: {
         Args: { _pin: string }
         Returns: {
@@ -757,6 +794,28 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "deliveries"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      partner_list_products: {
+        Args: { _pin: string }
+        Returns: {
+          category_id: string | null
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          partner_id: string | null
+          price_max: number | null
+          price_min: number | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "products"
           isOneToOne: false
           isSetofReturn: true
         }
@@ -789,6 +848,60 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "ratings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      partner_toggle_product: {
+        Args: { _pin: string; _product_id: string }
+        Returns: {
+          category_id: string | null
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          partner_id: string | null
+          price_max: number | null
+          price_min: number | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "products"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      partner_update_product: {
+        Args: {
+          _category_id: string
+          _description: string
+          _image_url: string
+          _is_active: boolean
+          _name: string
+          _pin: string
+          _price_max: number
+          _price_min: number
+          _product_id: string
+        }
+        Returns: {
+          category_id: string | null
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          partner_id: string | null
+          price_max: number | null
+          price_min: number | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "products"
           isOneToOne: true
           isSetofReturn: false
         }
