@@ -358,6 +358,7 @@ export type Database = {
           owner_name: string | null
           promotions: string | null
           status: string
+          user_id: string | null
           uses_app_courier: boolean
           whatsapp: string
         }
@@ -377,6 +378,7 @@ export type Database = {
           owner_name?: string | null
           promotions?: string | null
           status?: string
+          user_id?: string | null
           uses_app_courier?: boolean
           whatsapp: string
         }
@@ -396,6 +398,7 @@ export type Database = {
           owner_name?: string | null
           promotions?: string | null
           status?: string
+          user_id?: string | null
           uses_app_courier?: boolean
           whatsapp?: string
         }
@@ -633,6 +636,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      current_partner_id: { Args: never; Returns: string }
       customer_create_delivery: {
         Args: {
           _customer_name: string
@@ -775,6 +779,35 @@ export type Database = {
         Args: { _pin: string; _product_id: string }
         Returns: undefined
       }
+      partner_link_user: {
+        Args: { _pin: string; _user_id: string }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          created_at: string
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_featured: boolean
+          is_open: boolean
+          logo_url: string | null
+          owner_name: string | null
+          promotions: string | null
+          status: string
+          user_id: string | null
+          uses_app_courier: boolean
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       partner_list_deliveries: {
         Args: { _pin: string }
         Returns: {
@@ -877,6 +910,7 @@ export type Database = {
           owner_name: string | null
           promotions: string | null
           status: string
+          user_id: string | null
           uses_app_courier: boolean
           whatsapp: string
         }
@@ -967,6 +1001,7 @@ export type Database = {
           owner_name: string | null
           promotions: string | null
           status: string
+          user_id: string | null
           uses_app_courier: boolean
           whatsapp: string
         }

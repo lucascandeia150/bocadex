@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings } from "lucide-react";
+import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound } from "lucide-react";
 import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
 import PartnerStoreTab from "@/components/portal/PartnerStoreTab";
 
@@ -47,6 +47,14 @@ export default function PortalLojaPage() {
   const [stars, setStars] = useState(5);
   const [comment, setComment] = useState("");
 
+  // Auth (email/senha)
+  const [authMode, setAuthMode] = useState<"email" | "pin">("email");
+  const [authTab, setAuthTab] = useState<"signin" | "signup">("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [linkPin, setLinkPin] = useState("");
+  const [needsLink, setNeedsLink] = useState(false);
+
   // form
   const [orderDesc, setOrderDesc] = useState("");
   const [address, setAddress] = useState("");
@@ -60,8 +68,76 @@ export default function PortalLojaPage() {
       setPin(saved);
       tryLogin(saved, true);
     }
+    // Auto-restore from auth session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user && !saved) {
+        resolvePinFromUser(session.user.id);
+      }
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user && !partner) {
+        // defer to avoid deadlock
+        setTimeout(() => resolvePinFromUser(session.user.id), 0);
+      }
+    });
+    return () => subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // After auth login, find the partner linked to this user_id and reuse the existing PIN-based RPCs
+  const resolvePinFromUser = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("partner_applications")
+      .select("access_pin")
+      .eq("user_id", userId)
+      .eq("status", "approved")
+      .eq("is_active", true)
+      .maybeSingle();
+    if (error || !data?.access_pin) {
+      setNeedsLink(true);
+      return;
+    }
+    setNeedsLink(false);
+    setPin(data.access_pin);
+    tryLogin(data.access_pin, true);
+  };
+
+  const signIn = async () => {
+    if (!email || !password) { toast.error("Preencha email e senha"); return; }
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Login realizado ✅");
+  };
+
+  const signUp = async () => {
+    if (!email || password.length < 6) { toast.error("Email e senha (mín. 6) obrigatórios"); return; }
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/portal-loja` },
+    });
+    setLoading(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Cadastro feito! Verifique seu email para confirmar.");
+    setAuthTab("signin");
+  };
+
+  const linkAccount = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) { toast.error("Faça login primeiro"); return; }
+    if (linkPin.length !== 6) { toast.error("Informe o PIN de 6 dígitos"); return; }
+    setLoading(true);
+    const { error } = await supabase.rpc("partner_link_user", { _pin: linkPin, _user_id: session.user.id });
+    setLoading(false);
+    if (error) { toast.error(error.message || "Erro ao vincular"); return; }
+    toast.success("Conta vinculada à loja ✅");
+    setNeedsLink(false);
+    setPin(linkPin);
+    tryLogin(linkPin, true);
+  };
 
   const tryLogin = async (code: string, silent = false) => {
     setLoading(true);
@@ -143,11 +219,13 @@ export default function PortalLojaPage() {
     setComment("");
   };
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.removeItem(PIN_KEY);
     setPartner(null);
     setPin("");
     setDeliveries([]);
+    setNeedsLink(false);
+    await supabase.auth.signOut();
   };
 
   const submit = async () => {
@@ -184,6 +262,38 @@ export default function PortalLojaPage() {
   };
 
   if (!partner) {
+    // Step: needs to link auth user to a partner via PIN
+    if (needsLink) {
+      return (
+        <div className="p-4 max-w-md mx-auto space-y-4 animate-slide-up">
+          <div className="bg-card rounded-2xl border border-border p-6 space-y-4 text-center">
+            <KeyRound className="mx-auto text-primary" size={36} />
+            <h1 className="text-lg font-black text-foreground">Vincular conta à loja</h1>
+            <p className="text-xs text-muted-foreground">Sua conta ainda não está vinculada. Informe o PIN de 6 dígitos da sua loja para vincular permanentemente.</p>
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              value={linkPin}
+              onChange={(e) => setLinkPin(e.target.value.replace(/\D/g, ""))}
+              placeholder="000000"
+              className="w-full text-center text-2xl font-black tracking-widest bg-muted rounded-xl px-3 py-3"
+            />
+            <button
+              disabled={loading || linkPin.length !== 6}
+              onClick={linkAccount}
+              className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50"
+            >
+              {loading ? "Vinculando..." : "Vincular"}
+            </button>
+            <button onClick={logout} className="text-[11px] text-muted-foreground underline">
+              Sair
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="p-4 max-w-md mx-auto space-y-4 animate-slide-up">
         <a href="/" className="inline-flex items-center gap-1 text-xs text-muted-foreground">
@@ -192,23 +302,84 @@ export default function PortalLojaPage() {
         <div className="bg-card rounded-2xl border border-border p-6 space-y-4 text-center">
           <Store className="mx-auto text-primary" size={40} />
           <h1 className="text-lg font-black text-foreground">Portal da Loja</h1>
-          <p className="text-xs text-muted-foreground">Digite o PIN de 6 dígitos fornecido pelo administrador.</p>
-          <input
-            type="text"
-            inputMode="numeric"
-            maxLength={6}
-            value={pin}
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-            placeholder="000000"
-            className="w-full text-center text-2xl font-black tracking-widest bg-muted rounded-xl px-3 py-3"
-          />
-          <button
-            disabled={loading || pin.length !== 6}
-            onClick={() => tryLogin(pin)}
-            className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50"
-          >
-            {loading ? "Entrando..." : "Entrar"}
-          </button>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setAuthMode("email")}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold ${authMode === "email" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+            >
+              <Mail size={12} className="inline mr-1" /> Email
+            </button>
+            <button
+              onClick={() => setAuthMode("pin")}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold ${authMode === "pin" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+            >
+              <KeyRound size={12} className="inline mr-1" /> PIN
+            </button>
+          </div>
+
+          {authMode === "pin" ? (
+            <>
+              <p className="text-xs text-muted-foreground">Digite o PIN de 6 dígitos fornecido pelo administrador.</p>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
+                placeholder="000000"
+                className="w-full text-center text-2xl font-black tracking-widest bg-muted rounded-xl px-3 py-3"
+              />
+              <button
+                disabled={loading || pin.length !== 6}
+                onClick={() => tryLogin(pin)}
+                className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50"
+              >
+                {loading ? "Entrando..." : "Entrar"}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setAuthTab("signin")}
+                  className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold ${authTab === "signin" ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}
+                >
+                  Entrar
+                </button>
+                <button
+                  onClick={() => setAuthTab("signup")}
+                  className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold ${authTab === "signup" ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}
+                >
+                  Criar conta
+                </button>
+              </div>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="seuemail@loja.com"
+                className="w-full bg-muted rounded-xl px-3 py-3 text-sm"
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Senha (mín. 6)"
+                className="w-full bg-muted rounded-xl px-3 py-3 text-sm"
+              />
+              <button
+                disabled={loading}
+                onClick={authTab === "signin" ? signIn : signUp}
+                className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50"
+              >
+                {loading ? "Aguarde..." : authTab === "signin" ? "Entrar" : "Criar conta"}
+              </button>
+              <p className="text-[10px] text-muted-foreground">
+                Após o primeiro login, você precisará informar o PIN da loja uma única vez para vincular sua conta.
+              </p>
+            </>
+          )}
         </div>
       </div>
     );
