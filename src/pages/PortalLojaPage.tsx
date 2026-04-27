@@ -221,6 +221,26 @@ export default function PortalLojaPage() {
     setComment("");
   };
 
+  const advanceStatus = async (deliveryId: string, next: "aceita" | "em_andamento" | "concluida" | "cancelada") => {
+    const { error } = await supabase.rpc("partner_advance_delivery_status", {
+      _pin: pin,
+      _delivery_id: deliveryId,
+      _next_status: next,
+    });
+    if (error) {
+      toast.error(error.message || "Não foi possível atualizar o pedido");
+      return;
+    }
+    const labels: Record<string, string> = {
+      aceita: "Pedido em preparo 👨‍🍳",
+      em_andamento: "Saiu para entrega 🛵",
+      concluida: "Pedido entregue ✅",
+      cancelada: "Pedido cancelado",
+    };
+    toast.success(labels[next]);
+    loadDeliveries(pin);
+  };
+
   const logout = async () => {
     localStorage.removeItem(PIN_KEY);
     setPartner(null);
