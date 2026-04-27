@@ -2,7 +2,7 @@ import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { stores, getProductsByCategory, productCategoryLabels, ProductCategory } from "@/data/stores";
-import { ArrowLeft, MessageCircle, Star, Flame, ShoppingBag, X, ChevronLeft, ChevronRight, Camera, MapPin, ShoppingCart } from "lucide-react";
+import { ArrowLeft, MessageCircle, Star, Flame, ShoppingBag, X, ChevronLeft, ChevronRight, Camera, MapPin, Plus } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
 import { ProductOrderModal } from "@/components/ProductOrderModal";
@@ -63,45 +63,40 @@ import type { Store, StoreProduct } from "@/data/stores";
 function ProductCard({ product, store, openWhatsApp, onOrder, index }: { product: StoreProduct; store: Store; openWhatsApp: (msg: string) => void; onOrder: (product: StoreProduct) => void; index: number }) {
   const productImg = product.image || productImageMap[product.id];
   return (
-    <div
-      className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden animate-slide-up"
+    <article
+      className="rounded-2xl border border-border bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden animate-slide-up flex"
       style={{ animationDelay: `${(index + 1) * 60}ms` }}
     >
-      {productImg && (
-        <img
-          src={productImg}
-          alt={product.name}
-          loading="lazy"
-          className="w-full h-36 object-cover"
-        />
-      )}
-      <div className="p-4">
-        <div className="flex items-start gap-3">
-          <span className="text-3xl">{product.emoji}</span>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-base font-bold text-foreground">{product.name}</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">{product.description}</p>
-            <p className="text-sm font-black text-primary mt-1">
-              {product.priceMin === product.priceMax ? `R$${product.priceMin},00` : `R$${product.priceMin},00 - R$${product.priceMax},00`}
-            </p>
-          </div>
-        </div>
-        <button
-          onClick={() => onOrder(product)}
-          className="w-full mt-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
-        >
-          <ShoppingCart size={16} />
-          🛒 Pedir agora
-        </button>
+      <div className="flex-1 p-4 min-w-0">
+        <h3 className="text-base font-black text-foreground leading-tight">{product.name}</h3>
+        <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-snug">{product.description}</p>
+        <p className="text-base font-black text-primary mt-2">
+          {product.priceMin === product.priceMax
+            ? `R$${product.priceMin},00`
+            : `R$${product.priceMin},00 – R$${product.priceMax},00`}
+        </p>
         <button
           onClick={() => openWhatsApp(product.whatsappMessage)}
-          className="w-full mt-2 bg-background border-2 border-border hover:bg-accent text-foreground font-bold py-2.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-xs"
+          className="mt-2 text-[11px] font-bold text-muted-foreground inline-flex items-center gap-1 active:scale-95 transition-transform"
         >
-          <MessageCircle size={14} />
-          Falar com a loja
+          <MessageCircle size={11} /> Falar com a loja
         </button>
       </div>
-    </div>
+      <div className="relative w-28 shrink-0 bg-gradient-to-br from-[hsl(142,60%,55%)] to-[hsl(24,90%,55%)]">
+        {productImg ? (
+          <img src={productImg} alt={product.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-3xl drop-shadow-lg">{product.emoji}</div>
+        )}
+        <button
+          onClick={() => onOrder(product)}
+          className="absolute bottom-2 right-2 w-9 h-9 rounded-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+          aria-label={`Adicionar ${product.name}`}
+        >
+          <Plus size={18} strokeWidth={3} />
+        </button>
+      </div>
+    </article>
   );
 }
 
