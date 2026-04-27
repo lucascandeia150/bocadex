@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { AdBanner } from "@/components/AdBanner";
@@ -6,6 +6,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { CartFab } from "@/components/CartFab";
 import { BottomNav } from "@/components/BottomNav";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { ArrowLeft } from "lucide-react";
 import { useHistory } from "@/hooks/useHistory";
 import type { Food } from "@/data/foods";
 import HomePage from "./HomePage";
@@ -45,11 +46,7 @@ export default function AppLayout() {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col max-w-lg mx-auto w-full">
-          <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border h-14 flex items-center px-4 gap-3">
-            <SidebarTrigger className="h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-all animate-pulse [animation-iteration-count:2] [animation-duration:1.5s]" />
-            <span className="text-xs font-bold text-primary">Menu</span>
-            <span className="text-base font-black text-foreground ml-auto">EscolheAí</span>
-          </header>
+          <AppHeader />
 
           <main className="flex-1 pb-24">
             <Routes>
@@ -93,5 +90,31 @@ export default function AppLayout() {
       <InstallPrompt />
       <BottomNav />
     </SidebarProvider>
+  );
+}
+
+function AppHeader() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isHome = location.pathname === "/";
+  const isAdmin = location.pathname.startsWith("/admin/dashboard");
+
+  if (isAdmin) return null;
+
+  return (
+    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border h-14 flex items-center px-4 gap-2">
+      <SidebarTrigger className="h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-all" />
+      {!isHome && (
+        <button
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/"))}
+          aria-label="Voltar"
+          className="h-10 px-3 rounded-full bg-muted hover:bg-accent text-foreground flex items-center gap-1.5 active:scale-95 transition-all"
+        >
+          <ArrowLeft size={18} />
+          <span className="text-xs font-bold">Voltar</span>
+        </button>
+      )}
+      <span className="text-base font-black text-foreground ml-auto">EscolheAí</span>
+    </header>
   );
 }
