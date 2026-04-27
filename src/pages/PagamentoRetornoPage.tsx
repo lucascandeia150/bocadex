@@ -23,14 +23,6 @@ export default function PagamentoRetornoPage() {
     const poll = async () => {
       attempts += 1;
       try {
-        const { data, error } = await supabase.functions.invoke("mp-payment-status", {
-          body: null,
-        });
-        // edge function lê via query string; usar fetch direto
-        void data; void error;
-      } catch { /* ignore */ }
-
-      try {
         const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mp-payment-status?ref=${encodeURIComponent(ref)}`;
         const res = await fetch(url, {
           headers: {
