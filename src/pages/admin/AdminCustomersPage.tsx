@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Search, Phone, ShoppingBag, DollarSign } from "lucide-react";
+import { Users, Search, Phone, ShoppingBag, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Payment { id: string; status: string; amount: number; customer_name: string | null; customer_phone: string | null; created_at: string; }
 
@@ -8,6 +8,8 @@ export default function AdminCustomersPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 30;
 
   useEffect(() => {
     (async () => {
@@ -35,6 +37,10 @@ export default function AdminCustomersPage() {
     return list.filter((c) => c.name.toLowerCase().includes(s) || c.phone.includes(s));
   }, [payments, search]);
 
+  const totalPages = Math.max(1, Math.ceil(customers.length / PAGE_SIZE));
+  const pageItems = customers.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+  useEffect(() => { setPage(0); }, [search]);
+
   const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   return (
@@ -52,7 +58,7 @@ export default function AdminCustomersPage() {
           <div className="p-4 space-y-2">{[...Array(6)].map((_, i) => <div key={i} className="h-14 rounded-lg bg-muted animate-pulse" />)}</div>
         ) : customers.length === 0 ? (
           <div className="p-10 text-center"><Users className="mx-auto text-muted-foreground mb-2" size={28} /><p className="text-sm text-muted-foreground">Nenhum cliente encontrado.</p></div>
-        ) : customers.map((c) => (
+        ) : pageItems.map((c) => (
           <div key={c.phone} className="p-3 hover:bg-muted/30 transition-colors flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black text-xs shrink-0">{c.name.slice(0, 2).toUpperCase()}</div>
             <div className="min-w-0 flex-1">
@@ -66,6 +72,13 @@ export default function AdminCustomersPage() {
           </div>
         ))}
       </div>
+      {customers.length > PAGE_SIZE && (
+        <div className="flex items-center justify-end gap-2">
+          <button disabled={page === 0} onClick={() => setPage(Math.max(0, page - 1))} className="flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 disabled:opacity-40"><ChevronLeft size={12} /> Anterior</button>
+          <span className="text-xs text-muted-foreground">{page + 1} / {totalPages}</span>
+          <button disabled={page + 1 >= totalPages} onClick={() => setPage(Math.min(totalPages - 1, page + 1))} className="flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 disabled:opacity-40">Próxima <ChevronRight size={12} /></button>
+        </div>
+      )}
     </div>
   );
 }
