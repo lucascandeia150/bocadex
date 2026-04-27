@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { Search, X, Clock, DollarSign, Sparkles, RotateCcw, ArrowLeft, Bookmark, Loader2, ChefHat, Lightbulb, ShoppingCart, ExternalLink } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
 import { allItems, type Food } from "@/data/foods";
 import { RecipeModal } from "@/components/RecipeModal";
 import { supabase } from "@/integrations/supabase/client";
@@ -104,7 +103,6 @@ export default function BuscarPage() {
 
   return (
     <div className="px-4 pt-6 pb-10">
-      <BackButton />
       {/* Header */}
       <div className="text-center mb-5 animate-bounce-in">
         <Search className="mx-auto text-primary mb-2" size={32} />

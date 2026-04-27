@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Mail, Handshake, HelpCircle, Heart, Send, MessageSquare, Lightbulb, Store } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
-import { BackButton } from "@/components/BackButton";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function ContatoPage() {
@@ -34,7 +33,6 @@ export default function ContatoPage() {
 
   return (
     <div className="flex flex-col items-center px-6 pt-8 pb-10 gap-5">
-      <BackButton />
       <div className="text-center animate-bounce-in">
         <img src={logo} alt="EscolheAí" className="w-20 h-20 mx-auto mb-2 object-contain drop-shadow-lg" />
         <h1 className="text-2xl font-black text-foreground">Fale com a gente 📩</h1>

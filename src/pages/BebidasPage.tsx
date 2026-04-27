@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BackButton } from "@/components/BackButton";
 import { RecipeModal } from "@/components/RecipeModal";
 import { drinks } from "@/data/foods";
 import { stores } from "@/data/stores";
@@ -47,7 +46,6 @@ export default function BebidasPage() {
 
   return (
     <div className="px-4 pt-8 pb-10">
-      <BackButton />
 
       {/* Header */}
       <div className="text-center mb-6 animate-bounce-in">
