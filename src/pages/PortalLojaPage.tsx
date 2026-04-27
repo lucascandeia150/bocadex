@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound, BarChart3 } from "lucide-react";
+import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound, BarChart3, ChefHat, Bike, CheckCircle2 } from "lucide-react";
 import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
 import PartnerStoreTab from "@/components/portal/PartnerStoreTab";
 import PartnerDashboardTab from "@/components/portal/PartnerDashboardTab";
@@ -29,10 +29,10 @@ interface Delivery {
 }
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
-  disponivel: { label: "Aguardando entregador", color: "bg-blue-500/10 text-blue-600" },
-  aceita: { label: "Aceita", color: "bg-yellow-500/10 text-yellow-600" },
-  em_andamento: { label: "Em andamento", color: "bg-orange-500/10 text-orange-600" },
-  concluida: { label: "Finalizado", color: "bg-green-500/10 text-green-600" },
+  disponivel: { label: "💰 Pago — pendente", color: "bg-blue-500/10 text-blue-600" },
+  aceita: { label: "👨‍🍳 Em preparo", color: "bg-yellow-500/10 text-yellow-600" },
+  em_andamento: { label: "🛵 Saiu p/ entrega", color: "bg-orange-500/10 text-orange-600" },
+  concluida: { label: "✅ Entregue", color: "bg-green-500/10 text-green-600" },
   cancelada: { label: "Cancelada", color: "bg-red-500/10 text-red-600" },
 };
 
