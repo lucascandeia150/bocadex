@@ -4,13 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   LayoutDashboard, ShoppingBag, Store, Package, Users, DollarSign, Star,
-  Settings, ScrollText, LogOut, Bell, Menu, X, Activity, ChevronRight
+  Settings, ScrollText, LogOut, Bell, Menu, X, Activity, ChevronRight,
+  type LucideIcon
 } from "lucide-react";
 
 interface NavItem {
   to: string;
   label: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
   end?: boolean;
 }
 
