@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle2, Clock, XCircle, Loader2, Home } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 
 type Status = "loading" | "approved" | "pending" | "failed" | "not_found";
 
@@ -22,14 +21,6 @@ export default function PagamentoRetornoPage() {
 
     const poll = async () => {
       attempts += 1;
-      try {
-        const { data, error } = await supabase.functions.invoke("mp-payment-status", {
-          body: null,
-        });
-        // edge function lê via query string; usar fetch direto
-        void data; void error;
-      } catch { /* ignore */ }
-
       try {
         const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mp-payment-status?ref=${encodeURIComponent(ref)}`;
         const res = await fetch(url, {
