@@ -342,46 +342,73 @@ export default function CarrinhoPage() {
           )}
         </div>
 
-        {/* Total */}
-        <div className="rounded-2xl bg-accent/40 p-4 flex items-center justify-between">
-          <div>
-            <p className="text-[11px] font-bold text-muted-foreground uppercase">Total</p>
-            <p className="text-xs text-muted-foreground">{totalItems} {totalItems === 1 ? "item" : "itens"}</p>
+        {/* Resumo */}
+        <div className="rounded-2xl border border-border bg-card p-4 space-y-2 animate-slide-up">
+          <p className="text-xs font-black text-foreground uppercase tracking-wide mb-2">Resumo</p>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Subtotal ({totalItems} {totalItems === 1 ? "item" : "itens"})</span>
+            <span className="font-bold text-foreground">R${totalValue.toFixed(2)}</span>
           </div>
-          <p className="text-2xl font-black text-primary">R${totalValue.toFixed(2)}</p>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Taxa de entrega</span>
+            <span className="font-bold text-muted-foreground text-xs">
+              {mode === "entrega" && partnerHasDelivery ? "Combinada na entrega" : "—"}
+            </span>
+          </div>
+          <div className="border-t border-border pt-2 mt-1 flex items-end justify-between">
+            <div>
+              <p className="text-[11px] font-bold text-muted-foreground uppercase">Total</p>
+            </div>
+            <p className="text-2xl font-black text-primary leading-none">R${totalValue.toFixed(2)}</p>
+          </div>
         </div>
       </div>
 
       {/* CTA fixo */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-40">
         <div className="max-w-sm mx-auto space-y-2">
-          {mode === "entrega" && partnerHasDelivery && (
-            <button
-              onClick={payWithMercadoPago}
-              disabled={payingMp || submitting}
-              className="w-full bg-[hsl(210,90%,50%)] hover:bg-[hsl(210,90%,45%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-base shadow-lg"
-            >
-              <CreditCard size={18} />
-              {payingMp ? "Abrindo Mercado Pago..." : "Pagar com Mercado Pago (PIX/cartão)"}
-            </button>
-          )}
-          <button
-            onClick={confirmOrder}
-            disabled={submitting}
-            className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] disabled:opacity-60 text-white font-black py-3.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-lg"
-          >
-            <Zap size={18} />
-            {submitting ? "Enviando..." : (mode === "entrega" && partnerHasDelivery ? "Pedir sem pagar agora (combina na entrega)" : "Finalizar pedido")}
-          </button>
-          {mode === "retirar" && (
-            <p className="text-[10px] text-center text-muted-foreground">
-              O pedido será enviado direto para a loja via WhatsApp.
-            </p>
-          )}
-          {mode === "entrega" && partnerHasDelivery && (
-            <p className="text-[10px] text-center text-muted-foreground">
-              O pedido será enviado para entregadores disponíveis no app.
-            </p>
+          {mode === "entrega" && partnerHasDelivery ? (
+            <>
+              <button
+                onClick={payWithMercadoPago}
+                disabled={payingMp || submitting}
+                className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
+              >
+                <span className="flex items-center gap-2">
+                  <CreditCard size={20} />
+                  {payingMp ? "Abrindo pagamento..." : "Ir para pagamento"}
+                </span>
+                <span className="font-black">R${totalValue.toFixed(2)}</span>
+              </button>
+              <button
+                onClick={confirmOrder}
+                disabled={submitting}
+                className="w-full bg-card border-2 border-border hover:bg-accent disabled:opacity-60 text-foreground font-bold py-2.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-xs"
+              >
+                <Zap size={14} />
+                {submitting ? "Enviando..." : "Pedir sem pagar agora (combinar na entrega)"}
+              </button>
+              <p className="text-[10px] text-center text-muted-foreground">
+                Pague online com PIX ou cartão · Entregador a caminho assim que aprovar
+              </p>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={confirmOrder}
+                disabled={submitting}
+                className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
+              >
+                <span className="flex items-center gap-2">
+                  <Zap size={20} />
+                  {submitting ? "Enviando..." : "Finalizar pedido"}
+                </span>
+                <span className="font-black">R${totalValue.toFixed(2)}</span>
+              </button>
+              <p className="text-[10px] text-center text-muted-foreground">
+                O pedido será enviado direto para a loja via WhatsApp.
+              </p>
+            </>
           )}
         </div>
       </div>
