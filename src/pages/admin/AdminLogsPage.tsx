@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ScrollText, RefreshCw, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { ScrollText, RefreshCw, Filter, ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 interface Log { id: string; actor_type: string; actor_label: string | null; action: string; entity_type: string | null; entity_id: string | null; description: string; metadata: Record<string, unknown>; created_at: string; }
 
@@ -14,6 +14,7 @@ export default function AdminLogsPage() {
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
   const PAGE_SIZE = 50;
@@ -28,6 +29,7 @@ export default function AdminLogsPage() {
       .order("created_at", { ascending: false })
       .range(from, to);
     if (filter !== "all") q = q.eq("actor_type", filter);
+    if (search.trim()) q = q.or(`action.ilike.%${search}%,description.ilike.%${search}%,actor_label.ilike.%${search}%`);
     const { data, count } = await q;
     setLogs((data as Log[]) || []);
     setTotal(count || 0);
@@ -57,6 +59,16 @@ export default function AdminLogsPage() {
         {["all", "admin", "partner", "courier", "customer", "webhook", "system"].map((f) => (
           <button key={f} onClick={() => { setFilter(f); setPage(0); }} className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-bold capitalize transition-colors ${filter === f ? "bg-foreground text-background" : "bg-muted text-muted-foreground hover:text-foreground"}`}>{f === "all" ? "Todos" : f}</button>
         ))}
+      </div>
+      <div className="relative">
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") { setPage(0); load(); } }}
+          placeholder="Buscar por ação, descrição ou autor... (Enter)"
+          className="w-full bg-card border border-border rounded-xl pl-9 pr-3 py-2.5 text-sm"
+        />
       </div>
       <div className="bg-card border border-border rounded-2xl divide-y divide-border overflow-hidden">
         {loading ? (

@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   LayoutDashboard, ShoppingBag, Store, Package, Users, DollarSign, Star,
-  Settings, ScrollText, LogOut, Bell, Menu, X, Activity, ChevronRight,
+  Settings, ScrollText, LogOut, Menu, X, Activity, ChevronRight,
   type LucideIcon
 } from "lucide-react";
+import AdminNotificationCenter from "@/components/admin/AdminNotificationCenter";
 
 interface NavItem {
   to: string;
@@ -192,12 +193,7 @@ export default function AdminLayout() {
               <Activity size={11} />
               {systemOk ? "Sistema operacional" : "Indisponível"}
             </div>
-            <button className="relative p-2 rounded-lg hover:bg-muted text-muted-foreground" title="Notificações">
-              <Bell size={16} />
-              {pendingCount > 0 && (
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500" />
-              )}
-            </button>
+            <AdminNotificationCenter />
           </div>
         </header>
 
