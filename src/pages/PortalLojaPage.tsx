@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings } from "lucide-react";
+import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound } from "lucide-react";
 import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
 import PartnerStoreTab from "@/components/portal/PartnerStoreTab";
 
@@ -47,6 +47,14 @@ export default function PortalLojaPage() {
   const [stars, setStars] = useState(5);
   const [comment, setComment] = useState("");
 
+  // Auth (email/senha)
+  const [authMode, setAuthMode] = useState<"email" | "pin">("email");
+  const [authTab, setAuthTab] = useState<"signin" | "signup">("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [linkPin, setLinkPin] = useState("");
+  const [needsLink, setNeedsLink] = useState(false);
+
   // form
   const [orderDesc, setOrderDesc] = useState("");
   const [address, setAddress] = useState("");
@@ -60,8 +68,76 @@ export default function PortalLojaPage() {
       setPin(saved);
       tryLogin(saved, true);
     }
+    // Auto-restore from auth session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user && !saved) {
+        resolvePinFromUser(session.user.id);
+      }
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user && !partner) {
+        // defer to avoid deadlock
+        setTimeout(() => resolvePinFromUser(session.user.id), 0);
+      }
+    });
+    return () => subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // After auth login, find the partner linked to this user_id and reuse the existing PIN-based RPCs
+  const resolvePinFromUser = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("partner_applications")
+      .select("access_pin")
+      .eq("user_id", userId)
+      .eq("status", "approved")
+      .eq("is_active", true)
+      .maybeSingle();
+    if (error || !data?.access_pin) {
+      setNeedsLink(true);
+      return;
+    }
+    setNeedsLink(false);
+    setPin(data.access_pin);
+    tryLogin(data.access_pin, true);
+  };
+
+  const signIn = async () => {
+    if (!email || !password) { toast.error("Preencha email e senha"); return; }
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Login realizado ✅");
+  };
+
+  const signUp = async () => {
+    if (!email || password.length < 6) { toast.error("Email e senha (mín. 6) obrigatórios"); return; }
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/portal-loja` },
+    });
+    setLoading(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Cadastro feito! Verifique seu email para confirmar.");
+    setAuthTab("signin");
+  };
+
+  const linkAccount = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) { toast.error("Faça login primeiro"); return; }
+    if (linkPin.length !== 6) { toast.error("Informe o PIN de 6 dígitos"); return; }
+    setLoading(true);
+    const { error } = await supabase.rpc("partner_link_user", { _pin: linkPin, _user_id: session.user.id });
+    setLoading(false);
+    if (error) { toast.error(error.message || "Erro ao vincular"); return; }
+    toast.success("Conta vinculada à loja ✅");
+    setNeedsLink(false);
+    setPin(linkPin);
+    tryLogin(linkPin, true);
+  };
 
   const tryLogin = async (code: string, silent = false) => {
     setLoading(true);
@@ -143,11 +219,13 @@ export default function PortalLojaPage() {
     setComment("");
   };
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.removeItem(PIN_KEY);
     setPartner(null);
     setPin("");
     setDeliveries([]);
+    setNeedsLink(false);
+    await supabase.auth.signOut();
   };
 
   const submit = async () => {
