@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package } from "lucide-react";
+import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings } from "lucide-react";
 import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
+import PartnerStoreTab from "@/components/portal/PartnerStoreTab";
 
 interface Partner {
   id: string;
@@ -10,6 +11,7 @@ interface Partner {
   address: string;
   whatsapp: string;
   uses_app_courier?: boolean;
+  is_open?: boolean;
 }
 
 interface Delivery {
@@ -39,7 +41,7 @@ export default function PortalLojaPage() {
   const [partner, setPartner] = useState<Partner | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState<"list" | "new" | "products">("list");
+  const [tab, setTab] = useState<"list" | "new" | "products" | "store">("list");
   const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
   const [rateModal, setRateModal] = useState<Delivery | null>(null);
   const [stars, setStars] = useState(5);
@@ -71,14 +73,15 @@ export default function PortalLojaPage() {
       setPartner(null);
       return;
     }
-    const p = data[0] as Partner;
-    // fetch uses_app_courier flag (not exposed by RPC)
-    const { data: pa } = await supabase
-      .from("partner_applications")
-      .select("uses_app_courier")
-      .eq("id", p.id)
-      .maybeSingle();
-    const merged = { ...p, uses_app_courier: !!pa?.uses_app_courier };
+    const p = data[0] as any;
+    const merged: Partner = {
+      id: p.id,
+      business_name: p.business_name,
+      address: p.address,
+      whatsapp: p.whatsapp,
+      uses_app_courier: !!p.uses_app_courier,
+      is_open: p.is_open !== false,
+    };
     setPartner(merged);
     setAddress(p.address);
     localStorage.setItem(PIN_KEY, code);
@@ -216,7 +219,12 @@ export default function PortalLojaPage() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-[10px] text-muted-foreground">Portal da loja</p>
-          <h1 className="text-base font-black text-foreground">{partner.business_name}</h1>
+          <h1 className="text-base font-black text-foreground flex items-center gap-2">
+            {partner.business_name}
+            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md ${partner.is_open ? "bg-green-500/10 text-green-600" : "bg-red-500/10 text-red-600"}`}>
+              {partner.is_open ? "🟢 Aberta" : "🔴 Fechada"}
+            </span>
+          </h1>
         </div>
         <button onClick={logout} className="p-2 rounded-xl bg-destructive/10 text-destructive">
           <LogOut size={14} />
@@ -261,12 +269,25 @@ export default function PortalLojaPage() {
         >
           <Package size={12} className="inline" /> Produtos
         </button>
+        <button
+          onClick={() => setTab("store")}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "store" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+        >
+          <Settings size={12} className="inline" /> Loja
+        </button>
         <button onClick={() => loadDeliveries(pin)} className="p-2 rounded-xl bg-muted">
           <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
         </button>
       </div>
 
       {tab === "products" && <PartnerProductsTab pin={pin} />}
+
+      {tab === "store" && (
+        <PartnerStoreTab
+          pin={pin}
+          onChanged={(s) => setPartner((prev) => prev ? { ...prev, business_name: s.business_name, address: s.address, whatsapp: s.whatsapp, is_open: s.is_open } : prev)}
+        />
+      )}
 
       {tab === "new" && (
         <div className="bg-card rounded-2xl border border-border p-4 space-y-3">
