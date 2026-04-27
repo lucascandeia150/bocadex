@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound, BarChart3, ChefHat, Bike, CheckCircle2 } from "lucide-react";
+import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound, BarChart3, ChefHat, Bike, CheckCircle2, Power, Clock, DollarSign, Bell } from "lucide-react";
 import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
 import PartnerStoreTab from "@/components/portal/PartnerStoreTab";
 import PartnerDashboardTab from "@/components/portal/PartnerDashboardTab";
@@ -407,81 +407,127 @@ export default function PortalLojaPage() {
     );
   }
 
+  const newOrdersCount = deliveries.filter(d => d.status === "disponivel").length;
+
+  const toggleStoreOpen = async () => {
+    const { data, error } = await supabase.rpc("partner_toggle_open", { _pin: pin });
+    if (error) { toast.error(error.message || "Erro"); return; }
+    const s = data as any;
+    setPartner((prev) => prev ? { ...prev, is_open: s.is_open } : prev);
+    toast.success(s.is_open ? "🟢 Loja aberta" : "🔴 Loja fechada");
+  };
+
+  const tabs: { id: typeof tab; label: string; icon: React.ReactNode; badge?: number }[] = [
+    { id: "dash", label: "Início", icon: <BarChart3 size={16} /> },
+    { id: "list", label: "Pedidos", icon: <Package size={16} />, badge: newOrdersCount },
+    { id: "new", label: "Novo", icon: <Plus size={16} /> },
+    { id: "products", label: "Cardápio", icon: <ChefHat size={16} /> },
+    { id: "store", label: "Loja", icon: <Settings size={16} /> },
+  ];
+
   return (
-    <div className="p-4 max-w-md mx-auto space-y-3 animate-slide-up">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-[10px] text-muted-foreground">Portal da loja</p>
-          <h1 className="text-base font-black text-foreground flex items-center gap-2">
-            {partner.business_name}
-            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md ${partner.is_open ? "bg-green-500/10 text-green-600" : "bg-red-500/10 text-red-600"}`}>
-              {partner.is_open ? "🟢 Aberta" : "🔴 Fechada"}
-            </span>
-          </h1>
-        </div>
-        <button onClick={logout} className="p-2 rounded-xl bg-destructive/10 text-destructive">
-          <LogOut size={14} />
-        </button>
-      </div>
-
-      <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-xs text-foreground">
-        💡 O pagamento da entrega é combinado diretamente entre loja e entregador.
-      </div>
-
-      {partner.uses_app_courier && (
-        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 text-xs text-foreground">
-          💡 Ao utilizar entregadores do app EscolheAí, será aplicada uma <b>taxa de 8%</b> sobre o valor do pedido.
-        </div>
-      )}
-
-      {deliveries.length > 0 && (
-        <div className="grid grid-cols-4 gap-2">
-          <StatBox label="Aguard." count={deliveries.filter(d => d.status === "disponivel").length} color="blue" />
-          <StatBox label="Aceitos" count={deliveries.filter(d => d.status === "aceita" || d.status === "em_andamento").length} color="orange" />
-          <StatBox label="Final." count={deliveries.filter(d => d.status === "concluida").length} color="green" />
-          <StatBox label="Total" count={deliveries.length} color="primary" />
-        </div>
-      )}
-
-      <div className="space-y-2">
-        <div className="flex gap-2">
-          <button
-            onClick={() => setTab("dash")}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "dash" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-          >
-            <BarChart3 size={12} className="inline mr-1" /> Dashboard
+    <div className="max-w-md mx-auto animate-slide-up pb-4">
+      {/* Sticky branded header */}
+      <div className="sticky top-14 z-30 bg-gradient-to-br from-primary via-primary to-orange-500 text-primary-foreground px-4 pt-4 pb-5 rounded-b-3xl shadow-lg shadow-primary/20">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] uppercase tracking-widest opacity-80 font-bold">Portal da loja</p>
+            <h1 className="text-lg font-black truncate">{partner.business_name}</h1>
+          </div>
+          <button onClick={logout} className="p-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 transition-all" title="Sair">
+            <LogOut size={14} />
           </button>
+        </div>
+
+        {/* Open/Close toggle */}
+        <button
+          onClick={toggleStoreOpen}
+          className={`mt-3 w-full flex items-center justify-between gap-2 rounded-2xl px-4 py-2.5 font-bold text-xs active:scale-[.98] transition-all ${
+            partner.is_open
+              ? "bg-white text-green-600 shadow-md"
+              : "bg-red-500/90 text-white"
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            <span className={`relative flex h-2.5 w-2.5`}>
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${partner.is_open ? "bg-green-500" : "bg-white"}`}></span>
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${partner.is_open ? "bg-green-500" : "bg-white"}`}></span>
+            </span>
+            {partner.is_open ? "Loja aberta — recebendo pedidos" : "Loja fechada"}
+          </span>
+          <span className="flex items-center gap-1 text-[10px] uppercase opacity-90">
+            <Power size={11} /> {partner.is_open ? "Fechar" : "Abrir"}
+          </span>
+        </button>
+
+        {/* Quick stats */}
+        <div className="grid grid-cols-3 gap-2 mt-3">
+          <HeroStat icon={<Bell size={12} />} label="Novos" value={newOrdersCount} />
+          <HeroStat icon={<Clock size={12} />} label="Em curso" value={deliveries.filter(d => d.status === "aceita" || d.status === "em_andamento").length} />
+          <HeroStat icon={<CheckCircle2 size={12} />} label="Hoje" value={deliveries.filter(d => {
+            const t = new Date(d.created_at); const now = new Date();
+            return t.getDate() === now.getDate() && t.getMonth() === now.getMonth() && t.getFullYear() === now.getFullYear();
+          }).length} />
+        </div>
+      </div>
+
+      <div className="px-4 pt-4 space-y-3">
+        {newOrdersCount > 0 && (
           <button
             onClick={() => setTab("list")}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "list" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+            className="w-full bg-blue-500/10 border border-blue-500/40 rounded-2xl p-3 flex items-center gap-3 active:scale-[.98] transition-all"
           >
-            📦 Pedidos
+            <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 animate-pulse">
+              <Bell size={18} />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-black text-blue-700">
+                {newOrdersCount} {newOrdersCount === 1 ? "novo pedido pago" : "novos pedidos pagos"}
+              </p>
+              <p className="text-[11px] text-blue-600">Toque para visualizar e iniciar o preparo</p>
+            </div>
           </button>
+        )}
+
+        {partner.uses_app_courier && (
+          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl px-3 py-2 text-[11px] text-foreground flex items-start gap-2">
+            <DollarSign size={14} className="text-yellow-600 shrink-0 mt-0.5" />
+            <span>Ao usar entregadores do app, é cobrada <b>taxa de 8%</b> sobre o valor do pedido.</span>
+          </div>
+        )}
+
+        {/* Tab pill bar — horizontal scroll */}
+        <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1 scrollbar-hide">
+          {tabs.map((t) => {
+            const active = tab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                className={`relative shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all active:scale-95 ${
+                  active
+                    ? "bg-foreground text-background shadow-md"
+                    : "bg-muted text-muted-foreground hover:bg-muted/70"
+                }`}
+              >
+                {t.icon}
+                {t.label}
+                {t.badge && t.badge > 0 ? (
+                  <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] text-[10px] font-black rounded-full bg-red-500 text-white px-1">
+                    {t.badge}
+                  </span>
+                ) : null}
+              </button>
+            );
+          })}
           <button
-            onClick={() => setTab("new")}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "new" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+            onClick={() => loadDeliveries(pin)}
+            className="shrink-0 p-2 rounded-full bg-muted active:scale-95"
+            title="Atualizar"
           >
-            <Plus size={12} className="inline" /> Novo
-          </button>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setTab("products")}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "products" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-          >
-            <Package size={12} className="inline" /> Produtos
-          </button>
-          <button
-            onClick={() => setTab("store")}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "store" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-          >
-            <Settings size={12} className="inline" /> Loja
-          </button>
-          <button onClick={() => loadDeliveries(pin)} className="p-2 rounded-xl bg-muted">
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           </button>
         </div>
-      </div>
 
       {tab === "dash" && <PartnerDashboardTab deliveries={deliveries} />}
 
@@ -534,7 +580,11 @@ export default function PortalLojaPage() {
       {tab === "list" && (
         <div className="space-y-2">
           {deliveries.length === 0 && (
-            <p className="text-center text-muted-foreground text-sm py-10">Nenhum pedido ainda 📭</p>
+            <div className="text-center py-12 space-y-2">
+              <div className="text-5xl">📭</div>
+              <p className="text-sm font-bold text-foreground">Nenhum pedido ainda</p>
+              <p className="text-xs text-muted-foreground">Os pedidos aparecerão aqui em tempo real.</p>
+            </div>
           )}
           {deliveries.map((d) => {
             const s = STATUS_LABEL[d.status] || STATUS_LABEL.disponivel;
@@ -643,6 +693,7 @@ export default function PortalLojaPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
@@ -688,6 +739,17 @@ function StatBox({ label, count, color }: { label: string; count: number; color:
     <div className={`border rounded-xl p-2 text-center ${colorMap[color]}`}>
       <p className="text-lg font-black text-foreground">{count}</p>
       <p className="text-[9px] font-bold uppercase tracking-wide">{label}</p>
+    </div>
+  );
+}
+
+function HeroStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
+  return (
+    <div className="bg-white/15 backdrop-blur-sm rounded-xl px-2 py-2 text-center">
+      <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase tracking-wide opacity-90">
+        {icon} {label}
+      </div>
+      <p className="text-xl font-black mt-0.5">{value}</p>
     </div>
   );
 }
