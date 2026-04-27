@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X } from "lucide-react";
+import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package } from "lucide-react";
+import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
 
 interface Partner {
   id: string;
@@ -38,7 +39,7 @@ export default function PortalLojaPage() {
   const [partner, setPartner] = useState<Partner | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState<"list" | "new">("list");
+  const [tab, setTab] = useState<"list" | "new" | "products">("list");
   const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
   const [rateModal, setRateModal] = useState<Delivery | null>(null);
   const [stars, setStars] = useState(5);
@@ -246,7 +247,7 @@ export default function PortalLojaPage() {
           onClick={() => setTab("list")}
           className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "list" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
         >
-          📦 Meus pedidos
+          📦 Pedidos
         </button>
         <button
           onClick={() => setTab("new")}
@@ -254,10 +255,18 @@ export default function PortalLojaPage() {
         >
           <Plus size={12} className="inline" /> Novo
         </button>
+        <button
+          onClick={() => setTab("products")}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "products" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+        >
+          <Package size={12} className="inline" /> Produtos
+        </button>
         <button onClick={() => loadDeliveries(pin)} className="p-2 rounded-xl bg-muted">
           <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
         </button>
       </div>
+
+      {tab === "products" && <PartnerProductsTab pin={pin} />}
 
       {tab === "new" && (
         <div className="bg-card rounded-2xl border border-border p-4 space-y-3">
