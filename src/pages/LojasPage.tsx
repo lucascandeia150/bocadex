@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { StoreCategory, stores, categoryLabels, getAllCategories } from "@/data/stores";
 import { ShoppingBag, Flame, Handshake } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { BackButton } from "@/components/BackButton";
 import { CardParceiro } from "@/components/CardParceiro";
 
 interface DbPartner {
@@ -62,7 +61,6 @@ export default function LojasPage() {
 
   return (
     <div className="px-4 pt-6 pb-10">
-      <BackButton />
       <div className="text-center mb-6 animate-bounce-in">
         <ShoppingBag className="mx-auto text-primary mb-2" size={32} />
         <h1 className="text-2xl font-black text-foreground">Explorar Lojas 🛍️</h1>

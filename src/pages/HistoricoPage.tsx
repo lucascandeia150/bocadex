@@ -1,6 +1,5 @@
 import type { HistoryEntry } from "@/hooks/useHistory";
 import { Clock, Trash2 } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
 
 interface HistoricoPageProps {
   history: HistoryEntry[];
@@ -21,7 +20,6 @@ function timeAgo(ts: number): string {
 export default function HistoricoPage({ history, onClear }: HistoricoPageProps) {
   return (
     <div className="px-4 pt-6 pb-10">
-      <BackButton />
       <div className="text-center mb-6 animate-bounce-in">
         <Clock className="mx-auto text-primary mb-2" size={32} />
         <h1 className="text-2xl font-black text-foreground">Histórico</h1>

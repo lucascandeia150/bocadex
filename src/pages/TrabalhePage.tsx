@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { Rocket, Truck } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
 
 export default function TrabalhePage() {
   const navigate = useNavigate();
@@ -28,7 +27,6 @@ export default function TrabalhePage() {
 
   return (
     <div className="p-4 max-w-md mx-auto space-y-4 animate-slide-up">
-      <BackButton />
       <div className="text-center space-y-1">
         <h1 className="text-2xl font-black text-foreground">🤝 Trabalhe com a gente</h1>
         <p className="text-xs text-muted-foreground">
