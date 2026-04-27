@@ -35,15 +35,18 @@ export function BottomNav() {
               to={tab.to}
               end={tab.end}
               className={({ isActive }) =>
-                `flex-1 flex flex-col items-center justify-center py-2 gap-0.5 relative transition-colors ${
+                `flex-1 flex flex-col items-center justify-center py-2.5 gap-1 relative transition-colors ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`
               }
             >
               {({ isActive }) => (
                 <>
+                  {isActive && (
+                    <span className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-1 rounded-b-full bg-primary" />
+                  )}
                   <div className="relative">
-                    <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                    <Icon size={isActive ? 24 : 22} strokeWidth={isActive ? 2.5 : 2} />
                     {tab.badge && totalItems > 0 && (
                       <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-[hsl(142,70%,45%)] text-white text-[10px] font-black flex items-center justify-center">
                         {totalItems}
