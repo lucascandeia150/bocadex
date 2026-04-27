@@ -2,8 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 interface Body {
@@ -20,12 +19,18 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const token = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
+    const token = "APP_USR-8850508677496843-042515-20432e57cf8e5962675554af8699788f-3083015366";
     if (!token) throw new Error("MERCADOPAGO_ACCESS_TOKEN não configurado");
 
     const body = (await req.json()) as Body;
-    if (!body.partner_id || !body.customer_name || !body.customer_phone ||
-        !body.delivery_address || !body.order_description || !body.amount) {
+    if (
+      !body.partner_id ||
+      !body.customer_name ||
+      !body.customer_phone ||
+      !body.delivery_address ||
+      !body.order_description ||
+      !body.amount
+    ) {
       return new Response(JSON.stringify({ error: "Campos obrigatórios ausentes" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -39,10 +44,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     // valida parceiro aprovado/aberto
     const { data: partner, error: pErr } = await supabase
@@ -105,9 +107,7 @@ Deno.serve(async (req) => {
         customer_name: body.customer_name,
         customer_phone: body.customer_phone,
       },
-      back_urls: body.back_url
-        ? { success: body.back_url, failure: body.back_url, pending: body.back_url }
-        : undefined,
+      back_urls: body.back_url ? { success: body.back_url, failure: body.back_url, pending: body.back_url } : undefined,
       auto_return: body.back_url ? "approved" : undefined,
       statement_descriptor: "EscolheAi",
     };
@@ -129,23 +129,15 @@ Deno.serve(async (req) => {
       });
     }
 
-    await supabase
-      .from("payments")
-      .update({ mp_preference_id: mpData.id })
-      .eq("external_reference", externalReference);
+    await supabase.from("payments").update({ mp_preference_id: mpData.id }).eq("external_reference", externalReference);
 
-    const isTest = token.startsWith("TEST-");
-    const initPoint = isTest
-      ? (mpData.sandbox_init_point ?? mpData.init_point)
-      : (mpData.init_point ?? mpData.sandbox_init_point);
+    const initPoint = mpData.init_point;
 
     return new Response(
       JSON.stringify({
         external_reference: externalReference,
         preference_id: mpData.id,
         init_point: initPoint,
-        sandbox_init_point: mpData.sandbox_init_point,
-        is_test: isTest,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
