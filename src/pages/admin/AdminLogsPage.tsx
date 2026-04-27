@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ScrollText, RefreshCw, Filter } from "lucide-react";
+import { ScrollText, RefreshCw, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Log { id: string; actor_type: string; actor_label: string | null; action: string; entity_type: string | null; entity_id: string | null; description: string; metadata: Record<string, unknown>; created_at: string; }
 
@@ -14,36 +14,48 @@ export default function AdminLogsPage() {
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+  const [page, setPage] = useState(0);
+  const [total, setTotal] = useState(0);
+  const PAGE_SIZE = 50;
 
   const load = async () => {
     setLoading(true);
-    let q = supabase.from("admin_audit_logs").select("*").order("created_at", { ascending: false }).limit(200);
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    let q = supabase
+      .from("admin_audit_logs")
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(from, to);
     if (filter !== "all") q = q.eq("actor_type", filter);
-    const { data } = await q;
+    const { data, count } = await q;
     setLogs((data as Log[]) || []);
+    setTotal(count || 0);
     setLoading(false);
   };
 
   useEffect(() => {
     load();
-    const ch = supabase.channel("admin-logs").on("postgres_changes", { event: "INSERT", schema: "public", table: "admin_audit_logs" }, load).subscribe();
+    const ch = supabase.channel("admin-logs").on("postgres_changes", { event: "INSERT", schema: "public", table: "admin_audit_logs" }, () => { if (page === 0) load(); }).subscribe();
     return () => { supabase.removeChannel(ch); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
+  }, [filter, page]);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-black text-foreground">Logs / Auditoria</h1>
-          <p className="text-sm text-muted-foreground">{logs.length} eventos · atualiza em tempo real</p>
+          <p className="text-sm text-muted-foreground">{total} eventos · página {page + 1} de {totalPages}</p>
         </div>
         <button onClick={load} className="p-2 rounded-lg bg-muted hover:bg-muted/70" title="Atualizar"><RefreshCw size={14} className={loading ? "animate-spin" : ""} /></button>
       </div>
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
         <Filter size={14} className="text-muted-foreground shrink-0" />
         {["all", "admin", "partner", "courier", "customer", "webhook", "system"].map((f) => (
-          <button key={f} onClick={() => setFilter(f)} className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-bold capitalize transition-colors ${filter === f ? "bg-foreground text-background" : "bg-muted text-muted-foreground hover:text-foreground"}`}>{f === "all" ? "Todos" : f}</button>
+          <button key={f} onClick={() => { setFilter(f); setPage(0); }} className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-bold capitalize transition-colors ${filter === f ? "bg-foreground text-background" : "bg-muted text-muted-foreground hover:text-foreground"}`}>{f === "all" ? "Todos" : f}</button>
         ))}
       </div>
       <div className="bg-card border border-border rounded-2xl divide-y divide-border overflow-hidden">
@@ -63,6 +75,11 @@ export default function AdminLogsPage() {
             {l.actor_label && <p className="text-[10px] text-muted-foreground/70 mt-0.5">por {l.actor_label}</p>}
           </div>
         ))}
+      </div>
+      <div className="flex items-center justify-end gap-2">
+        <button disabled={page === 0} onClick={() => setPage(Math.max(0, page - 1))} className="flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 disabled:opacity-40"><ChevronLeft size={12} /> Anterior</button>
+        <span className="text-xs text-muted-foreground">{page + 1} / {totalPages}</span>
+        <button disabled={page + 1 >= totalPages} onClick={() => setPage(Math.min(totalPages - 1, page + 1))} className="flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 disabled:opacity-40">Próxima <ChevronRight size={12} /></button>
       </div>
     </div>
   );

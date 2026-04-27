@@ -138,6 +138,20 @@ Deno.serve(async (req) => {
       });
     }
 
+    // audit: status do pagamento atualizado
+    try {
+      await supabase.rpc("log_audit_event", {
+        _actor_type: "webhook",
+        _actor_id: String(payment_id),
+        _actor_label: "Mercado Pago",
+        _action: `payment.${status}`,
+        _entity_type: "payment",
+        _entity_id: payment.id,
+        _description: `Pagamento ${status} de R$ ${Number(payment.amount).toFixed(2)} — ${payment.customer_name}`,
+        _metadata: { external_reference: externalRef, mp_payment_id: String(payment_id), amount: payment.amount },
+      });
+    } catch (e) { console.warn("audit log falhou (payment)", e); }
+
     // só cria pedido se aprovado
     if (status !== "approved") {
       return new Response(JSON.stringify({ ok: true, status }), {
@@ -213,6 +227,19 @@ Deno.serve(async (req) => {
       delivery_id: delivery.id,
       external_reference: externalRef,
     });
+
+    try {
+      await supabase.rpc("log_audit_event", {
+        _actor_type: "webhook",
+        _actor_id: String(payment_id),
+        _actor_label: "Mercado Pago",
+        _action: "delivery.created",
+        _entity_type: "delivery",
+        _entity_id: delivery.id,
+        _description: `Pedido criado para ${partner?.business_name ?? "Loja"} — R$ ${Number(payment.amount).toFixed(2)}`,
+        _metadata: { partner_id: payment.partner_id, app_fee: appFee, fee, courier_payout: payout },
+      });
+    } catch (e) { console.warn("audit log falhou (delivery)", e); }
 
     return new Response(
       JSON.stringify({ ok: true, delivery_id: delivery.id }),
