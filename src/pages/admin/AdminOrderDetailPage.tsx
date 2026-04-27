@@ -300,7 +300,11 @@ export default function AdminOrderDetailPage() {
           <p className="text-xs font-black text-muted-foreground uppercase mb-3 flex items-center gap-1"><CreditCard size={11} /> Pagamento</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
             <KV label="Valor" value={fmt(Number(payment.amount))} />
-            <KV label="External Ref" value={payment.external_reference.slice(0, 16) + "..."} onCopy={() => copy(payment.external_reference, "Referência")} />
+            <KV
+              label="External Ref"
+              value={payment.external_reference ? `${payment.external_reference.slice(0, 16)}...` : "—"}
+              onCopy={payment.external_reference ? () => copy(payment.external_reference, "Referência") : undefined}
+            />
             <KV label="MP Payment ID" value={payment.mp_payment_id || "—"} onCopy={payment.mp_payment_id ? () => copy(payment.mp_payment_id!, "ID MP") : undefined} />
             <KV label="Criado" value={new Date(payment.created_at).toLocaleString("pt-BR")} />
           </div>
