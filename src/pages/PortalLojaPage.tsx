@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound } from "lucide-react";
+import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound, BarChart3 } from "lucide-react";
 import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
 import PartnerStoreTab from "@/components/portal/PartnerStoreTab";
+import PartnerDashboardTab from "@/components/portal/PartnerDashboardTab";
 
 interface Partner {
   id: string;
@@ -24,6 +25,7 @@ interface Delivery {
   status: string;
   courier_id: string | null;
   created_at: string;
+  order_value?: number;
 }
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
@@ -41,7 +43,7 @@ export default function PortalLojaPage() {
   const [partner, setPartner] = useState<Partner | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState<"list" | "new" | "products" | "store">("list");
+  const [tab, setTab] = useState<"dash" | "list" | "new" | "products" | "store">("dash");
   const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
   const [rateModal, setRateModal] = useState<Delivery | null>(null);
   const [stars, setStars] = useState(5);
@@ -421,35 +423,47 @@ export default function PortalLojaPage() {
         </div>
       )}
 
-      <div className="flex gap-2">
-        <button
-          onClick={() => setTab("list")}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "list" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-        >
-          📦 Pedidos
-        </button>
-        <button
-          onClick={() => setTab("new")}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "new" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-        >
-          <Plus size={12} className="inline" /> Novo
-        </button>
-        <button
-          onClick={() => setTab("products")}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "products" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-        >
-          <Package size={12} className="inline" /> Produtos
-        </button>
-        <button
-          onClick={() => setTab("store")}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "store" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-        >
-          <Settings size={12} className="inline" /> Loja
-        </button>
-        <button onClick={() => loadDeliveries(pin)} className="p-2 rounded-xl bg-muted">
-          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-        </button>
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setTab("dash")}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "dash" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+          >
+            <BarChart3 size={12} className="inline mr-1" /> Dashboard
+          </button>
+          <button
+            onClick={() => setTab("list")}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "list" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+          >
+            📦 Pedidos
+          </button>
+          <button
+            onClick={() => setTab("new")}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "new" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+          >
+            <Plus size={12} className="inline" /> Novo
+          </button>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setTab("products")}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "products" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+          >
+            <Package size={12} className="inline" /> Produtos
+          </button>
+          <button
+            onClick={() => setTab("store")}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold ${tab === "store" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+          >
+            <Settings size={12} className="inline" /> Loja
+          </button>
+          <button onClick={() => loadDeliveries(pin)} className="p-2 rounded-xl bg-muted">
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+          </button>
+        </div>
       </div>
+
+      {tab === "dash" && <PartnerDashboardTab deliveries={deliveries} />}
 
       {tab === "products" && <PartnerProductsTab pin={pin} />}
 
