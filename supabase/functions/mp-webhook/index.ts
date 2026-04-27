@@ -1,0 +1,229 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-signature, x-request-id",
+};
+
+// Valida assinatura do webhook do Mercado Pago (x-signature + x-request-id)
+// https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks
+async function verifySignature(req: Request, dataId: string): Promise<boolean> {
+  const secret = Deno.env.get("MERCADOPAGO_WEBHOOK_SECRET");
+  if (!secret) return true; // se não configurado, não bloqueia (dev)
+
+  const xSignature = req.headers.get("x-signature");
+  const xRequestId = req.headers.get("x-request-id");
+  if (!xSignature || !xRequestId) return false;
+
+  const parts = Object.fromEntries(
+    xSignature.split(",").map((p) => p.trim().split("=").map((s) => s.trim())),
+  );
+  const ts = parts.ts;
+  const v1 = parts.v1;
+  if (!ts || !v1) return false;
+
+  const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sigBuf = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(manifest));
+  const hex = Array.from(new Uint8Array(sigBuf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hex === v1;
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  try {
+    const url = new URL(req.url);
+    let payment_id =
+      url.searchParams.get("data.id") ||
+      url.searchParams.get("id") ||
+      "";
+    let topic =
+      url.searchParams.get("type") ||
+      url.searchParams.get("topic") ||
+      "";
+
+    let bodyJson: any = null;
+    try {
+      bodyJson = await req.json();
+    } catch {
+      bodyJson = null;
+    }
+    if (bodyJson) {
+      payment_id = payment_id || bodyJson?.data?.id || bodyJson?.id || "";
+      topic = topic || bodyJson?.type || bodyJson?.topic || "";
+    }
+
+    console.log("MP Webhook recebido", { topic, payment_id });
+
+    // só tratamos eventos de payment
+    if (topic && !["payment", "payment.updated", "payment.created"].includes(topic)) {
+      return new Response(JSON.stringify({ ignored: true, topic }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!payment_id) {
+      return new Response(JSON.stringify({ error: "payment id ausente" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const ok = await verifySignature(req, String(payment_id));
+    if (!ok) {
+      console.warn("Assinatura inválida do Mercado Pago");
+      return new Response(JSON.stringify({ error: "assinatura inválida" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const token = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
+    if (!token) throw new Error("MERCADOPAGO_ACCESS_TOKEN não configurado");
+
+    // busca pagamento na API do MP
+    const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${payment_id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const mp = await mpRes.json();
+    if (!mpRes.ok) {
+      console.error("Erro ao buscar pagamento MP", mp);
+      return new Response(JSON.stringify({ error: "erro ao consultar pagamento", details: mp }), {
+        status: 502,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const externalRef: string | null = mp.external_reference ?? null;
+    const status: string = mp.status ?? "unknown";
+    if (!externalRef) {
+      return new Response(JSON.stringify({ ignored: true, reason: "sem external_reference" }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+
+    // atualiza pagamento
+    const { data: payment, error: pErr } = await supabase
+      .from("payments")
+      .update({
+        status,
+        mp_payment_id: String(payment_id),
+      })
+      .eq("external_reference", externalRef)
+      .select("*")
+      .maybeSingle();
+    if (pErr) throw new Error(`Erro ao atualizar pagamento: ${pErr.message}`);
+    if (!payment) {
+      console.warn("Pagamento não encontrado para external_reference", externalRef);
+      return new Response(JSON.stringify({ ignored: true, reason: "payment não encontrado" }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // só cria pedido se aprovado
+    if (status !== "approved") {
+      return new Response(JSON.stringify({ ok: true, status }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // idempotência: já existe delivery para esse payment?
+    const { data: existing } = await supabase
+      .from("deliveries")
+      .select("id")
+      .eq("payment_id", payment.id)
+      .maybeSingle();
+    if (existing) {
+      return new Response(JSON.stringify({ ok: true, duplicated: true, delivery_id: existing.id }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // busca parceiro para regras de taxa / app_courier
+    const { data: partner } = await supabase
+      .from("partner_applications")
+      .select("id, business_name, uses_app_courier")
+      .eq("id", payment.partner_id)
+      .maybeSingle();
+
+    const { data: settings } = await supabase
+      .from("delivery_settings")
+      .select("default_fee, default_courier_payout, app_fee_percent")
+      .limit(1)
+      .maybeSingle();
+
+    const fee = partner?.uses_app_courier ? Number(settings?.default_fee ?? 0) : 0;
+    const payout = partner?.uses_app_courier ? Number(settings?.default_courier_payout ?? 0) : 0;
+    const pct = Number(settings?.app_fee_percent ?? 8);
+    const appFee = partner?.uses_app_courier
+      ? Number(((payment.amount * pct) / 100).toFixed(2))
+      : 0;
+
+    const notes = `Pedido pago via Mercado Pago — Cliente: ${payment.customer_name} | Tel: ${payment.customer_phone}`;
+
+    const { data: delivery, error: dErr } = await supabase
+      .from("deliveries")
+      .insert({
+        partner_id: payment.partner_id,
+        partner_name: partner?.business_name ?? "Loja",
+        order_description: payment.order_description,
+        delivery_address: payment.delivery_address,
+        notes,
+        fee,
+        courier_payout: payout,
+        order_value: payment.amount,
+        app_fee: appFee,
+        status: "disponivel",
+        payment_id: payment.id,
+      })
+      .select("id")
+      .single();
+    if (dErr) {
+      // se for violação do unique payment_id, considera idempotente
+      if (dErr.code === "23505") {
+        return new Response(JSON.stringify({ ok: true, duplicated: true }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      throw new Error(`Erro ao criar pedido: ${dErr.message}`);
+    }
+
+    console.log("Pedido criado a partir do pagamento aprovado", {
+      delivery_id: delivery.id,
+      external_reference: externalRef,
+    });
+
+    return new Response(
+      JSON.stringify({ ok: true, delivery_id: delivery.id }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  } catch (e) {
+    console.error("Webhook erro", e);
+    const msg = e instanceof Error ? e.message : "Erro desconhecido";
+    return new Response(JSON.stringify({ error: msg }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+});

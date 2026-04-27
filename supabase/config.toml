@@ -1,1 +1,10 @@
 project_id = "zlaqrczybwsifhbpakun"
+
+[functions.mp-webhook]
+verify_jwt = false
+
+[functions.mp-payment-status]
+verify_jwt = false
+
+[functions.mp-create-preference]
+verify_jwt = false

@@ -197,6 +197,7 @@ export type Database = {
           order_value: number
           partner_id: string | null
           partner_name: string
+          payment_id: string | null
           status: string
           updated_at: string
         }
@@ -214,6 +215,7 @@ export type Database = {
           order_value?: number
           partner_id?: string | null
           partner_name: string
+          payment_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -231,6 +233,7 @@ export type Database = {
           order_value?: number
           partner_id?: string | null
           partner_name?: string
+          payment_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -247,6 +250,13 @@ export type Database = {
             columns: ["partner_id"]
             isOneToOne: false
             referencedRelation: "partner_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deliveries_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
             referencedColumns: ["id"]
           },
         ]
@@ -403,6 +413,65 @@ export type Database = {
           whatsapp?: string
         }
         Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_name: string
+          customer_phone: string
+          delivery_address: string
+          external_reference: string
+          id: string
+          metadata: Json
+          mp_payment_id: string | null
+          mp_preference_id: string | null
+          order_description: string
+          partner_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          customer_name: string
+          customer_phone: string
+          delivery_address: string
+          external_reference: string
+          id?: string
+          metadata?: Json
+          mp_payment_id?: string | null
+          mp_preference_id?: string | null
+          order_description: string
+          partner_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_name?: string
+          customer_phone?: string
+          delivery_address?: string
+          external_reference?: string
+          id?: string
+          metadata?: Json
+          mp_payment_id?: string | null
+          mp_preference_id?: string | null
+          order_description?: string
+          partner_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partner_applications"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {
@@ -626,6 +695,7 @@ export type Database = {
           order_value: number
           partner_id: string | null
           partner_name: string
+          payment_id: string | null
           status: string
           updated_at: string
         }
@@ -660,6 +730,7 @@ export type Database = {
           order_value: number
           partner_id: string | null
           partner_name: string
+          payment_id: string | null
           status: string
           updated_at: string
         }
@@ -702,6 +773,7 @@ export type Database = {
               order_value: number
               partner_id: string | null
               partner_name: string
+              payment_id: string | null
               status: string
               updated_at: string
             }
@@ -735,6 +807,7 @@ export type Database = {
               order_value: number
               partner_id: string | null
               partner_name: string
+              payment_id: string | null
               status: string
               updated_at: string
             }
@@ -824,6 +897,7 @@ export type Database = {
           order_value: number
           partner_id: string | null
           partner_name: string
+          payment_id: string | null
           status: string
           updated_at: string
         }[]

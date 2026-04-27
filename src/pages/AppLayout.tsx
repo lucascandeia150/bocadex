@@ -33,6 +33,7 @@ import TrabalhePage from "./TrabalhePage";
 import CarrinhoPage from "./CarrinhoPage";
 import PedidosPage from "./PedidosPage";
 import PerfilPage from "./PerfilPage";
+import PagamentoRetornoPage from "./PagamentoRetornoPage";
 import NotFound from "./NotFound";
 
 export default function AppLayout() {
@@ -56,6 +57,7 @@ export default function AppLayout() {
               <Route path="/lojas" element={<LojasPage />} />
               <Route path="/loja/:id" element={<LojaDetalhePage />} />
               <Route path="/carrinho" element={<CarrinhoPage />} />
+              <Route path="/pagamento/retorno" element={<PagamentoRetornoPage />} />
               <Route path="/pedidos" element={<PedidosPage />} />
               <Route path="/perfil" element={<PerfilPage />} />
               <Route path="/parceiro/:id" element={<ParceiroDetalhePage />} />

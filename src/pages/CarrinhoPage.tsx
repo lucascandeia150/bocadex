@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, MessageCircle } from "lucide-react";
+import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, CreditCard } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -28,6 +28,7 @@ export default function CarrinhoPage() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [payingMp, setPayingMp] = useState(false);
 
   const buildOrderDescription = () =>
     items
@@ -127,6 +128,45 @@ export default function CarrinhoPage() {
     trackAnalyticsEvent("partner_click", { partner_name: partnerName ?? "", source: "cart_order" });
     clear();
     navigate("/pedidos?tab=historico");
+  };
+
+  const payWithMercadoPago = async () => {
+    if (!partnerId) return;
+    if (mode !== "entrega" || !partnerHasDelivery) {
+      toast.error("Pagamento online disponível apenas para entrega");
+      return;
+    }
+    if (!name.trim() || !phone.trim() || !address.trim()) {
+      toast.error("Preencha nome, telefone e endereço");
+      return;
+    }
+    setPayingMp(true);
+    try {
+      const backUrl = `${window.location.origin}/pagamento/retorno`;
+      const { data, error } = await supabase.functions.invoke("mp-create-preference", {
+        body: {
+          partner_id: partnerId,
+          customer_name: name.trim(),
+          customer_phone: phone.trim(),
+          delivery_address: address.trim(),
+          order_description: buildOrderDescription(),
+          amount: Number(totalValue.toFixed(2)),
+          back_url: backUrl,
+        },
+      });
+      if (error) throw new Error(error.message);
+      const init = (data as { init_point?: string; sandbox_init_point?: string } | null);
+      const url = init?.init_point ?? init?.sandbox_init_point;
+      if (!url) throw new Error("URL de checkout não recebida");
+      trackAnalyticsEvent("partner_click", { partner_name: partnerName ?? "", source: "cart_mp_checkout" });
+      clear();
+      window.location.href = url;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Falha ao iniciar pagamento";
+      toast.error(msg);
+    } finally {
+      setPayingMp(false);
+    }
   };
 
   if (items.length === 0) {
@@ -312,13 +352,23 @@ export default function CarrinhoPage() {
       {/* CTA fixo */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-40">
         <div className="max-w-sm mx-auto space-y-2">
+          {mode === "entrega" && partnerHasDelivery && (
+            <button
+              onClick={payWithMercadoPago}
+              disabled={payingMp || submitting}
+              className="w-full bg-[hsl(210,90%,50%)] hover:bg-[hsl(210,90%,45%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-base shadow-lg"
+            >
+              <CreditCard size={18} />
+              {payingMp ? "Abrindo Mercado Pago..." : "Pagar com Mercado Pago (PIX/cartão)"}
+            </button>
+          )}
           <button
             onClick={confirmOrder}
             disabled={submitting}
-            className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-base shadow-lg"
+            className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] disabled:opacity-60 text-white font-black py-3.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-lg"
           >
             <Zap size={18} />
-            {submitting ? "Enviando..." : "Finalizar pedido"}
+            {submitting ? "Enviando..." : (mode === "entrega" && partnerHasDelivery ? "Pedir sem pagar agora (combina na entrega)" : "Finalizar pedido")}
           </button>
           {mode === "retirar" && (
             <p className="text-[10px] text-center text-muted-foreground">
