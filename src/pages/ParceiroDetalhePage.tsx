@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, MapPin, MessageCircle, Package, ShoppingBag, Store as StoreIcon, ShoppingCart } from "lucide-react";
+import { ArrowLeft, MapPin, MessageCircle, Package, ShoppingBag, Store as StoreIcon, Plus, Star, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
 import { ProductOrderModal } from "@/components/ProductOrderModal";
@@ -68,8 +68,18 @@ export default function ParceiroDetalhePage() {
 
   if (loading) {
     return (
-      <div className="px-4 pt-12 text-center animate-slide-up">
-        <p className="text-muted-foreground text-sm">Carregando loja...</p>
+      <div className="pb-28">
+        <div className="h-44 bg-muted animate-pulse" />
+        <div className="px-4 -mt-12">
+          <div className="w-24 h-24 rounded-2xl bg-muted animate-pulse border-4 border-background mx-auto" />
+          <div className="h-5 bg-muted rounded mt-4 w-2/3 mx-auto animate-pulse" />
+          <div className="h-3 bg-muted rounded mt-2 w-1/2 mx-auto animate-pulse" />
+          <div className="space-y-3 mt-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-2xl bg-muted h-28 animate-pulse" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -88,44 +98,62 @@ export default function ParceiroDetalhePage() {
 
   return (
     <div className="pb-28">
-      <div className="bg-gradient-to-b from-secondary/20 to-background px-4 pt-6 pb-4">
+      {/* Banner com gradiente */}
+      <div className="relative h-44 bg-gradient-to-br from-[hsl(142,71%,45%)] via-[hsl(142,71%,38%)] to-[hsl(24,95%,48%)] overflow-hidden">
+        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.3) 0%, transparent 50%)" }} />
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1.5 text-sm font-semibold text-primary mb-4 active:scale-95 transition-transform"
+          className="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/95 backdrop-blur shadow-lg flex items-center justify-center active:scale-90 transition-transform z-10"
+          aria-label="Voltar"
         >
-          <ArrowLeft size={16} /> Voltar
+          <ArrowLeft size={18} className="text-foreground" />
         </button>
-        <div className="text-center animate-slide-up">
+      </div>
+
+      {/* Logo + info */}
+      <div className="px-4 -mt-12 relative z-10">
+        <div className="flex items-end gap-4">
           {partner.logo_url ? (
             <img
               src={partner.logo_url}
               alt={partner.business_name}
               loading="lazy"
-              className="w-28 h-28 rounded-full mx-auto mb-3 shadow-lg border-4 border-card object-cover"
+              className="w-24 h-24 rounded-2xl shadow-xl border-4 border-background object-cover bg-card shrink-0"
             />
           ) : (
-            <div className="w-28 h-28 rounded-full mx-auto mb-3 shadow-lg border-4 border-card bg-muted flex items-center justify-center">
-              <StoreIcon size={42} className="text-muted-foreground" />
+            <div className="w-24 h-24 rounded-2xl shadow-xl border-4 border-background bg-card flex items-center justify-center shrink-0">
+              <StoreIcon size={36} className="text-muted-foreground" />
             </div>
           )}
-          <h1 className="text-2xl font-black text-foreground">{partner.business_name}</h1>
-          <p className="text-xs uppercase tracking-wide text-primary font-bold mt-1">{partner.business_type}</p>
-          {partner.description && (
-            <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">{partner.description}</p>
-          )}
-          {partner.address && (
-            <p className="text-xs text-muted-foreground mt-2 flex items-center justify-center gap-1">
-              <MapPin size={12} className="text-primary shrink-0" />
-              {partner.address}
-            </p>
-          )}
+          <div className="flex-1 min-w-0 pb-1">
+            <span className="inline-flex items-center gap-1 text-[10px] font-black bg-[hsl(142,70%,45%)] text-white px-2 py-0.5 rounded-full uppercase">
+              <Clock size={9} /> Aberto
+            </span>
+          </div>
         </div>
+        <h1 className="text-2xl font-black text-foreground mt-3 leading-tight">{partner.business_name}</h1>
+        <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+          {partner.business_type && (
+            <span className="text-xs font-bold text-muted-foreground">{partner.business_type}</span>
+          )}
+          <span className="flex items-center gap-1 text-xs font-bold text-foreground">
+            <Star size={12} className="fill-secondary text-secondary" /> Novo
+          </span>
+        </div>
+        {partner.description && (
+          <p className="text-sm text-muted-foreground mt-2 leading-snug">{partner.description}</p>
+        )}
+        {partner.address && (
+          <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1.5">
+            <MapPin size={12} className="text-primary shrink-0" /> {partner.address}
+          </p>
+        )}
       </div>
 
-      <div className="max-w-sm mx-auto px-4 space-y-5">
+      <div className="max-w-sm mx-auto px-4 space-y-5 mt-5">
         {partner.promotions && (
-          <div className="bg-secondary/15 border-2 border-secondary/40 rounded-2xl p-4 text-center animate-slide-up">
-            <p className="text-xs font-bold text-secondary uppercase tracking-wide mb-1">🔥 Promoções</p>
+          <div className="bg-gradient-to-r from-secondary/20 to-secondary/10 border border-secondary/40 rounded-2xl p-4 animate-slide-up">
+            <p className="text-[10px] font-black text-secondary uppercase tracking-wider mb-1 flex items-center gap-1">🔥 Promoções</p>
             <p className="text-sm text-foreground font-semibold whitespace-pre-line">{partner.promotions}</p>
           </div>
         )}
@@ -146,42 +174,39 @@ export default function ParceiroDetalhePage() {
           ) : (
             <div className="flex flex-col gap-3">
               {products.map((p, i) => (
-                <div
+                <article
                   key={p.id}
-                  className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden animate-slide-up"
+                  className="rounded-2xl border border-border bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden animate-slide-up flex"
                   style={{ animationDelay: `${(i + 1) * 60}ms` }}
                 >
-                  {p.image_url && (
-                    <img src={p.image_url} alt={p.name} loading="lazy" className="w-full h-36 object-cover" />
-                  )}
-                  <div className="p-4">
-                    <h3 className="text-base font-bold text-foreground">{p.name}</h3>
+                  <div className="flex-1 p-4 min-w-0">
+                    <h3 className="text-base font-black text-foreground leading-tight">{p.name}</h3>
                     {p.description && (
-                      <p className="text-xs text-muted-foreground mt-0.5">{p.description}</p>
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-snug">{p.description}</p>
                     )}
                     {p.price_min != null && (
-                      <p className="text-sm font-black text-primary mt-1">
+                      <p className="text-base font-black text-primary mt-2">
                         {p.price_max && p.price_max !== p.price_min
                           ? `R$${Number(p.price_min).toFixed(2)} – R$${Number(p.price_max).toFixed(2)}`
                           : `R$${Number(p.price_min).toFixed(2)}`}
                       </p>
                     )}
+                  </div>
+                  <div className="relative w-28 shrink-0 bg-gradient-to-br from-[hsl(142,60%,55%)] to-[hsl(24,90%,55%)]">
+                    {p.image_url ? (
+                      <img src={p.image_url} alt={p.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center text-3xl drop-shadow-lg">🍽️</div>
+                    )}
                     <button
                       onClick={() => setOrderProduct(p)}
-                      className="w-full mt-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
+                      className="absolute bottom-2 right-2 w-9 h-9 rounded-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                      aria-label={`Adicionar ${p.name}`}
                     >
-                      <ShoppingCart size={16} />
-                      Pedir agora
-                    </button>
-                    <button
-                      onClick={() => openWhatsApp(`Olá! Vi a ${partner.business_name} no EscolheAí e me interessei pelo ${p.name} 😄`, "product_card")}
-                      className="w-full mt-2 bg-background border-2 border-border hover:bg-accent text-foreground font-bold py-2.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 text-xs"
-                    >
-                      <MessageCircle size={14} />
-                      Falar com a loja
+                      <Plus size={18} strokeWidth={3} />
                     </button>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           )}
@@ -192,10 +217,10 @@ export default function ParceiroDetalhePage() {
         <div className="max-w-sm mx-auto">
           <button
             onClick={() => openWhatsApp(`Olá! Vi a ${partner.business_name} no EscolheAí 😄`, "partner_page")}
-            className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-base shadow-lg"
+            className="w-full bg-card border-2 border-[hsl(142,70%,45%)] text-[hsl(142,70%,38%)] font-black py-3.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
           >
-            <MessageCircle size={20} />
-            📲 Falar com a loja 💬
+            <MessageCircle size={18} />
+            Falar com a loja
           </button>
         </div>
       </div>
