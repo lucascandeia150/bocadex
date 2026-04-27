@@ -155,15 +155,9 @@ export default function CarrinhoPage() {
         },
       });
       if (error) throw new Error(error.message);
-      const init = (data as {
-        init_point?: string;
-        sandbox_init_point?: string;
-        is_test?: boolean;
-      } | null);
-      const url = init?.is_test
-        ? (init?.sandbox_init_point ?? init?.init_point)
-        : (init?.init_point ?? init?.sandbox_init_point);
-      if (!url || !/^https:\/\/(www|sandbox)\.mercadopago\.com/.test(url)) {
+      const init = data as { init_point?: string } | null;
+      const url = init?.init_point;
+      if (!url || !/^https:\/\/www\.mercadopago\.com/.test(url)) {
         throw new Error("URL de checkout inválida");
       }
       console.log("[MP] Redirecionando para checkout:", url);
