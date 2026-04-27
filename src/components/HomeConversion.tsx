@@ -129,31 +129,37 @@ export function HomeConversion() {
             {promos.map((p) => (
               <article
                 key={p.id}
-                className="snap-start shrink-0 w-44 bg-card rounded-2xl border border-secondary/30 shadow-md overflow-hidden flex flex-col"
+                className="snap-start shrink-0 w-48 bg-card rounded-2xl border border-border shadow-md hover:shadow-lg transition-shadow overflow-hidden flex flex-col"
               >
                 <button
                   onClick={() => p.partner && navigate(`/loja/${p.partner.id}`)}
-                  className="aspect-square bg-muted relative"
+                  className={`relative aspect-[4/3] overflow-hidden bg-gradient-to-br ${gradientFor(p.id)}`}
+                  aria-label={`Ver ${p.name}`}
                 >
                   {p.image_url ? (
                     <img src={p.image_url} alt={p.name} loading="lazy" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl">🔥</div>
+                    <div className="w-full h-full flex items-center justify-center text-5xl drop-shadow-lg">
+                      {emojiFor(p)}
+                    </div>
                   )}
-                  <span className="absolute top-2 left-2 bg-secondary text-secondary-foreground text-[10px] font-black px-2 py-0.5 rounded-full uppercase">
-                    Promo
+                  <span className="absolute top-2 left-2 bg-secondary text-secondary-foreground text-[10px] font-black px-2 py-1 rounded-full uppercase shadow-md flex items-center gap-1">
+                    <Flame size={10} /> Promo
                   </span>
                 </button>
-                <div className="p-2.5 flex flex-col gap-1.5 flex-1">
-                  <h3 className="text-xs font-black text-foreground line-clamp-2 leading-tight">{p.name}</h3>
+                <div className="p-3 flex flex-col gap-1 flex-1">
+                  <h3 className="text-sm font-black text-foreground line-clamp-1 leading-tight">{p.name}</h3>
                   <p className="text-[11px] text-muted-foreground truncate">{p.partner?.business_name}</p>
-                  <p className="text-sm font-black text-primary mt-auto">{priceLabel(p)}</p>
-                  <button
-                    onClick={() => setOrder(p)}
-                    className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white text-[11px] font-black rounded-lg py-1.5 flex items-center justify-center gap-1 active:scale-95 transition-transform"
-                  >
-                    <ShoppingCart size={12} /> Pedir
-                  </button>
+                  <div className="flex items-end justify-between mt-2 gap-2">
+                    <p className="text-base font-black text-primary leading-none">{priceLabel(p)}</p>
+                    <button
+                      onClick={() => setOrder(p)}
+                      className="w-9 h-9 rounded-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white flex items-center justify-center active:scale-90 transition-transform shadow-md shrink-0"
+                      aria-label={`Adicionar ${p.name}`}
+                    >
+                      <Plus size={18} strokeWidth={3} />
+                    </button>
+                  </div>
                 </div>
               </article>
             ))}
@@ -208,28 +214,37 @@ export function HomeConversion() {
             {quick.map((p) => (
               <article
                 key={p.id}
-                className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col"
+                className="bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col"
               >
                 <button
                   onClick={() => p.partner && navigate(`/loja/${p.partner.id}`)}
-                  className="aspect-square bg-muted"
+                  className={`relative aspect-[4/3] overflow-hidden bg-gradient-to-br ${gradientFor(p.id)}`}
+                  aria-label={`Ver ${p.name}`}
                 >
                   {p.image_url ? (
                     <img src={p.image_url} alt={p.name} loading="lazy" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-3xl">🍽️</div>
+                    <div className="w-full h-full flex items-center justify-center text-4xl drop-shadow-lg">
+                      {emojiFor(p)}
+                    </div>
                   )}
+                  <span className="absolute top-1.5 right-1.5 bg-white/95 backdrop-blur text-[10px] font-black px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm">
+                    <Star size={9} className="fill-secondary text-secondary" /> Novo
+                  </span>
                 </button>
-                <div className="p-2.5 flex flex-col gap-1 flex-1">
-                  <h3 className="text-xs font-black text-foreground line-clamp-1">{p.name}</h3>
+                <div className="p-2.5 flex flex-col gap-0.5 flex-1">
+                  <h3 className="text-sm font-black text-foreground line-clamp-1 leading-tight">{p.name}</h3>
                   <p className="text-[10px] text-muted-foreground truncate">{p.partner?.business_name}</p>
-                  <p className="text-xs font-black text-primary">{priceLabel(p)}</p>
-                  <button
-                    onClick={() => setOrder(p)}
-                    className="mt-1 w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white text-[10px] font-black rounded-lg py-1.5 flex items-center justify-center gap-1 active:scale-95 transition-transform"
-                  >
-                    <ShoppingCart size={11} /> Pedir agora
-                  </button>
+                  <div className="flex items-end justify-between mt-1.5 gap-2">
+                    <p className="text-sm font-black text-primary leading-none">{priceLabel(p)}</p>
+                    <button
+                      onClick={() => setOrder(p)}
+                      className="w-8 h-8 rounded-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white flex items-center justify-center active:scale-90 transition-transform shadow-md shrink-0"
+                      aria-label={`Adicionar ${p.name}`}
+                    >
+                      <Plus size={16} strokeWidth={3} />
+                    </button>
+                  </div>
                 </div>
               </article>
             ))}
