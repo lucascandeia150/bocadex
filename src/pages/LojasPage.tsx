@@ -15,6 +15,7 @@ interface DbPartner {
   promotions: string | null;
   logo_url: string | null;
   is_active: boolean;
+  is_featured?: boolean;
 }
 
 export default function LojasPage() {
@@ -26,7 +27,7 @@ export default function LojasPage() {
   useEffect(() => {
     supabase
       .from("partner_applications")
-      .select("id, business_name, business_type, address, description, whatsapp, promotions, logo_url, is_active")
+      .select("id, business_name, business_type, address, description, whatsapp, promotions, logo_url, is_active, is_featured")
       .eq("status", "approved")
       .eq("is_active", true)
       .then(({ data }) => { if (data) setDbPartners(data as DbPartner[]); });
@@ -46,18 +47,30 @@ export default function LojasPage() {
     return map[type.toLowerCase()] || null;
   };
 
+  // Deduplicação global: parceiros do banco têm prioridade sobre mocks com mesmo nome
+  const dbNames = new Set(dbPartners.map((p) => p.business_name.trim().toLowerCase()));
+  const uniqueMocks = stores.filter((s) => !dbNames.has(s.name.trim().toLowerCase()));
+
+  // Destaques (do DB ou dos mocks restantes) — exibidos APENAS na seção de destaque
+  const dbFeatured = dbPartners.filter((p) => p.is_featured);
+  const mockFeatured = uniqueMocks.filter((s) => s.highlighted);
+  const featuredDbIds = new Set(dbFeatured.map((p) => p.id));
+  const featuredMockIds = new Set(mockFeatured.map((s) => s.id));
+
+  // Lista principal exclui destaques para evitar repetição
+  const mainDb = dbPartners.filter((p) => !featuredDbIds.has(p.id));
+  const mainMocks = uniqueMocks.filter((s) => !featuredMockIds.has(s.id));
+
   const filteredStores = activeCategory === "todas"
-    ? stores
-    : stores.filter((s) => s.category === activeCategory);
+    ? mainMocks
+    : mainMocks.filter((s) => s.category === activeCategory);
 
   const filteredDbPartners = activeCategory === "todas"
-    ? dbPartners
-    : dbPartners.filter((p) => mapBusinessType(p.business_type) === activeCategory);
+    ? mainDb
+    : mainDb.filter((p) => mapBusinessType(p.business_type) === activeCategory);
 
-  // Highlighted stores (hardcoded + db)
-  const highlightedStores = stores.filter(s => s.highlighted);
-
-  const hasResults = filteredStores.length > 0 || filteredDbPartners.length > 0;
+  const hasResults = filteredStores.length > 0 || filteredDbPartners.length > 0 ||
+    (activeCategory === "todas" && (dbFeatured.length > 0 || mockFeatured.length > 0));
 
   return (
     <div className="px-4 pt-6 pb-10">
@@ -67,17 +80,33 @@ export default function LojasPage() {
         <p className="text-muted-foreground text-sm mt-1">Descubra parceiros perto de você</p>
       </div>
 
-      {/* Parceiros em destaque */}
-      {activeCategory === "todas" && highlightedStores.length > 0 && (
+      {/* Parceiros em destaque (DB + mocks únicos) */}
+      {activeCategory === "todas" && (dbFeatured.length > 0 || mockFeatured.length > 0) && (
         <div className="max-w-sm mx-auto mb-6 animate-slide-up">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
             <Flame size={14} className="text-secondary" /> Parceiros em destaque
           </h2>
           <div className="flex flex-col gap-3">
-            {highlightedStores.map((store, i) => (
+            {dbFeatured.map((p, i) => (
               <CardParceiro
-                key={store.id}
+                key={`db-feat-${p.id}`}
                 index={i}
+                variant="highlight"
+                partner={{
+                  id: p.id,
+                  business_name: p.business_name,
+                  description: p.description,
+                  logo_url: p.logo_url,
+                  business_type: p.business_type,
+                  offer: p.promotions,
+                  highlighted: true,
+                }}
+              />
+            ))}
+            {mockFeatured.map((store, i) => (
+              <CardParceiro
+                key={`mock-feat-${store.id}`}
+                index={i + dbFeatured.length}
                 variant="highlight"
                 partner={{
                   id: store.id,

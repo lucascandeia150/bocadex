@@ -89,14 +89,27 @@ export function HomeConversion() {
         .limit(30);
 
       if (!active) return;
-      const partnersList = (pData as Partner[]) || [];
+      // Deduplicar parceiros por id (defesa) e por nome normalizado
+      const seenIds = new Set<string>();
+      const seenNames = new Set<string>();
+      const partnersList = ((pData as Partner[]) || []).filter((p) => {
+        const key = (p.business_name || "").trim().toLowerCase();
+        if (seenIds.has(p.id) || seenNames.has(key)) return false;
+        seenIds.add(p.id); seenNames.add(key);
+        return true;
+      });
       setPartners(partnersList);
 
       const partnerMap = new Map(partnersList.map((p) => [p.id, p]));
-      const enriched: ProductWithPartner[] = ((prodData as Product[]) || []).map((p) => ({
-        ...p,
-        partner: p.partner_id ? partnerMap.get(p.partner_id) ?? null : null,
-      })).filter((p) => p.partner); // só produtos de parceiros aprovados
+      const seenProd = new Set<string>();
+      const enriched: ProductWithPartner[] = ((prodData as Product[]) || [])
+        .map((p) => ({ ...p, partner: p.partner_id ? partnerMap.get(p.partner_id) ?? null : null }))
+        .filter((p) => {
+          if (!p.partner) return false;
+          if (seenProd.has(p.id)) return false;
+          seenProd.add(p.id);
+          return true;
+        });
       setProducts(enriched);
     })();
     return () => { active = false; };
@@ -109,8 +122,9 @@ export function HomeConversion() {
       /promo|oferta|desconto/i.test(`${p.name} ${p.description}`)
   ).slice(0, 6);
 
-  // Pedidos rápidos: produtos mais recentes (já vêm ordenados)
-  const quick = products.slice(0, 8);
+  // Pedidos rápidos: exclui produtos já exibidos em "Promoções" para não duplicar
+  const promoIds = new Set(promos.map((p) => p.id));
+  const quick = products.filter((p) => !promoIds.has(p.id)).slice(0, 8);
 
   if (partners.length === 0 && products.length === 0) return null;
 
