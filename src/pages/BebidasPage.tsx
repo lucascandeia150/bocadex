@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RecipeModal } from "@/components/RecipeModal";
 import { drinks } from "@/data/foods";
-import { stores } from "@/data/stores";
 import type { Food } from "@/data/foods";
-import { Clock, DollarSign, ChefHat, Tag, Wine, Coffee, GlassWater, Sparkles, MessageCircle, Flame, ArrowRight } from "lucide-react";
+import { Clock, DollarSign, ChefHat, Tag, Wine, Coffee, GlassWater, Sparkles, MessageCircle, Flame, ArrowRight, Store as StoreIcon } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
-import eprajaLogo from "@/assets/partner/epraja-logo.jpg";
+import { supabase } from "@/integrations/supabase/client";
 
 type DrinkCategory = "todas" | "leve" | "econômico" | "especial" | "rápido";
 
@@ -19,13 +18,40 @@ const categories: { id: DrinkCategory; label: string; emoji: string }[] = [
   { id: "rápido", label: "Rápidas", emoji: "⚡" },
 ];
 
-const eprajaStore = stores.find((s) => s.id === "e-pra-ja");
+interface FeaturedDrinkPartner {
+  id: string;
+  business_name: string;
+  business_type: string;
+  description: string | null;
+  whatsapp: string;
+  logo_url: string | null;
+  promotions: string | null;
+}
 
 export default function BebidasPage() {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<DrinkCategory>("todas");
   const [selectedDrink, setSelectedDrink] = useState<Food | null>(null);
   const [recipeOpen, setRecipeOpen] = useState(false);
+  const [featured, setFeatured] = useState<FeaturedDrinkPartner | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      // Prioriza parceiros do tipo bebidas/distribuidora; se não houver, usa o primeiro featured.
+      const { data } = await supabase
+        .from("partner_applications")
+        .select("id, business_name, business_type, description, whatsapp, logo_url, promotions")
+        .eq("status", "approved")
+        .eq("is_active", true)
+        .eq("is_featured", true)
+        .order("created_at", { ascending: true });
+      const list = (data ?? []) as FeaturedDrinkPartner[];
+      const drinkPartner = list.find((p) =>
+        /distribuidora|bebida|adega|conveni/i.test(p.business_type || "")
+      );
+      setFeatured(drinkPartner ?? list[0] ?? null);
+    })();
+  }, []);
 
   const filtered = activeCategory === "todas"
     ? drinks
@@ -37,11 +63,13 @@ export default function BebidasPage() {
     trackEvent("view_drink_recipe", { drink: drink.name });
   };
 
-  const openEprajaWhatsApp = () => {
-    trackAnalyticsEvent("partner_click", { partner_name: "É Pra Já", source: "bebidas_page" });
+  const openFeaturedWhatsApp = () => {
+    if (!featured) return;
+    trackAnalyticsEvent("partner_click", { partner_name: featured.business_name, source: "bebidas_page" });
     trackAnalyticsEvent("whatsapp_click", { source: "bebidas_partner_banner" });
-    const message = encodeURIComponent("Olá! Vi as bebidas no EscolheAí 🍻");
-    window.open(`https://wa.me/${eprajaStore?.whatsapp || "5573999999999"}?text=${message}`, "_blank");
+    const phone = (featured.whatsapp || "").replace(/\D/g, "");
+    const message = encodeURIComponent(`Olá! Vi a ${featured.business_name} no EscolheAí 🍻`);
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
   };
 
   return (
@@ -56,8 +84,8 @@ export default function BebidasPage() {
         </p>
       </div>
 
-      {/* Partner Highlight - É Pra Já */}
-      {eprajaStore && (
+      {/* Partner Highlight - dinâmico do banco */}
+      {featured && (
         <div className="mb-6 animate-slide-up">
           <div className="w-full rounded-2xl border-2 border-secondary/40 bg-card shadow-lg overflow-hidden">
             <div className="bg-secondary/15 px-4 py-2 flex items-center justify-center gap-2">
@@ -69,54 +97,48 @@ export default function BebidasPage() {
             </div>
             <div className="p-4">
               <div className="flex items-start gap-3">
-                <img
-                  src={eprajaLogo}
-                  alt="É Pra Já"
-                  loading="lazy"
-                  width={64}
-                  height={64}
-                  className="w-16 h-16 rounded-2xl shadow-md border-2 border-secondary/30 object-cover shrink-0"
-                />
+                {featured.logo_url ? (
+                  <img
+                    src={featured.logo_url}
+                    alt={featured.business_name}
+                    loading="lazy"
+                    width={64}
+                    height={64}
+                    className="w-16 h-16 rounded-2xl shadow-md border-2 border-secondary/30 object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center shrink-0">
+                    <StoreIcon size={28} className="text-muted-foreground" />
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-black text-foreground">É Pra Já 🍺</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    🍺 Cerveja gelada, é pra já!
-                  </p>
-                  <p className="text-[11px] text-muted-foreground">
-                    Cerveja gelada é pra já 🍻
-                  </p>
-                  <p className="text-[10px] text-destructive font-semibold mt-1">
-                    ⚠️ Não fazemos entrega
-                  </p>
+                  <h3 className="text-lg font-black text-foreground">{featured.business_name}</h3>
+                  {featured.business_type && (
+                    <p className="text-xs text-muted-foreground mt-0.5">{featured.business_type}</p>
+                  )}
+                  {featured.description && (
+                    <p className="text-[11px] text-muted-foreground line-clamp-2">{featured.description}</p>
+                  )}
                 </div>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {eprajaStore.products.map((p) => (
-                  <span key={p.id} className="text-[11px] font-semibold bg-accent px-2.5 py-1 rounded-full text-accent-foreground">
-                    {p.emoji} {p.name}
-                  </span>
-                ))}
-              </div>
-
-              <div className="mt-3 bg-secondary/15 border border-secondary/30 rounded-xl p-3 text-center">
-                <p className="text-sm font-black text-secondary flex items-center justify-center gap-1">
-                  <Flame size={16} /> Bebida gelada na hora! <Flame size={16} />
-                </p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
-                  🔥 Parceiro com bebidas sempre geladas e preço justo!
-                </p>
-              </div>
+              {featured.promotions && (
+                <div className="mt-3 bg-secondary/15 border border-secondary/30 rounded-xl p-3 text-center">
+                  <p className="text-sm font-black text-secondary flex items-center justify-center gap-1">
+                    <Flame size={16} /> {featured.promotions} <Flame size={16} />
+                  </p>
+                </div>
+              )}
 
               <div className="flex flex-col gap-2 mt-3">
                 <button
-                  onClick={() => navigate("/loja/e-pra-ja")}
+                  onClick={() => navigate(`/parceiro/${featured.id}`)}
                   className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 text-sm"
                 >
                   🏪 Ver loja completa <ArrowRight size={14} />
                 </button>
                 <button
-                  onClick={openEprajaWhatsApp}
+                  onClick={openFeaturedWhatsApp}
                   className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 text-sm shadow-md"
                 >
                   <MessageCircle size={16} />
