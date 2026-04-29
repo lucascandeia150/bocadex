@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Trash2, RefreshCw, CheckCircle, XCircle, Clock, Phone } from "lucide-react";
+import { Trash2, RefreshCw, CheckCircle, XCircle, Clock, Phone, Mail, MessageCircle, KeyRound } from "lucide-react";
 
 interface CourierApp {
   id: string;
   full_name: string;
   phone: string;
+  email: string | null;
+  user_id: string | null;
   city_neighborhood: string;
   transport_type: string;
   availability: string;
@@ -28,6 +30,7 @@ export default function AdminCourierApplicationsTab() {
   const [items, setItems] = useState<CourierApp[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"todos" | "pendente" | "aprovado" | "recusado">("todos");
+  const [pinByApp, setPinByApp] = useState<Record<string, string>>({});
 
   const load = async () => {
     setLoading(true);
@@ -37,16 +40,37 @@ export default function AdminCourierApplicationsTab() {
       .order("created_at", { ascending: false });
     if (error) toast.error("Erro ao carregar");
     else setItems((data as CourierApp[]) || []);
+    // Carrega PINs dos couriers aprovados
+    const { data: cs } = await supabase.from("couriers").select("application_id, access_pin").not("application_id", "is", null);
+    const map: Record<string, string> = {};
+    (cs || []).forEach((c: any) => { if (c.application_id && c.access_pin) map[c.application_id] = c.access_pin; });
+    setPinByApp(map);
     setLoading(false);
   };
 
   useEffect(() => { load(); }, []);
 
-  const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("courier_applications").update({ status }).eq("id", id);
+  const approve = async (id: string) => {
+    const { data, error } = await supabase.rpc("admin_approve_courier", { _application_id: id });
+    if (error) { toast.error(error.message || "Erro ao aprovar"); return; }
+    toast.success("Aprovado ✅ PIN gerado");
+    const pin = (data as any)?.access_pin;
+    if (pin) setPinByApp((p) => ({ ...p, [id]: pin }));
+    setItems((p) => p.map((i) => i.id === id ? { ...i, status: "aprovado" } : i));
+  };
+
+  const reject = async (id: string) => {
+    if (!confirm("Recusar este cadastro?")) return;
+    const { error } = await supabase.rpc("admin_reject_courier", { _application_id: id });
+    if (error) { toast.error(error.message || "Erro"); return; }
+    setItems((p) => p.map((i) => i.id === id ? { ...i, status: "recusado" } : i));
+    toast.success("Recusado");
+  };
+
+  const setPending = async (id: string) => {
+    const { error } = await supabase.from("courier_applications").update({ status: "pendente" }).eq("id", id);
     if (error) { toast.error("Erro ao atualizar"); return; }
-    setItems((p) => p.map((i) => i.id === id ? { ...i, status } : i));
-    toast.success("Status atualizado");
+    setItems((p) => p.map((i) => i.id === id ? { ...i, status: "pendente" } : i));
   };
 
   const remove = async (id: string) => {
@@ -58,6 +82,17 @@ export default function AdminCourierApplicationsTab() {
   };
 
   const filtered = items.filter((i) => filter === "todos" || i.status === filter);
+
+  const waLink = (c: CourierApp) => {
+    const phone = c.phone.replace(/\D/g, "");
+    const pin = pinByApp[c.id];
+    const msg = c.status === "aprovado" && pin
+      ? `🚀 Olá ${c.full_name}! Seu cadastro de entregador foi APROVADO no EscolheAí!\n\n🔐 Seu PIN: ${pin}\n\nAcesse: https://escolheai.today/portal-entregador\n\n👉 Faça login com seu email (${c.email || "—"}) e senha cadastrados ou use o PIN acima.\n\nBoas entregas! 🛵`
+      : c.status === "recusado"
+      ? `Olá ${c.full_name}, infelizmente não pudemos aprovar seu cadastro no EscolheAí no momento. Qualquer dúvida estamos à disposição.`
+      : `Olá ${c.full_name}! Recebemos seu cadastro de entregador no EscolheAí e estamos analisando. Em breve retornaremos.`;
+    return `https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`;
+  };
 
   return (
     <div className="space-y-3 animate-slide-up">
@@ -89,6 +124,16 @@ export default function AdminCourierApplicationsTab() {
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <Phone size={10} /> {c.phone} • {c.city_neighborhood}
               </p>
+              {c.email && (
+                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                  <Mail size={10} /> {c.email}
+                </p>
+              )}
+              {c.status === "aprovado" && pinByApp[c.id] && (
+                <p className="text-xs text-primary flex items-center gap-1 mt-0.5 font-bold">
+                  <KeyRound size={10} /> PIN: {pinByApp[c.id]}
+                </p>
+              )}
             </div>
             <span className={`text-[10px] font-bold px-2 py-1 rounded-full capitalize ${STATUS_COLORS[c.status] || "bg-muted"}`}>
               {c.status}
@@ -109,15 +154,15 @@ export default function AdminCourierApplicationsTab() {
           </p>
 
           <div className="flex gap-1 pt-1">
-            <button onClick={() => updateStatus(c.id, "aprovado")}
+            <button onClick={() => approve(c.id)} disabled={c.status === "aprovado"}
               className="flex-1 py-2 rounded-xl bg-green-500/10 text-green-600 text-xs font-bold flex items-center justify-center gap-1">
               <CheckCircle size={12} /> Aprovar
             </button>
-            <button onClick={() => updateStatus(c.id, "recusado")}
+            <button onClick={() => reject(c.id)} disabled={c.status === "recusado"}
               className="flex-1 py-2 rounded-xl bg-destructive/10 text-destructive text-xs font-bold flex items-center justify-center gap-1">
               <XCircle size={12} /> Recusar
             </button>
-            <button onClick={() => updateStatus(c.id, "pendente")}
+            <button onClick={() => setPending(c.id)} disabled={c.status === "pendente"}
               className="flex-1 py-2 rounded-xl bg-yellow-500/10 text-yellow-600 text-xs font-bold">
               Pendente
             </button>
@@ -126,9 +171,10 @@ export default function AdminCourierApplicationsTab() {
             </button>
           </div>
 
-          <a href={`https://wa.me/55${c.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
-            className="block text-center py-2 rounded-xl bg-secondary/10 text-secondary text-xs font-bold">
-            💬 Abrir WhatsApp
+          <a href={waLink(c)} target="_blank" rel="noreferrer"
+            className="block text-center py-2 rounded-xl bg-green-500/10 text-green-600 text-xs font-bold">
+            <MessageCircle size={12} className="inline mr-1" />
+            {c.status === "aprovado" ? "Enviar PIN por WhatsApp" : "Abrir WhatsApp"}
           </a>
         </div>
       ))}
