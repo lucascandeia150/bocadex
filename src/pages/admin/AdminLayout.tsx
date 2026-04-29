@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   LayoutDashboard, ShoppingBag, Store, Package, Users, DollarSign, Star,
-  Settings, ScrollText, LogOut, Menu, X, Activity, ChevronRight,
+  Settings, ScrollText, LogOut, Menu, X, Activity, ChevronRight, Bike,
   type LucideIcon
 } from "lucide-react";
 import AdminNotificationCenter from "@/components/admin/AdminNotificationCenter";
@@ -20,6 +20,7 @@ const NAV: NavItem[] = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/admin/dashboard/orders", label: "Pedidos", icon: ShoppingBag },
   { to: "/admin/dashboard/stores", label: "Lojas", icon: Store },
+  { to: "/admin/dashboard/couriers", label: "Entregadores", icon: Bike },
   { to: "/admin/dashboard/products", label: "Produtos", icon: Package },
   { to: "/admin/dashboard/customers", label: "Clientes", icon: Users },
   { to: "/admin/dashboard/finance", label: "Financeiro", icon: DollarSign },
@@ -56,16 +57,18 @@ export default function AdminLayout() {
   // Realtime: pending partner applications + new paid deliveries (lightweight notification badge)
   useEffect(() => {
     const refreshBadges = async () => {
-      const [{ count: pPart }, { count: pDel }] = await Promise.all([
+      const [{ count: pPart }, { count: pDel }, { count: pCour }] = await Promise.all([
         supabase.from("partner_applications").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("deliveries").select("id", { count: "exact", head: true }).eq("status", "disponivel"),
+        supabase.from("courier_applications").select("id", { count: "exact", head: true }).eq("status", "pendente"),
       ]);
-      setPendingCount((pPart || 0) + (pDel || 0));
+      setPendingCount((pPart || 0) + (pDel || 0) + (pCour || 0));
     };
     refreshBadges();
     const ch = supabase.channel("admin-shell-badges")
       .on("postgres_changes", { event: "*", schema: "public", table: "partner_applications" }, refreshBadges)
       .on("postgres_changes", { event: "*", schema: "public", table: "deliveries" }, refreshBadges)
+      .on("postgres_changes", { event: "*", schema: "public", table: "courier_applications" }, refreshBadges)
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, []);

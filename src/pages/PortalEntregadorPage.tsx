@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock, History, Star } from "lucide-react";
+import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock, History, Star, Mail, Lock } from "lucide-react";
 
 interface Courier {
   id: string;
@@ -30,6 +30,10 @@ const SEEN_KEY = "escolheai_courier_seen_ids";
 
 export default function PortalEntregadorPage() {
   const [pin, setPin] = useState("");
+  const [authMode, setAuthMode] = useState<"email" | "pin">("email");
+  const [emailForm, setEmailForm] = useState({ email: "", password: "" });
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<string | null>(null);
   const [courier, setCourier] = useState<Courier | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
@@ -42,11 +46,16 @@ export default function PortalEntregadorPage() {
   const [finishLoading, setFinishLoading] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(PIN_KEY);
-    if (saved) {
-      setPin(saved);
-      tryLogin(saved, true);
-    }
+    // Tenta login por sessão Auth primeiro
+    (async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        await loadFromAuth();
+        return;
+      }
+      const saved = localStorage.getItem(PIN_KEY);
+      if (saved) { setPin(saved); tryLogin(saved, true); }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -63,6 +72,41 @@ export default function PortalEntregadorPage() {
     setCourier(data[0] as Courier);
     localStorage.setItem(PIN_KEY, code);
     loadDeliveries(code, true);
+  };
+
+  const loadFromAuth = async () => {
+    setEmailLoading(true);
+    const { data, error } = await supabase.rpc("courier_login_self");
+    if (error) { toast.error(error.message); setEmailLoading(false); return; }
+    if (!data || data.length === 0) {
+      // Verifica se há cadastro pendente/recusado
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: app } = await supabase
+          .from("courier_applications").select("status").eq("user_id", user.id).maybeSingle();
+        setPendingStatus(app?.status || "sem_cadastro");
+      }
+      setEmailLoading(false);
+      return;
+    }
+    const c = data[0];
+    setCourier({ id: c.id, name: c.name, phone: c.phone, vehicle: c.vehicle });
+    setPin(c.access_pin);
+    localStorage.setItem(PIN_KEY, c.access_pin);
+    setPendingStatus(null);
+    setEmailLoading(false);
+    loadDeliveries(c.access_pin, true);
+  };
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailForm.email || !emailForm.password) { toast.error("Preencha email e senha"); return; }
+    setEmailLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: emailForm.email.trim(), password: emailForm.password,
+    });
+    if (error) { toast.error(error.message); setEmailLoading(false); return; }
+    await loadFromAuth();
   };
 
   const loadDeliveries = async (code: string, markSeen = false) => {
@@ -128,11 +172,13 @@ export default function PortalEntregadorPage() {
     return () => { supabase.removeChannel(channel); };
   }, [courier, pin]);
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem(PIN_KEY);
     setCourier(null);
     setPin("");
     setDeliveries([]);
+    setPendingStatus(null);
   };
 
   const action = async (id: string, act: "accept" | "release") => {
@@ -171,31 +217,81 @@ export default function PortalEntregadorPage() {
   };
 
   if (!courier) {
+    if (pendingStatus && pendingStatus !== "aprovado") {
+      const msg = pendingStatus === "recusado"
+        ? "Seu cadastro não foi aprovado."
+        : pendingStatus === "sem_cadastro"
+        ? "Você ainda não enviou seu cadastro."
+        : "Seu cadastro está aguardando aprovação do admin.";
+      return (
+        <div className="p-4 max-w-md mx-auto space-y-4 animate-slide-up text-center">
+          <span className="text-5xl block">⏳</span>
+          <h1 className="text-lg font-black text-foreground">{pendingStatus === "recusado" ? "Cadastro recusado" : "Aguardando aprovação"}</h1>
+          <p className="text-sm text-muted-foreground">{msg}</p>
+          <a href="/seja-entregador" className="inline-block px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm">
+            {pendingStatus === "sem_cadastro" ? "Fazer cadastro" : "Ver cadastro"}
+          </a>
+          <div><button onClick={logout} className="text-xs text-destructive underline">Sair</button></div>
+        </div>
+      );
+    }
     return (
       <div className="p-4 max-w-md mx-auto space-y-4 animate-slide-up">
         <a href="/" className="inline-flex items-center gap-1 text-xs text-muted-foreground">
           <ArrowLeft size={14} /> Voltar
         </a>
-        <div className="bg-card rounded-2xl border border-border p-6 space-y-4 text-center">
+        <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
           <Truck className="mx-auto text-primary" size={40} />
-          <h1 className="text-lg font-black text-foreground">Portal do Entregador</h1>
-          <p className="text-xs text-muted-foreground">Digite seu PIN de 6 dígitos.</p>
-          <input
-            type="text"
-            inputMode="numeric"
-            maxLength={6}
-            value={pin}
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-            placeholder="000000"
-            className="w-full text-center text-2xl font-black tracking-widest bg-muted rounded-xl px-3 py-3"
-          />
-          <button
-            disabled={loading || pin.length !== 6}
-            onClick={() => tryLogin(pin)}
-            className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50"
-          >
-            {loading ? "Entrando..." : "Entrar"}
-          </button>
+          <h1 className="text-lg font-black text-foreground text-center">Portal do Entregador</h1>
+
+          <div className="flex gap-2">
+            <button onClick={() => setAuthMode("email")}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold ${authMode === "email" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+              Email e senha
+            </button>
+            <button onClick={() => setAuthMode("pin")}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold ${authMode === "pin" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+              PIN
+            </button>
+          </div>
+
+          {authMode === "email" ? (
+            <form onSubmit={handleEmailLogin} className="space-y-3">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
+                <input type="email" value={emailForm.email}
+                  onChange={(e) => setEmailForm((p) => ({ ...p, email: e.target.value }))}
+                  placeholder="seu@email.com" autoComplete="email"
+                  className="w-full bg-muted rounded-xl pl-9 pr-3 py-3 text-sm text-foreground" />
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
+                <input type="password" value={emailForm.password}
+                  onChange={(e) => setEmailForm((p) => ({ ...p, password: e.target.value }))}
+                  placeholder="Senha" autoComplete="current-password"
+                  className="w-full bg-muted rounded-xl pl-9 pr-3 py-3 text-sm text-foreground" />
+              </div>
+              <button type="submit" disabled={emailLoading}
+                className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50">
+                {emailLoading ? "Entrando..." : "Entrar"}
+              </button>
+              <a href="/seja-entregador" className="block text-center text-xs text-primary font-bold underline">
+                Ainda não tenho conta — cadastrar
+              </a>
+            </form>
+          ) : (
+            <div className="space-y-3 text-center">
+              <p className="text-xs text-muted-foreground">Digite seu PIN de 6 dígitos.</p>
+              <input type="text" inputMode="numeric" maxLength={6} value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
+                placeholder="000000"
+                className="w-full text-center text-2xl font-black tracking-widest bg-muted rounded-xl px-3 py-3" />
+              <button disabled={loading || pin.length !== 6} onClick={() => tryLogin(pin)}
+                className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl active:scale-95 disabled:opacity-50">
+                {loading ? "Entrando..." : "Entrar"}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );

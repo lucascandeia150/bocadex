@@ -173,6 +173,7 @@ export type Database = {
           average_fee: number | null
           city_neighborhood: string
           created_at: string
+          email: string | null
           full_name: string
           has_experience: boolean
           id: string
@@ -182,12 +183,14 @@ export type Database = {
           status: string
           transport_type: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           availability: string
           average_fee?: number | null
           city_neighborhood: string
           created_at?: string
+          email?: string | null
           full_name: string
           has_experience?: boolean
           id?: string
@@ -197,12 +200,14 @@ export type Database = {
           status?: string
           transport_type: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           availability?: string
           average_fee?: number | null
           city_neighborhood?: string
           created_at?: string
+          email?: string | null
           full_name?: string
           has_experience?: boolean
           id?: string
@@ -212,38 +217,48 @@ export type Database = {
           status?: string
           transport_type?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
       couriers: {
         Row: {
           access_pin: string | null
+          application_id: string | null
           created_at: string
+          email: string | null
           id: string
           is_active: boolean
           name: string
           phone: string
           updated_at: string
+          user_id: string | null
           vehicle: string
         }
         Insert: {
           access_pin?: string | null
+          application_id?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           is_active?: boolean
           name: string
           phone: string
           updated_at?: string
+          user_id?: string | null
           vehicle?: string
         }
         Update: {
           access_pin?: string | null
+          application_id?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           is_active?: boolean
           name?: string
           phone?: string
           updated_at?: string
+          user_id?: string | null
           vehicle?: string
         }
         Relationships: []
@@ -706,6 +721,54 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_approve_courier: {
+        Args: { _application_id: string }
+        Returns: {
+          access_pin: string | null
+          application_id: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          phone: string
+          updated_at: string
+          user_id: string | null
+          vehicle: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "couriers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_reject_courier: {
+        Args: { _application_id: string }
+        Returns: {
+          availability: string
+          average_fee: number | null
+          city_neighborhood: string
+          created_at: string
+          email: string | null
+          full_name: string
+          has_experience: boolean
+          id: string
+          notes: string | null
+          phone: string
+          service_area: string
+          status: string
+          transport_type: string
+          updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "courier_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       courier_list_deliveries: {
         Args: { _pin: string }
         Returns: {
@@ -733,12 +796,60 @@ export type Database = {
           vehicle: string
         }[]
       }
+      courier_login_self: {
+        Args: never
+        Returns: {
+          access_pin: string
+          id: string
+          is_active: boolean
+          name: string
+          phone: string
+          status: string
+          vehicle: string
+        }[]
+      }
       courier_rating_stats: {
         Args: { _courier_id: string }
         Returns: {
           avg_stars: number
           total_ratings: number
         }[]
+      }
+      courier_submit_application: {
+        Args: {
+          _availability: string
+          _average_fee: number
+          _city_neighborhood: string
+          _full_name: string
+          _has_experience: boolean
+          _notes: string
+          _phone: string
+          _service_area: string
+          _transport_type: string
+        }
+        Returns: {
+          availability: string
+          average_fee: number | null
+          city_neighborhood: string
+          created_at: string
+          email: string | null
+          full_name: string
+          has_experience: boolean
+          id: string
+          notes: string | null
+          phone: string
+          service_area: string
+          status: string
+          transport_type: string
+          updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "courier_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       courier_update_delivery: {
         Args: {
