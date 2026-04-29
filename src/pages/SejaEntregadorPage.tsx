@@ -183,7 +183,7 @@ export default function SejaEntregadorPage() {
         <p className="text-sm text-muted-foreground">
           Você já pode entrar no portal e começar a aceitar entregas.
         </p>
-        <a href="/portal-entregador" className="inline-block mt-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm">
+        <a href="/portal/entregador" className="inline-block mt-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm">
           Abrir portal do entregador
         </a>
         <div><button onClick={logout} className="text-xs text-muted-foreground underline">Sair</button></div>
