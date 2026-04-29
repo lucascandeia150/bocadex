@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Package, ShoppingCart, ArrowRight, Trash2, Minus, Plus, Clock, CheckCircle2, Bike, ChefHat } from "lucide-react";
+import { Package, ShoppingCart, ArrowRight, Trash2, Minus, Plus, Clock, CheckCircle2, Bike, ChefHat, Dumbbell } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -187,7 +187,8 @@ export default function PedidosPage() {
               </p>
             </div>
           ) : (
-            orders.map((o) => {
+            <>
+              {orders.map((o) => {
               const meta = STATUS_META[o.status] ?? STATUS_META.pending;
               const Icon = meta.icon;
               return (
@@ -223,7 +224,29 @@ export default function PedidosPage() {
                   )}
                 </div>
               );
-            })
+              })}
+
+              <a
+                href="https://shapeturbo.escolheai.today"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block rounded-2xl overflow-hidden shadow-lg active:scale-[0.98] transition-transform animate-slide-up mt-3"
+              >
+                <div className="bg-gradient-to-br from-[hsl(280,70%,45%)] to-[hsl(24,95%,53%)] p-4 text-white relative overflow-hidden">
+                  <div className="absolute -right-3 -top-3 opacity-20">
+                    <Dumbbell size={80} strokeWidth={2.5} />
+                  </div>
+                  <div className="relative">
+                    <p className="text-sm font-black leading-tight">
+                      🔥 Aproveite e evolua seu corpo também
+                    </p>
+                    <span className="inline-flex items-center gap-1.5 mt-3 bg-white text-[hsl(280,70%,40%)] text-xs font-black px-3.5 py-2 rounded-full shadow-md">
+                      Ir para Shape Turbo →
+                    </span>
+                  </div>
+                </div>
+              </a>
+            </>
           )}
         </TabsContent>
       </Tabs>
