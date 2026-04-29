@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Flame, Store as StoreIcon, Zap, Plus, ChevronRight, Star } from "lucide-react";
+import { Flame, Store as StoreIcon, Zap, Plus, ChevronRight, Star, Dumbbell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CardParceiro } from "@/components/CardParceiro";
 import { ProductOrderModal } from "@/components/ProductOrderModal";
@@ -130,6 +130,29 @@ export function HomeConversion() {
 
   return (
     <div className="w-full max-w-md space-y-6 mb-8 relative z-10">
+      {/* SHAPE TURBO BANNER */}
+      <a
+        href="https://shapeturbo.escolheai.today"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block rounded-2xl overflow-hidden shadow-lg active:scale-[0.98] transition-transform animate-slide-up"
+      >
+        <div className="bg-gradient-to-br from-[hsl(280,70%,45%)] to-[hsl(24,95%,53%)] p-4 text-white relative overflow-hidden">
+          <div className="absolute -right-4 -top-4 opacity-20">
+            <Dumbbell size={96} strokeWidth={2.5} />
+          </div>
+          <div className="relative">
+            <p className="text-base font-black leading-tight">
+              💪 Quer resultado de verdade?
+            </p>
+            <p className="text-xs opacity-95 mt-1">Conheça o Shape Turbo</p>
+            <span className="inline-flex items-center gap-1.5 mt-3 bg-white text-[hsl(280,70%,40%)] text-xs font-black px-3.5 py-2 rounded-full shadow-md">
+              Começar agora →
+            </span>
+          </div>
+        </div>
+      </a>
+
       {/* PROMOÇÕES */}
       {promos.length > 0 && (
         <section className="animate-slide-up">
