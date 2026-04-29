@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   LayoutDashboard, ShoppingBag, Store, Package, Users, DollarSign, Star,
-  Settings, ScrollText, LogOut, Menu, X, Activity, ChevronRight,
+  Settings, ScrollText, LogOut, Menu, X, Activity, ChevronRight, Bike,
   type LucideIcon
 } from "lucide-react";
 import AdminNotificationCenter from "@/components/admin/AdminNotificationCenter";
@@ -20,6 +20,7 @@ const NAV: NavItem[] = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/admin/dashboard/orders", label: "Pedidos", icon: ShoppingBag },
   { to: "/admin/dashboard/stores", label: "Lojas", icon: Store },
+  { to: "/admin/dashboard/couriers", label: "Entregadores", icon: Bike },
   { to: "/admin/dashboard/products", label: "Produtos", icon: Package },
   { to: "/admin/dashboard/customers", label: "Clientes", icon: Users },
   { to: "/admin/dashboard/finance", label: "Financeiro", icon: DollarSign },
