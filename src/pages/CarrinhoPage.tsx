@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, CreditCard } from "lucide-react";
+import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, CreditCard, LogIn } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
@@ -10,6 +12,7 @@ type Mode = "retirar" | "entrega";
 
 export default function CarrinhoPage() {
   const navigate = useNavigate();
+  const { user, profile, loading: authLoading } = useAuth();
   const {
     items,
     partnerId,
@@ -29,6 +32,14 @@ export default function CarrinhoPage() {
   const [address, setAddress] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [payingMp, setPayingMp] = useState(false);
+
+  // Pré-preenche dados do perfil logado
+  useEffect(() => {
+    if (profile) {
+      if (!name && profile.name) setName(profile.name);
+      if (!phone && profile.phone) setPhone(profile.phone);
+    }
+  }, [profile]);
 
   const buildOrderDescription = () =>
     items
@@ -70,6 +81,10 @@ export default function CarrinhoPage() {
 
   const confirmOrder = async () => {
     if (!partnerId) return;
+    if (!user) {
+      navigate(`/auth?redirect=${encodeURIComponent("/carrinho")}`);
+      return;
+    }
     if (mode === "entrega") {
       if (!partnerHasDelivery) {
         toast.error("Esta loja não trabalha com entrega via app");
