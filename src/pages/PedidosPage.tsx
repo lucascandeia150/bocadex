@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Package, ShoppingCart, ArrowRight, Trash2, Minus, Plus, Clock, CheckCircle2, Bike, ChefHat, Dumbbell } from "lucide-react";
+import { Package, ShoppingCart, ArrowRight, Trash2, Minus, Plus, Clock, CheckCircle2, Bike, ChefHat, Dumbbell, LogIn } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
 interface OrderRow {
@@ -34,6 +35,7 @@ function formatDate(iso: string) {
 
 export default function PedidosPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [params, setParams] = useSearchParams();
   const initialTab = params.get("tab") === "historico" ? "historico" : "carrinho";
   const [tab, setTab] = useState<string>(initialTab);
@@ -49,35 +51,55 @@ export default function PedidosPage() {
 
   useEffect(() => {
     if (tab !== "historico") return;
-    const phone = (() => {
-      try {
-        const raw = localStorage.getItem("escolheai_profile");
-        return raw ? (JSON.parse(raw).phone as string) : "";
-      } catch {
-        return "";
+    let cancelled = false;
+    const load = async () => {
+      setLoading(true);
+      // 1) Pedidos do usuário logado (user_id)
+      const userOrders: OrderRow[] = [];
+      if (user) {
+        const { data } = await supabase.rpc("customer_list_orders");
+        if (data) userOrders.push(...(data as OrderRow[]));
       }
-    })();
-    const idsRaw = localStorage.getItem("escolheai_order_ids");
-    const ids: string[] = idsRaw ? JSON.parse(idsRaw) : [];
-    if (ids.length === 0 && !phone) {
-      setOrders([]);
-      return;
-    }
-    setLoading(true);
-    (async () => {
-      let query = supabase
-        .from("deliveries")
-        .select("id, partner_name, order_description, order_value, status, created_at, delivery_address, delivery_code")
-        .order("created_at", { ascending: false })
-        .limit(30);
+      // 2) Fallback: pedidos legados salvos no localStorage (pré-login)
+      const idsRaw = localStorage.getItem("escolheai_order_ids");
+      const ids: string[] = idsRaw ? JSON.parse(idsRaw) : [];
       if (ids.length > 0) {
-        query = query.in("id", ids);
+        const known = new Set(userOrders.map((o) => o.id));
+        const missing = ids.filter((id) => !known.has(id));
+        if (missing.length > 0) {
+          const { data: legacy } = await supabase
+            .from("deliveries")
+            .select("id, partner_name, order_description, order_value, status, created_at, delivery_address, delivery_code")
+            .in("id", missing)
+            .order("created_at", { ascending: false });
+          if (legacy) userOrders.push(...(legacy as OrderRow[]));
+        }
       }
-      const { data } = await query;
-      setOrders((data ?? []) as OrderRow[]);
-      setLoading(false);
-    })();
-  }, [tab]);
+      if (!cancelled) {
+        setOrders(userOrders.sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at)));
+        setLoading(false);
+      }
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [tab, user]);
+
+  // Realtime: atualiza pedidos do usuário em tempo real
+  useEffect(() => {
+    if (!user || tab !== "historico") return;
+    const channel = supabase
+      .channel(`my-orders-${user.id}`)
+      .on("postgres_changes",
+        { event: "*", schema: "public", table: "deliveries", filter: `user_id=eq.${user.id}` },
+        () => {
+          supabase.rpc("customer_list_orders").then(({ data }) => {
+            if (data) setOrders(data as OrderRow[]);
+          });
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, tab]);
 
   return (
     <div className="px-4 pt-6 pb-32">
