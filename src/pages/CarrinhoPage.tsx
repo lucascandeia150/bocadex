@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, CreditCard } from "lucide-react";
+import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, CreditCard, LogIn } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
@@ -10,6 +11,7 @@ type Mode = "retirar" | "entrega";
 
 export default function CarrinhoPage() {
   const navigate = useNavigate();
+  const { user, profile, loading: authLoading } = useAuth();
   const {
     items,
     partnerId,
@@ -29,6 +31,14 @@ export default function CarrinhoPage() {
   const [address, setAddress] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [payingMp, setPayingMp] = useState(false);
+
+  // Pré-preenche dados do perfil logado
+  useEffect(() => {
+    if (profile) {
+      if (!name && profile.name) setName(profile.name);
+      if (!phone && profile.phone) setPhone(profile.phone);
+    }
+  }, [profile]);
 
   const buildOrderDescription = () =>
     items
@@ -70,6 +80,10 @@ export default function CarrinhoPage() {
 
   const confirmOrder = async () => {
     if (!partnerId) return;
+    if (!user) {
+      navigate(`/auth?redirect=${encodeURIComponent("/carrinho")}`);
+      return;
+    }
     if (mode === "entrega") {
       if (!partnerHasDelivery) {
         toast.error("Esta loja não trabalha com entrega via app");
@@ -132,6 +146,10 @@ export default function CarrinhoPage() {
 
   const payWithMercadoPago = async () => {
     if (!partnerId) return;
+    if (!user) {
+      navigate(`/auth?redirect=${encodeURIComponent("/carrinho")}`);
+      return;
+    }
     if (mode !== "entrega" || !partnerHasDelivery) {
       toast.error("Pagamento online disponível apenas para entrega");
       return;
@@ -208,6 +226,24 @@ export default function CarrinhoPage() {
       </div>
 
       <div className="max-w-sm mx-auto px-4 space-y-4">
+        {!user && !authLoading && (
+          <button
+            onClick={() => navigate(`/auth?redirect=${encodeURIComponent("/carrinho")}`)}
+            className="w-full flex items-center justify-between gap-2 rounded-2xl border-2 border-primary/40 bg-primary/5 p-3 active:scale-[0.98] transition-all"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center">
+                <LogIn size={16} />
+              </div>
+              <div className="text-left">
+                <p className="text-xs font-black text-foreground">Entre pra finalizar</p>
+                <p className="text-[10px] text-muted-foreground">Histórico, status em tempo real e mais</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-black text-primary">Entrar →</span>
+          </button>
+        )}
+
         {/* Itens */}
         <div className="space-y-3">
           {items.map((item) => (

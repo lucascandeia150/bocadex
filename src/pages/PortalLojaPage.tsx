@@ -26,6 +26,7 @@ interface Delivery {
   courier_id: string | null;
   created_at: string;
   order_value?: number;
+  prep_status?: string;
 }
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
@@ -238,6 +239,17 @@ export default function PortalLojaPage() {
       cancelada: "Pedido cancelado",
     };
     toast.success(labels[next]);
+    loadDeliveries(pin);
+  };
+
+  const callCourier = async (deliveryId: string) => {
+    const { error } = await supabase.rpc("partner_advance_prep", {
+      _pin: pin,
+      _delivery_id: deliveryId,
+      _next: "ready",
+    });
+    if (error) { toast.error(error.message || "Erro ao chamar entregador"); return; }
+    toast.success("🚚 Entregador chamado! Pedido visível para entregadores.");
     loadDeliveries(pin);
   };
 
@@ -608,6 +620,20 @@ export default function PortalLojaPage() {
                 {d.notes && <p className="text-xs text-muted-foreground italic">"{d.notes}"</p>}
                 <p className="text-xs text-foreground">Taxa: <b>R$ {Number(d.fee).toFixed(2)}</b></p>
                 <p className="text-[10px] text-muted-foreground">{new Date(d.created_at).toLocaleString("pt-BR")}</p>
+
+                {d.prep_status && d.prep_status !== "ready" && d.status === "disponivel" && (
+                  <div className="mt-2 rounded-xl bg-yellow-500/10 border border-yellow-500/40 p-2 flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-bold text-yellow-700">
+                      {d.prep_status === "pending" ? "⏳ Aguardando preparo" : "👨‍🍳 Em preparo"}
+                    </span>
+                    <button
+                      onClick={() => callCourier(d.id)}
+                      className="bg-primary text-primary-foreground text-[11px] font-black px-3 py-1.5 rounded-lg active:scale-95"
+                    >
+                      🚚 Chamar entregador
+                    </button>
+                  </div>
+                )}
 
                 {/* Avançar status (apenas pedidos sem entregador app vinculado) */}
                 {!d.courier_id && d.status !== "concluida" && d.status !== "cancelada" && (
