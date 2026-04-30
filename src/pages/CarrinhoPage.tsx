@@ -146,6 +146,10 @@ export default function CarrinhoPage() {
 
   const payWithMercadoPago = async () => {
     if (!partnerId) return;
+    if (!user) {
+      navigate(`/auth?redirect=${encodeURIComponent("/carrinho")}`);
+      return;
+    }
     if (mode !== "entrega" || !partnerHasDelivery) {
       toast.error("Pagamento online disponível apenas para entrega");
       return;
@@ -222,6 +226,24 @@ export default function CarrinhoPage() {
       </div>
 
       <div className="max-w-sm mx-auto px-4 space-y-4">
+        {!user && !authLoading && (
+          <button
+            onClick={() => navigate(`/auth?redirect=${encodeURIComponent("/carrinho")}`)}
+            className="w-full flex items-center justify-between gap-2 rounded-2xl border-2 border-primary/40 bg-primary/5 p-3 active:scale-[0.98] transition-all"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center">
+                <LogIn size={16} />
+              </div>
+              <div className="text-left">
+                <p className="text-xs font-black text-foreground">Entre pra finalizar</p>
+                <p className="text-[10px] text-muted-foreground">Histórico, status em tempo real e mais</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-black text-primary">Entrar →</span>
+          </button>
+        )}
+
         {/* Itens */}
         <div className="space-y-3">
           {items.map((item) => (
