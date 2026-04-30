@@ -26,6 +26,7 @@ interface Delivery {
   courier_id: string | null;
   created_at: string;
   order_value?: number;
+  prep_status?: string;
 }
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
@@ -238,6 +239,17 @@ export default function PortalLojaPage() {
       cancelada: "Pedido cancelado",
     };
     toast.success(labels[next]);
+    loadDeliveries(pin);
+  };
+
+  const callCourier = async (deliveryId: string) => {
+    const { error } = await supabase.rpc("partner_advance_prep", {
+      _pin: pin,
+      _delivery_id: deliveryId,
+      _next: "ready",
+    });
+    if (error) { toast.error(error.message || "Erro ao chamar entregador"); return; }
+    toast.success("🚚 Entregador chamado! Pedido visível para entregadores.");
     loadDeliveries(pin);
   };
 
