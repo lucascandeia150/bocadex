@@ -621,6 +621,20 @@ export default function PortalLojaPage() {
                 <p className="text-xs text-foreground">Taxa: <b>R$ {Number(d.fee).toFixed(2)}</b></p>
                 <p className="text-[10px] text-muted-foreground">{new Date(d.created_at).toLocaleString("pt-BR")}</p>
 
+                {d.prep_status && d.prep_status !== "ready" && d.status === "disponivel" && (
+                  <div className="mt-2 rounded-xl bg-yellow-500/10 border border-yellow-500/40 p-2 flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-bold text-yellow-700">
+                      {d.prep_status === "pending" ? "⏳ Aguardando preparo" : "👨‍🍳 Em preparo"}
+                    </span>
+                    <button
+                      onClick={() => callCourier(d.id)}
+                      className="bg-primary text-primary-foreground text-[11px] font-black px-3 py-1.5 rounded-lg active:scale-95"
+                    >
+                      🚚 Chamar entregador
+                    </button>
+                  </div>
+                )}
+
                 {/* Avançar status (apenas pedidos sem entregador app vinculado) */}
                 {!d.courier_id && d.status !== "concluida" && d.status !== "cancelada" && (
                   <div className="grid grid-cols-2 gap-1.5 pt-2">
