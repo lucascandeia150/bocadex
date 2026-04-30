@@ -200,6 +200,20 @@ export default function PedidosPage() {
         <TabsContent value="historico" className="mt-4 space-y-2">
           {loading ? (
             <p className="text-center text-xs text-muted-foreground py-8">Carregando...</p>
+          ) : !user ? (
+            <div className="text-center py-10 animate-slide-up">
+              <span className="text-5xl block mb-3">🔐</span>
+              <p className="font-bold text-foreground">Entre pra ver seus pedidos</p>
+              <p className="text-xs text-muted-foreground mt-1 mb-4">
+                Acompanhe status em tempo real e histórico completo
+              </p>
+              <button
+                onClick={() => navigate(`/auth?redirect=${encodeURIComponent("/pedidos?tab=historico")}`)}
+                className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground font-bold px-5 py-2.5 rounded-2xl text-sm active:scale-95 transition-transform"
+              >
+                <LogIn size={14} /> Entrar
+              </button>
+            </div>
           ) : orders.length === 0 ? (
             <div className="text-center py-10 animate-slide-up">
               <span className="text-5xl block mb-3">📦</span>
