@@ -279,8 +279,10 @@ export type Database = {
           partner_id: string | null
           partner_name: string
           payment_id: string | null
+          prep_status: string
           status: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           app_fee?: number
@@ -297,8 +299,10 @@ export type Database = {
           partner_id?: string | null
           partner_name: string
           payment_id?: string | null
+          prep_status?: string
           status?: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           app_fee?: number
@@ -315,8 +319,10 @@ export type Database = {
           partner_id?: string | null
           partner_name?: string
           payment_id?: string | null
+          prep_status?: string
           status?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -611,6 +617,33 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          name?: string
+          phone?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ratings: {
         Row: {
           comment: string | null
@@ -873,8 +906,10 @@ export type Database = {
           partner_id: string | null
           partner_name: string
           payment_id: string | null
+          prep_status: string
           status: string
           updated_at: string
+          user_id: string | null
         }
         SetofOptions: {
           from: "*"
@@ -908,14 +943,45 @@ export type Database = {
           partner_id: string | null
           partner_name: string
           payment_id: string | null
+          prep_status: string
           status: string
           updated_at: string
+          user_id: string | null
         }
         SetofOptions: {
           from: "*"
           to: "deliveries"
           isOneToOne: true
           isSetofReturn: false
+        }
+      }
+      customer_list_orders: {
+        Args: never
+        Returns: {
+          app_fee: number
+          courier_id: string | null
+          courier_payout: number
+          created_at: string
+          delivery_address: string
+          delivery_code: string | null
+          fee: number
+          id: string
+          notes: string | null
+          order_description: string
+          order_value: number
+          partner_id: string | null
+          partner_name: string
+          payment_id: string | null
+          prep_status: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "deliveries"
+          isOneToOne: false
+          isSetofReturn: true
         }
       }
       generate_access_pin: { Args: never; Returns: string }
@@ -957,8 +1023,39 @@ export type Database = {
           partner_id: string | null
           partner_name: string
           payment_id: string | null
+          prep_status: string
           status: string
           updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deliveries"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      partner_advance_prep: {
+        Args: { _delivery_id: string; _next: string; _pin: string }
+        Returns: {
+          app_fee: number
+          courier_id: string | null
+          courier_payout: number
+          created_at: string
+          delivery_address: string
+          delivery_code: string | null
+          fee: number
+          id: string
+          notes: string | null
+          order_description: string
+          order_value: number
+          partner_id: string | null
+          partner_name: string
+          payment_id: string | null
+          prep_status: string
+          status: string
+          updated_at: string
+          user_id: string | null
         }
         SetofOptions: {
           from: "*"
@@ -991,8 +1088,10 @@ export type Database = {
               partner_id: string | null
               partner_name: string
               payment_id: string | null
+              prep_status: string
               status: string
               updated_at: string
+              user_id: string | null
             }
             SetofOptions: {
               from: "*"
@@ -1025,8 +1124,10 @@ export type Database = {
               partner_id: string | null
               partner_name: string
               payment_id: string | null
+              prep_status: string
               status: string
               updated_at: string
+              user_id: string | null
             }
             SetofOptions: {
               from: "*"
@@ -1115,8 +1216,10 @@ export type Database = {
           partner_id: string | null
           partner_name: string
           payment_id: string | null
+          prep_status: string
           status: string
           updated_at: string
+          user_id: string | null
         }[]
         SetofOptions: {
           from: "*"
