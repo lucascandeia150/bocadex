@@ -21,12 +21,31 @@ Deno.serve(async (req) => {
 
   try {
     const token = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
-    if (!token) throw new Error("MERCADOPAGO_ACCESS_TOKEN não configurado");
+    if (!token) {
+      console.error("MERCADOPAGO_ACCESS_TOKEN ausente");
+      return new Response(
+        JSON.stringify({ error: "Pagamento online indisponível no momento. Tente novamente mais tarde." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
-    const body = (await req.json()) as Body;
+    let body: Body;
+    try {
+      body = (await req.json()) as Body;
+    } catch {
+      return new Response(JSON.stringify({ error: "Requisição inválida" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    console.log("[mp-create-preference] payload", {
+      partner_id: body.partner_id,
+      amount: body.amount,
+      has_back_url: !!body.back_url,
+    });
     if (!body.partner_id || !body.customer_name || !body.customer_phone ||
         !body.delivery_address || !body.order_description || !body.amount) {
-      return new Response(JSON.stringify({ error: "Campos obrigatórios ausentes" }), {
+      return new Response(JSON.stringify({ error: "Preencha nome, telefone, endereço e itens do pedido" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -47,12 +66,13 @@ Deno.serve(async (req) => {
     // valida parceiro aprovado/aberto
     const { data: partner, error: pErr } = await supabase
       .from("partner_applications")
-      .select("id, business_name, is_open, status, is_active")
+      .select("id, business_name, is_open, status, is_active, uses_app_courier")
       .eq("id", body.partner_id)
       .eq("status", "approved")
       .eq("is_active", true)
       .maybeSingle();
     if (pErr || !partner) {
+      console.warn("Loja não encontrada/aprovada", body.partner_id, pErr?.message);
       return new Response(JSON.stringify({ error: "Loja indisponível" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -63,6 +83,12 @@ Deno.serve(async (req) => {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+    if (!partner.uses_app_courier) {
+      return new Response(
+        JSON.stringify({ error: "Esta loja não trabalha com entrega via app. Faça retirada ou contate a loja." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
 
     const externalReference = crypto.randomUUID();
@@ -123,7 +149,10 @@ Deno.serve(async (req) => {
     const mpData = await mpRes.json();
     if (!mpRes.ok) {
       console.error("Mercado Pago error", mpData);
-      return new Response(JSON.stringify({ error: "Falha ao criar preferência", details: mpData }), {
+      const mpMsg =
+        (mpData && (mpData.message || mpData.error)) ||
+        "Não foi possível iniciar o pagamento. Tente novamente.";
+      return new Response(JSON.stringify({ error: `Mercado Pago: ${mpMsg}`, details: mpData }), {
         status: 502,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

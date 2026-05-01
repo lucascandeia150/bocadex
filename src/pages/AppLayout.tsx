@@ -41,6 +41,10 @@ import NotFound from "./NotFound";
 export default function AppLayout() {
   const { history, addEntry, clearHistory } = useHistory();
   const handleChoose = (food: Food) => addEntry(food);
+  const location = useLocation();
+  const hideAd = ["/carrinho", "/auth", "/pagamento/retorno"].some((p) =>
+    location.pathname.startsWith(p),
+  );
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -82,9 +86,11 @@ export default function AppLayout() {
             </Routes>
           </main>
 
-          <div className="fixed bottom-14 left-0 right-0 z-40 max-w-lg mx-auto">
-            <AdBanner placement="bottom" />
-          </div>
+          {!hideAd && (
+            <div className="fixed bottom-14 left-0 right-0 z-30 max-w-lg mx-auto">
+              <AdBanner placement="bottom" />
+            </div>
+          )}
         </div>
       </div>
       <CartFab />
