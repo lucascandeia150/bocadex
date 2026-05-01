@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, CreditCard, LogIn } from "lucide-react";
+import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, CreditCard, LogIn, MapPin, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +31,7 @@ export default function CarrinhoPage() {
   const [address, setAddress] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [payingMp, setPayingMp] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<{ id: string; label: string; address: string; is_default: boolean }[]>([]);
 
   // Pré-preenche dados do perfil logado
   useEffect(() => {
@@ -39,6 +40,31 @@ export default function CarrinhoPage() {
       if (!phone && profile.phone) setPhone(profile.phone);
     }
   }, [profile]);
+
+  // Carrega endereços salvos e seleciona o padrão
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("user_addresses")
+      .select("id, label, address, is_default")
+      .eq("user_id", user.id)
+      .order("is_default", { ascending: false })
+      .then(({ data }) => {
+        if (!data) return;
+        setSavedAddresses(data);
+        const def = data.find((a) => a.is_default) || data[0];
+        if (def && !address) setAddress(def.address);
+      });
+  }, [user]);
+
+  // Validação derivada
+  const validation = (() => {
+    if (!name.trim()) return "Informe seu nome";
+    if (!phone.trim() || phone.replace(/\D/g, "").length < 10) return "Informe um telefone válido";
+    if (mode === "entrega" && partnerHasDelivery && !address.trim()) return "Informe o endereço de entrega";
+    if (totalValue <= 0) return "Carrinho sem valor";
+    return null;
+  })();
 
   const buildOrderDescription = () =>
     items
@@ -154,13 +180,14 @@ export default function CarrinhoPage() {
       toast.error("Pagamento online disponível apenas para entrega");
       return;
     }
-    if (!name.trim() || !phone.trim() || !address.trim()) {
-      toast.error("Preencha nome, telefone e endereço");
+    if (validation) {
+      toast.error(validation);
       return;
     }
     setPayingMp(true);
     try {
       const backUrl = `${window.location.origin}/pagamento/retorno`;
+      console.log("[MP] Criando preferência", { partnerId, amount: totalValue });
       const { data, error } = await supabase.functions.invoke("mp-create-preference", {
         body: {
           partner_id: partnerId,
@@ -172,8 +199,16 @@ export default function CarrinhoPage() {
           back_url: backUrl,
         },
       });
-      if (error) throw new Error(error.message);
-      const init = data as { init_point?: string } | null;
+      console.log("[MP] Resposta", { data, error });
+      // Edge function retorna { error } no body em caso de validação (status 400/500)
+      const payload = (data ?? {}) as { init_point?: string; error?: string; details?: unknown };
+      if (error) {
+        // Tenta extrair mensagem real do body
+        const realMsg = payload?.error || error.message || "Não foi possível iniciar o pagamento";
+        throw new Error(realMsg);
+      }
+      if (payload.error) throw new Error(payload.error);
+      const init = payload as { init_point?: string };
       const url = init?.init_point;
       if (!url || !/^https:\/\/www\.mercadopago\.com/.test(url)) {
         throw new Error("URL de checkout inválida");
@@ -184,7 +219,8 @@ export default function CarrinhoPage() {
       window.location.href = url;
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Falha ao iniciar pagamento";
-      toast.error(msg);
+      console.error("[MP] Erro:", e);
+      toast.error(msg, { description: "Verifique seus dados e tente novamente." });
     } finally {
       setPayingMp(false);
     }
@@ -207,7 +243,7 @@ export default function CarrinhoPage() {
   }
 
   return (
-    <div className="pb-40">
+    <div className="pb-56">
       <div className="bg-gradient-to-b from-secondary/20 to-background px-4 pt-6 pb-4">
         <button
           onClick={() => navigate(-1)}
@@ -367,6 +403,25 @@ export default function CarrinhoPage() {
               <label className="text-[10px] font-bold text-muted-foreground mb-1 block uppercase">
                 Endereço de entrega
               </label>
+              {savedAddresses.length > 0 && (
+                <div className="flex gap-1.5 overflow-x-auto pb-2 mb-2 -mx-1 px-1">
+                  {savedAddresses.map((a) => {
+                    const active = address.trim() === a.address.trim();
+                    return (
+                      <button
+                        key={a.id}
+                        type="button"
+                        onClick={() => setAddress(a.address)}
+                        className={`shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-xl border-2 text-[10px] font-bold transition-colors ${
+                          active ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-foreground"
+                        }`}
+                      >
+                        <MapPin size={10} /> {a.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
               <textarea
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -374,6 +429,15 @@ export default function CarrinhoPage() {
                 rows={2}
                 className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm text-foreground"
               />
+              {user && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/perfil?tab=enderecos")}
+                  className="text-[10px] font-bold text-primary mt-1 active:scale-95"
+                >
+                  Gerenciar endereços salvos →
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -400,50 +464,50 @@ export default function CarrinhoPage() {
         </div>
       </div>
 
-      {/* CTA fixo */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-40">
+      {/* CTA fixo — acima da BottomNav (h ~14) e do AdBanner */}
+      <div
+        className="fixed left-0 right-0 z-50 px-4 pt-3 pb-3 bg-background/95 backdrop-blur-sm border-t border-border shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.15)]"
+        style={{ bottom: "calc(56px + env(safe-area-inset-bottom))" }}
+      >
         <div className="max-w-sm mx-auto space-y-2">
+          {validation && (
+            <p className="text-[10px] text-center text-destructive font-bold">{validation}</p>
+          )}
           {mode === "entrega" && partnerHasDelivery ? (
             <>
               <button
                 onClick={payWithMercadoPago}
-                disabled={payingMp || submitting}
+                disabled={payingMp || submitting || !!validation}
                 className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
               >
                 <span className="flex items-center gap-2">
-                  <CreditCard size={20} />
+                  {payingMp ? <Loader2 size={20} className="animate-spin" /> : <CreditCard size={20} />}
                   {payingMp ? "Abrindo pagamento..." : "Ir para pagamento"}
                 </span>
                 <span className="font-black">R${totalValue.toFixed(2)}</span>
               </button>
               <button
                 onClick={confirmOrder}
-                disabled={submitting}
+                disabled={submitting || !!validation}
                 className="w-full bg-card border-2 border-border hover:bg-accent disabled:opacity-60 text-foreground font-bold py-2.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-xs"
               >
-                <Zap size={14} />
+                {submitting ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />}
                 {submitting ? "Enviando..." : "Pedir sem pagar agora (combinar na entrega)"}
               </button>
-              <p className="text-[10px] text-center text-muted-foreground">
-                Pague online com PIX ou cartão · Entregador a caminho assim que aprovar
-              </p>
             </>
           ) : (
             <>
               <button
                 onClick={confirmOrder}
-                disabled={submitting}
+                disabled={submitting || !!validation}
                 className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
               >
                 <span className="flex items-center gap-2">
-                  <Zap size={20} />
+                  {submitting ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} />}
                   {submitting ? "Enviando..." : "Finalizar pedido"}
                 </span>
                 <span className="font-black">R${totalValue.toFixed(2)}</span>
               </button>
-              <p className="text-[10px] text-center text-muted-foreground">
-                O pedido será enviado direto para a loja via WhatsApp.
-              </p>
             </>
           )}
         </div>
