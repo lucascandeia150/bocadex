@@ -9,6 +9,9 @@ export function CartFab() {
 
   if (totalItems === 0) return null;
   if (location.pathname === "/carrinho") return null;
+  // Telas que já possuem CTA principal fixo no rodapé — evita sobreposição
+  if (location.pathname.startsWith("/parceiro/")) return null;
+  if (location.pathname.startsWith("/loja/")) return null;
 
   return (
     <button
