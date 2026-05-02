@@ -36,6 +36,7 @@ export default function ParceiroDetalhePage() {
   const [orderProduct, setOrderProduct] = useState<Product | null>(null);
   const { totalItems, totalValue, partnerId: cartPartnerId } = useCart();
   const cartHasThisStore = cartPartnerId === partner?.id && totalItems > 0;
+  const isProductModalOpen = !!orderProduct;
 
   useEffect(() => {
     if (!id) return;
@@ -217,7 +218,9 @@ export default function ParceiroDetalhePage() {
       </div>
 
       <div
-        className="fixed left-0 right-0 z-40 px-4 pt-3 bg-background/95 backdrop-blur-sm border-t border-border animate-slide-up"
+        className={`fixed left-0 right-0 z-40 px-4 pt-3 bg-background/95 backdrop-blur-sm border-t border-border transition-transform duration-200 ${
+          isProductModalOpen ? "translate-y-full pointer-events-none" : "translate-y-0 animate-slide-up"
+        }`}
         style={{
           bottom: "calc(56px + env(safe-area-inset-bottom))",
           paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
