@@ -12,11 +12,9 @@ const tabs = [
 export function BottomNav() {
   const { totalItems } = useCart();
   const location = useLocation();
-  const shouldHideForProductModal = Boolean(document.querySelector('[data-product-order-modal="open"]'));
 
   // Hide on admin/portal routes for cleaner UX
   if (
-    shouldHideForProductModal ||
     location.pathname.startsWith("/admin") ||
     location.pathname.startsWith("/portal")
   ) {
