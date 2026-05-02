@@ -100,7 +100,7 @@ export default function ParceiroDetalhePage() {
   }
 
   return (
-    <div className="pb-28">
+    <div className="pb-44">
       {/* Banner com gradiente */}
       <div className="relative h-44 bg-gradient-to-br from-[hsl(142,71%,45%)] via-[hsl(142,71%,38%)] to-[hsl(24,95%,48%)] overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.3) 0%, transparent 50%)" }} />
