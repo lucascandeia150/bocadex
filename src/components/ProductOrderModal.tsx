@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Minus, Plus, ShoppingCart, AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCart, type CartItem } from "@/contexts/CartContext";
@@ -46,7 +47,19 @@ export function ProductOrderModal({
     }
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [open]);
+
   if (!open) return null;
+  if (typeof document === "undefined") return null;
 
   const price = unitPrice ?? 0;
   const total = price * qty;
@@ -101,14 +114,14 @@ export function ProductOrderModal({
     startY.current = null;
   };
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[80] bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in"
+      className="fixed inset-0 z-[1000] isolate bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in"
       onClick={onClose}
     >
       <div
         style={{ transform: dragY > 0 ? `translateY(${dragY}px)` : undefined, transition: dragY === 0 ? "transform 0.2s ease" : "none" }}
-        className="w-full sm:max-w-sm bg-card rounded-t-3xl sm:rounded-3xl shadow-2xl border border-border flex flex-col max-h-[92vh] sm:max-h-[88vh] animate-slide-up"
+        className="w-full sm:max-w-sm bg-card rounded-t-3xl sm:rounded-3xl shadow-2xl border border-border flex flex-col max-h-[92dvh] sm:max-h-[88vh] animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle (mobile) */}
@@ -245,6 +258,7 @@ export function ProductOrderModal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
