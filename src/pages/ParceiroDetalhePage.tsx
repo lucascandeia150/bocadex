@@ -4,6 +4,7 @@ import { ArrowLeft, MapPin, MessageCircle, Package, ShoppingBag, Store as StoreI
 import { supabase } from "@/integrations/supabase/client";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
 import { ProductOrderModal } from "@/components/ProductOrderModal";
+import { useCart } from "@/contexts/CartContext";
 
 interface Partner {
   id: string;
@@ -33,6 +34,8 @@ export default function ParceiroDetalhePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [orderProduct, setOrderProduct] = useState<Product | null>(null);
+  const { totalItems, totalValue, partnerId: cartPartnerId } = useCart();
+  const cartHasThisStore = cartPartnerId === partner?.id && totalItems > 0;
 
   useEffect(() => {
     if (!id) return;
@@ -213,15 +216,36 @@ export default function ParceiroDetalhePage() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-40">
+      <div
+        className="fixed left-0 right-0 z-40 px-4 pt-3 bg-background/95 backdrop-blur-sm border-t border-border animate-slide-up"
+        style={{
+          bottom: "calc(56px + env(safe-area-inset-bottom))",
+          paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
+        }}
+      >
         <div className="max-w-sm mx-auto">
-          <button
-            onClick={() => openWhatsApp(`Olá! Vi a ${partner.business_name} no EscolheAí 😄`, "partner_page")}
-            className="w-full bg-card border-2 border-[hsl(142,70%,45%)] text-[hsl(142,70%,38%)] font-black py-3.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
-          >
-            <MessageCircle size={18} />
-            Falar com a loja
-          </button>
+          {cartHasThisStore ? (
+            <button
+              onClick={() => navigate("/carrinho")}
+              className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-black py-3.5 rounded-2xl active:scale-[0.98] transition-all flex items-center justify-between gap-2 px-5 text-sm shadow-lg"
+            >
+              <span className="flex items-center gap-2">
+                <span className="bg-white/25 text-white text-[11px] font-black rounded-full min-w-[22px] h-[22px] flex items-center justify-center px-1.5">
+                  {totalItems}
+                </span>
+                Ver carrinho
+              </span>
+              <span className="font-black">R${totalValue.toFixed(2)}</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => openWhatsApp(`Olá! Vi a ${partner.business_name} no EscolheAí 😄`, "partner_page")}
+              className="w-full bg-card border-2 border-[hsl(142,70%,45%)] text-[hsl(142,70%,38%)] font-black py-3.5 rounded-2xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-sm shadow-lg"
+            >
+              <MessageCircle size={18} />
+              Falar com a loja
+            </button>
+          )}
         </div>
       </div>
 
