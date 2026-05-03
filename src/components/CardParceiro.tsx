@@ -22,6 +22,7 @@ export interface CardParceiroData {
   business_type?: string | null;
   highlighted?: boolean;
   offer?: string | null;
+  is_demo?: boolean;
 }
 
 interface Props {
@@ -52,6 +53,7 @@ export function CardParceiro({ partner, index = 0, variant = "default" }: Props)
   };
 
   const isHighlight = variant === "highlight" || !!partner.highlighted;
+  const isDemo = !!partner.is_demo;
 
   return (
     <button
@@ -62,9 +64,19 @@ export function CardParceiro({ partner, index = 0, variant = "default" }: Props)
     >
       <div
         className={`rounded-2xl border p-4 bg-card shadow-sm ${
-          isHighlight ? "border-secondary/50 ring-1 ring-secondary/20" : "border-border"
+          isDemo
+            ? "border-orange-500/60 ring-2 ring-orange-500/30"
+            : isHighlight ? "border-secondary/50 ring-1 ring-secondary/20" : "border-border"
         }`}
       >
+        {isDemo && (
+          <div className="flex items-center gap-1.5 mb-2">
+            <span className="text-[10px] font-black bg-orange-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wide">
+              🧪 DEMO
+            </span>
+            <span className="text-[10px] text-muted-foreground font-semibold">Visível só para admin</span>
+          </div>
+        )}
         {isHighlight && (
           <div className="flex items-center gap-1.5 mb-2">
             <Flame size={12} className="text-secondary" />
