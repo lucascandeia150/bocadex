@@ -52,6 +52,13 @@ export default function AcessoParceiroPage() {
       <p className="text-[10px] text-muted-foreground text-center pt-2">
         💡 Acesso restrito por PIN fornecido pelo administrador
       </p>
+
+      <div className="rounded-2xl border-2 border-orange-500/40 bg-orange-500/10 p-3 text-center">
+        <p className="text-[10px] font-black text-orange-600 uppercase tracking-wider">🧪 Apresentação / Demo</p>
+        <p className="text-[11px] text-foreground/80 mt-1">
+          Use o PIN <span className="font-mono font-black">000000</span> no Portal da Loja para entrar na loja de demonstração.
+        </p>
+      </div>
     </div>
   );
 }
