@@ -332,3 +332,66 @@ function ChartCard({
 function ChartSkeleton() {
   return <div className="h-[220px] rounded-xl bg-muted animate-pulse" />;
 }
+
+function DemoStoreCard({ onReset }: { onReset: () => void }) {
+  const [demoId, setDemoId] = useState<string | null>(null);
+  const [pin, setPin] = useState<string>("");
+  const [resetting, setResetting] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from("partner_applications")
+      .select("id, access_pin")
+      .eq("is_demo", true)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) { setDemoId(data.id); setPin(data.access_pin || ""); }
+      });
+  }, []);
+
+  const handleReset = async () => {
+    if (!confirm("Apagar TODOS os pedidos e produtos da Loja Demo?")) return;
+    setResetting(true);
+    const { data, error } = await supabase.rpc("reset_demo_store");
+    setResetting(false);
+    if (error) { toast.error(error.message); return; }
+    const r = data as { ok: boolean; deleted_orders?: number; deleted_products?: number };
+    toast.success(`Demo resetada: ${r.deleted_orders || 0} pedidos, ${r.deleted_products || 0} produtos`);
+    onReset();
+  };
+
+  return (
+    <div className="rounded-2xl border-2 border-orange-500/40 bg-gradient-to-br from-orange-500/10 to-orange-500/5 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="flex-1">
+        <p className="text-xs font-black text-orange-600 uppercase tracking-wider">🧪 Loja Demo</p>
+        <p className="text-sm font-bold text-foreground mt-0.5">Modo apresentação — dados isolados</p>
+        <p className="text-[11px] text-muted-foreground mt-0.5">
+          PIN de acesso: <span className="font-mono font-bold text-foreground">{pin || "—"}</span>
+        </p>
+      </div>
+      <div className="flex gap-2">
+        {demoId && (
+          <Link
+            to={`/loja/${demoId}`}
+            className="px-3 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-black active:scale-95"
+          >
+            Ver loja demo
+          </Link>
+        )}
+        <a
+          href="/portal/loja"
+          className="px-3 py-2 rounded-xl bg-card border border-border text-foreground text-xs font-black active:scale-95"
+        >
+          Portal demo
+        </a>
+        <button
+          onClick={handleReset}
+          disabled={resetting}
+          className="px-3 py-2 rounded-xl bg-red-500/10 text-red-600 text-xs font-black active:scale-95 disabled:opacity-50"
+        >
+          {resetting ? "..." : "Reset"}
+        </button>
+      </div>
+    </div>
+  );
+}
