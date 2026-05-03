@@ -4,6 +4,7 @@ import { StoreCategory, stores, categoryLabels, getAllCategories } from "@/data/
 import { ShoppingBag, Flame, Handshake } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CardParceiro } from "@/components/CardParceiro";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 interface DbPartner {
   id: string;
@@ -16,6 +17,8 @@ interface DbPartner {
   logo_url: string | null;
   is_active: boolean;
   is_featured?: boolean;
+  is_demo?: boolean;
+  visibility?: string;
 }
 
 export default function LojasPage() {
@@ -23,15 +26,19 @@ export default function LojasPage() {
   const [activeCategory, setActiveCategory] = useState<StoreCategory | "todas">("todas");
   const [dbPartners, setDbPartners] = useState<DbPartner[]>([]);
   const categories = getAllCategories();
+  const { isAdmin } = useIsAdmin();
 
   useEffect(() => {
-    supabase
+    const baseSelect = "id, business_name, business_type, address, description, whatsapp, promotions, logo_url, is_active, is_featured, is_demo, visibility";
+    const q = isAdmin
+      ? supabase.from("partner_applications").select(baseSelect).eq("status", "approved").eq("is_active", true)
+      : supabase
       .from("partner_applications")
-      .select("id, business_name, business_type, address, description, whatsapp, promotions, logo_url, is_active, is_featured")
+      .select(baseSelect)
       .eq("status", "approved")
-      .eq("is_active", true)
-      .then(({ data }) => { if (data) setDbPartners(data as DbPartner[]); });
-  }, []);
+      .eq("is_active", true);
+    q.then(({ data }) => { if (data) setDbPartners(data as DbPartner[]); });
+  }, [isAdmin]);
 
   // Map business_type to StoreCategory
   const mapBusinessType = (type: string): StoreCategory | null => {
