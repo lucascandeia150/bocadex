@@ -107,6 +107,7 @@ export default function LojasPage() {
                   business_type: p.business_type,
                   offer: p.promotions,
                   highlighted: true,
+                  is_demo: p.is_demo,
                 }}
               />
             ))}
@@ -164,6 +165,7 @@ export default function LojasPage() {
               description: p.description,
               logo_url: p.logo_url,
               business_type: p.business_type,
+              is_demo: p.is_demo,
             }}
           />
         ))}
