@@ -273,6 +273,7 @@ export type Database = {
           delivery_code: string | null
           fee: number
           id: string
+          is_demo: boolean
           notes: string | null
           order_description: string
           order_value: number
@@ -293,6 +294,7 @@ export type Database = {
           delivery_code?: string | null
           fee?: number
           id?: string
+          is_demo?: boolean
           notes?: string | null
           order_description: string
           order_value?: number
@@ -313,6 +315,7 @@ export type Database = {
           delivery_code?: string | null
           fee?: number
           id?: string
+          is_demo?: boolean
           notes?: string | null
           order_description?: string
           order_value?: number
@@ -445,10 +448,12 @@ export type Database = {
           business_name: string
           business_type: string
           created_at: string
+          created_by: string | null
           description: string
           id: string
           images: string[] | null
           is_active: boolean
+          is_demo: boolean
           is_featured: boolean
           is_open: boolean
           logo_url: string | null
@@ -457,6 +462,7 @@ export type Database = {
           status: string
           user_id: string | null
           uses_app_courier: boolean
+          visibility: string
           whatsapp: string
         }
         Insert: {
@@ -465,10 +471,12 @@ export type Database = {
           business_name: string
           business_type: string
           created_at?: string
+          created_by?: string | null
           description: string
           id?: string
           images?: string[] | null
           is_active?: boolean
+          is_demo?: boolean
           is_featured?: boolean
           is_open?: boolean
           logo_url?: string | null
@@ -477,6 +485,7 @@ export type Database = {
           status?: string
           user_id?: string | null
           uses_app_courier?: boolean
+          visibility?: string
           whatsapp: string
         }
         Update: {
@@ -485,10 +494,12 @@ export type Database = {
           business_name?: string
           business_type?: string
           created_at?: string
+          created_by?: string | null
           description?: string
           id?: string
           images?: string[] | null
           is_active?: boolean
+          is_demo?: boolean
           is_featured?: boolean
           is_open?: boolean
           logo_url?: string | null
@@ -497,6 +508,7 @@ export type Database = {
           status?: string
           user_id?: string | null
           uses_app_courier?: boolean
+          visibility?: string
           whatsapp?: string
         }
         Relationships: []
@@ -568,6 +580,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          is_demo: boolean
           name: string
           partner_id: string | null
           price_max: number | null
@@ -581,6 +594,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_demo?: boolean
           name: string
           partner_id?: string | null
           price_max?: number | null
@@ -594,6 +608,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_demo?: boolean
           name?: string
           partner_id?: string | null
           price_max?: number | null
@@ -954,6 +969,7 @@ export type Database = {
           delivery_code: string | null
           fee: number
           id: string
+          is_demo: boolean
           notes: string | null
           order_description: string
           order_value: number
@@ -991,6 +1007,7 @@ export type Database = {
           delivery_code: string | null
           fee: number
           id: string
+          is_demo: boolean
           notes: string | null
           order_description: string
           order_value: number
@@ -1020,6 +1037,7 @@ export type Database = {
           delivery_code: string | null
           fee: number
           id: string
+          is_demo: boolean
           notes: string | null
           order_description: string
           order_value: number
@@ -1071,6 +1089,7 @@ export type Database = {
           delivery_code: string | null
           fee: number
           id: string
+          is_demo: boolean
           notes: string | null
           order_description: string
           order_value: number
@@ -1100,6 +1119,7 @@ export type Database = {
           delivery_code: string | null
           fee: number
           id: string
+          is_demo: boolean
           notes: string | null
           order_description: string
           order_value: number
@@ -1136,6 +1156,7 @@ export type Database = {
               delivery_code: string | null
               fee: number
               id: string
+              is_demo: boolean
               notes: string | null
               order_description: string
               order_value: number
@@ -1172,6 +1193,7 @@ export type Database = {
               delivery_code: string | null
               fee: number
               id: string
+              is_demo: boolean
               notes: string | null
               order_description: string
               order_value: number
@@ -1207,6 +1229,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          is_demo: boolean
           name: string
           partner_id: string | null
           price_max: number | null
@@ -1232,10 +1255,12 @@ export type Database = {
           business_name: string
           business_type: string
           created_at: string
+          created_by: string | null
           description: string
           id: string
           images: string[] | null
           is_active: boolean
+          is_demo: boolean
           is_featured: boolean
           is_open: boolean
           logo_url: string | null
@@ -1244,6 +1269,7 @@ export type Database = {
           status: string
           user_id: string | null
           uses_app_courier: boolean
+          visibility: string
           whatsapp: string
         }
         SetofOptions: {
@@ -1264,6 +1290,7 @@ export type Database = {
           delivery_code: string | null
           fee: number
           id: string
+          is_demo: boolean
           notes: string | null
           order_description: string
           order_value: number
@@ -1291,6 +1318,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          is_demo: boolean
           name: string
           partner_id: string | null
           price_max: number | null
@@ -1348,10 +1376,12 @@ export type Database = {
           business_name: string
           business_type: string
           created_at: string
+          created_by: string | null
           description: string
           id: string
           images: string[] | null
           is_active: boolean
+          is_demo: boolean
           is_featured: boolean
           is_open: boolean
           logo_url: string | null
@@ -1360,6 +1390,7 @@ export type Database = {
           status: string
           user_id: string | null
           uses_app_courier: boolean
+          visibility: string
           whatsapp: string
         }
         SetofOptions: {
@@ -1378,6 +1409,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          is_demo: boolean
           name: string
           partner_id: string | null
           price_max: number | null
@@ -1410,6 +1442,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          is_demo: boolean
           name: string
           partner_id: string | null
           price_max: number | null
@@ -1439,10 +1472,12 @@ export type Database = {
           business_name: string
           business_type: string
           created_at: string
+          created_by: string | null
           description: string
           id: string
           images: string[] | null
           is_active: boolean
+          is_demo: boolean
           is_featured: boolean
           is_open: boolean
           logo_url: string | null
@@ -1451,6 +1486,7 @@ export type Database = {
           status: string
           user_id: string | null
           uses_app_courier: boolean
+          visibility: string
           whatsapp: string
         }
         SetofOptions: {
@@ -1460,6 +1496,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      reset_demo_store: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
