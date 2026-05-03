@@ -1339,6 +1339,7 @@ export type Database = {
           business_name: string
           description: string
           id: string
+          is_demo: boolean
           is_open: boolean
           logo_url: string
           uses_app_courier: boolean
