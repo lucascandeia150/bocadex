@@ -9,13 +9,15 @@ import {
 } from "recharts";
 import { format, subDays, startOfDay, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 interface Payment {
   id: string; status: string; amount: number; created_at: string;
   customer_phone: string | null; partner_id: string | null;
 }
-interface Delivery { id: string; status: string; created_at: string; order_value: number; }
-interface Partner { id: string; status: string; is_active: boolean; }
+interface Delivery { id: string; status: string; created_at: string; order_value: number; is_demo?: boolean; }
+interface Partner { id: string; status: string; is_active: boolean; is_demo?: boolean; }
 
 const STATUS_COLORS: Record<string, string> = {
   disponivel: "hsl(217 91% 60%)",
@@ -43,8 +45,8 @@ export default function AdminOverviewPage() {
     const since = subDays(new Date(), 30).toISOString();
     const [pRes, dRes, ptRes] = await Promise.all([
       supabase.from("payments").select("id,status,amount,created_at,customer_phone,partner_id").gte("created_at", since).order("created_at", { ascending: false }),
-      supabase.from("deliveries").select("id,status,created_at,order_value").gte("created_at", since).order("created_at", { ascending: false }),
-      supabase.from("partner_applications").select("id,status,is_active"),
+      supabase.from("deliveries").select("id,status,created_at,order_value,is_demo").eq("is_demo", false).gte("created_at", since).order("created_at", { ascending: false }),
+      supabase.from("partner_applications").select("id,status,is_active,is_demo"),
     ]);
     setPayments((pRes.data as Payment[]) || []);
     setDeliveries((dRes.data as Delivery[]) || []);
@@ -132,6 +134,8 @@ export default function AdminOverviewPage() {
           Visão geral dos últimos 30 dias · atualiza em tempo real
         </p>
       </div>
+
+      <DemoStoreCard onReset={load} />
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -327,4 +331,67 @@ function ChartCard({
 
 function ChartSkeleton() {
   return <div className="h-[220px] rounded-xl bg-muted animate-pulse" />;
+}
+
+function DemoStoreCard({ onReset }: { onReset: () => void }) {
+  const [demoId, setDemoId] = useState<string | null>(null);
+  const [pin, setPin] = useState<string>("");
+  const [resetting, setResetting] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from("partner_applications")
+      .select("id, access_pin")
+      .eq("is_demo", true)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) { setDemoId(data.id); setPin(data.access_pin || ""); }
+      });
+  }, []);
+
+  const handleReset = async () => {
+    if (!confirm("Apagar TODOS os pedidos e produtos da Loja Demo?")) return;
+    setResetting(true);
+    const { data, error } = await supabase.rpc("reset_demo_store");
+    setResetting(false);
+    if (error) { toast.error(error.message); return; }
+    const r = data as { ok: boolean; deleted_orders?: number; deleted_products?: number };
+    toast.success(`Demo resetada: ${r.deleted_orders || 0} pedidos, ${r.deleted_products || 0} produtos`);
+    onReset();
+  };
+
+  return (
+    <div className="rounded-2xl border-2 border-orange-500/40 bg-gradient-to-br from-orange-500/10 to-orange-500/5 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="flex-1">
+        <p className="text-xs font-black text-orange-600 uppercase tracking-wider">🧪 Loja Demo</p>
+        <p className="text-sm font-bold text-foreground mt-0.5">Modo apresentação — dados isolados</p>
+        <p className="text-[11px] text-muted-foreground mt-0.5">
+          PIN de acesso: <span className="font-mono font-bold text-foreground">{pin || "—"}</span>
+        </p>
+      </div>
+      <div className="flex gap-2">
+        {demoId && (
+          <Link
+            to={`/loja/${demoId}`}
+            className="px-3 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-black active:scale-95"
+          >
+            Ver loja demo
+          </Link>
+        )}
+        <a
+          href="/portal/loja"
+          className="px-3 py-2 rounded-xl bg-card border border-border text-foreground text-xs font-black active:scale-95"
+        >
+          Portal demo
+        </a>
+        <button
+          onClick={handleReset}
+          disabled={resetting}
+          className="px-3 py-2 rounded-xl bg-red-500/10 text-red-600 text-xs font-black active:scale-95 disabled:opacity-50"
+        >
+          {resetting ? "..." : "Reset"}
+        </button>
+      </div>
+    </div>
+  );
 }

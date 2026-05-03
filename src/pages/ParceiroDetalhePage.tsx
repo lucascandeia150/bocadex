@@ -16,6 +16,7 @@ interface Partner {
   promotions: string | null;
   logo_url: string | null;
   uses_app_courier: boolean;
+  is_demo?: boolean;
 }
 
 interface Product {
@@ -44,7 +45,7 @@ export default function ParceiroDetalhePage() {
       const [pRes, prRes] = await Promise.all([
         supabase
           .from("partner_applications")
-          .select("id, business_name, business_type, address, description, whatsapp, promotions, logo_url, uses_app_courier")
+          .select("id, business_name, business_type, address, description, whatsapp, promotions, logo_url, uses_app_courier, is_demo")
           .eq("id", id)
           .eq("status", "approved")
           .eq("is_active", true)
@@ -155,6 +156,15 @@ export default function ParceiroDetalhePage() {
       </div>
 
       <div className="max-w-sm mx-auto px-4 space-y-5 mt-5">
+        {partner.is_demo && (
+          <div className="rounded-2xl border-2 border-orange-500/50 bg-orange-500/10 p-3 flex items-start gap-2 animate-slide-up">
+            <span className="text-lg">🧪</span>
+            <div className="flex-1">
+              <p className="text-xs font-black text-orange-700 dark:text-orange-400 uppercase tracking-wide">Modo demonstração</p>
+              <p className="text-[11px] text-foreground/80 mt-0.5">Esta loja é apenas para apresentação. Os dados não são reais e não geram cobranças.</p>
+            </div>
+          </div>
+        )}
         {partner.promotions && (
           <div className="bg-gradient-to-r from-secondary/20 to-secondary/10 border border-secondary/40 rounded-2xl p-4 animate-slide-up">
             <p className="text-[10px] font-black text-secondary uppercase tracking-wider mb-1 flex items-center gap-1">🔥 Promoções</p>

@@ -13,6 +13,7 @@ interface Partner {
   whatsapp: string;
   uses_app_courier?: boolean;
   is_open?: boolean;
+  is_demo?: boolean;
 }
 
 interface Delivery {
@@ -160,6 +161,7 @@ export default function PortalLojaPage() {
       whatsapp: p.whatsapp,
       uses_app_courier: !!p.uses_app_courier,
       is_open: p.is_open !== false,
+      is_demo: !!p.is_demo,
     };
     setPartner(merged);
     setAddress(p.address);
@@ -444,12 +446,22 @@ export default function PortalLojaPage() {
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <p className="text-[10px] uppercase tracking-widest opacity-80 font-bold">Portal da loja</p>
-            <h1 className="text-lg font-black truncate">{partner.business_name}</h1>
+            <h1 className="text-lg font-black truncate flex items-center gap-2">
+              {partner.business_name}
+              {partner.is_demo && (
+                <span className="text-[9px] font-black bg-white text-orange-600 px-1.5 py-0.5 rounded-full">🧪 DEMO</span>
+              )}
+            </h1>
           </div>
           <button onClick={logout} className="p-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 transition-all" title="Sair">
             <LogOut size={14} />
           </button>
         </div>
+        {partner.is_demo && (
+          <p className="mt-2 text-[11px] bg-white/15 rounded-lg px-2 py-1.5 font-semibold">
+            ⚠️ Modo demonstração — dados não são reais.
+          </p>
+        )}
 
         {/* Open/Close toggle */}
         <button
