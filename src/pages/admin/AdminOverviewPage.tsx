@@ -9,13 +9,15 @@ import {
 } from "recharts";
 import { format, subDays, startOfDay, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 interface Payment {
   id: string; status: string; amount: number; created_at: string;
   customer_phone: string | null; partner_id: string | null;
 }
-interface Delivery { id: string; status: string; created_at: string; order_value: number; }
-interface Partner { id: string; status: string; is_active: boolean; }
+interface Delivery { id: string; status: string; created_at: string; order_value: number; is_demo?: boolean; }
+interface Partner { id: string; status: string; is_active: boolean; is_demo?: boolean; }
 
 const STATUS_COLORS: Record<string, string> = {
   disponivel: "hsl(217 91% 60%)",
@@ -43,8 +45,8 @@ export default function AdminOverviewPage() {
     const since = subDays(new Date(), 30).toISOString();
     const [pRes, dRes, ptRes] = await Promise.all([
       supabase.from("payments").select("id,status,amount,created_at,customer_phone,partner_id").gte("created_at", since).order("created_at", { ascending: false }),
-      supabase.from("deliveries").select("id,status,created_at,order_value").gte("created_at", since).order("created_at", { ascending: false }),
-      supabase.from("partner_applications").select("id,status,is_active"),
+      supabase.from("deliveries").select("id,status,created_at,order_value,is_demo").eq("is_demo", false).gte("created_at", since).order("created_at", { ascending: false }),
+      supabase.from("partner_applications").select("id,status,is_active,is_demo"),
     ]);
     setPayments((pRes.data as Payment[]) || []);
     setDeliveries((dRes.data as Delivery[]) || []);
