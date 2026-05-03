@@ -13,6 +13,7 @@ interface Partner {
   whatsapp: string;
   uses_app_courier?: boolean;
   is_open?: boolean;
+  is_demo?: boolean;
 }
 
 interface Delivery {
@@ -160,6 +161,7 @@ export default function PortalLojaPage() {
       whatsapp: p.whatsapp,
       uses_app_courier: !!p.uses_app_courier,
       is_open: p.is_open !== false,
+      is_demo: !!p.is_demo,
     };
     setPartner(merged);
     setAddress(p.address);
