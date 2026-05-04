@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { OrderTrackingMap } from "@/components/OrderTrackingMap";
 
 interface OrderRow {
   id: string;
@@ -15,6 +16,8 @@ interface OrderRow {
   created_at: string;
   delivery_address: string;
   delivery_code: string | null;
+  partner_id?: string | null;
+  partner_address?: string | null;
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; color: string }> = {
@@ -44,6 +47,17 @@ export default function PedidosPage() {
 
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const enrichWithPartnerAddress = async (rows: OrderRow[]): Promise<OrderRow[]> => {
+    const ids = Array.from(new Set(rows.map((o) => o.partner_id).filter(Boolean))) as string[];
+    if (ids.length === 0) return rows;
+    const { data } = await supabase
+      .from("partner_applications")
+      .select("id, address")
+      .in("id", ids);
+    const map = new Map((data ?? []).map((p: any) => [p.id, p.address as string]));
+    return rows.map((o) => ({ ...o, partner_address: o.partner_id ? map.get(o.partner_id) ?? null : null }));
+  };
 
   useEffect(() => {
     setParams(tab === "historico" ? { tab: "historico" } : {}, { replace: true });
@@ -76,7 +90,9 @@ export default function PedidosPage() {
         }
       }
       if (!cancelled) {
-        setOrders(userOrders.sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at)));
+        const sorted = userOrders.sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at));
+        const enriched = await enrichWithPartnerAddress(sorted);
+        if (!cancelled) setOrders(enriched);
         setLoading(false);
       }
     };
@@ -92,8 +108,8 @@ export default function PedidosPage() {
       .on("postgres_changes",
         { event: "*", schema: "public", table: "deliveries", filter: `user_id=eq.${user.id}` },
         () => {
-          supabase.rpc("customer_list_orders").then(({ data }) => {
-            if (data) setOrders(data as OrderRow[]);
+          supabase.rpc("customer_list_orders").then(async ({ data }) => {
+            if (data) setOrders(await enrichWithPartnerAddress(data as OrderRow[]));
           });
         }
       )
@@ -251,6 +267,15 @@ export default function PedidosPage() {
                       Total: R${Number(o.order_value).toFixed(2)}
                     </p>
                   )}
+                    {!["concluida","completed","delivered","cancelled","cancelada"].includes(o.status) && o.delivery_address && (
+                      <div className="mt-3">
+                        <OrderTrackingMap
+                          storeAddress={o.partner_address ?? o.partner_name}
+                          deliveryAddress={o.delivery_address}
+                          height={200}
+                        />
+                      </div>
+                    )}
                   {o.delivery_code && o.status !== "concluida" && o.status !== "completed" && o.status !== "delivered" && o.status !== "cancelled" && o.status !== "cancelada" && (
                     <div className="mt-3 rounded-xl bg-primary/10 border-2 border-dashed border-primary/40 p-3 text-center">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase">🔐 Código de entrega</p>

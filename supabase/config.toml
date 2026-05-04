@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.mp-refund]
 verify_jwt = false
+
+[functions.mapbox-token]
+verify_jwt = false
