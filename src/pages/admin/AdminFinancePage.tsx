@@ -4,7 +4,6 @@ import { DollarSign, TrendingUp, Receipt, Wallet, Download } from "lucide-react"
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
 import { format, subDays, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { withDemoFallback } from "@/lib/dashboardDemo";
 
 interface Payment { id: string; status: string; amount: number; created_at: string; partner_id: string | null; }
 interface Delivery { id: string; status: string; app_fee: number; fee: number; order_value: number; created_at: string; }
