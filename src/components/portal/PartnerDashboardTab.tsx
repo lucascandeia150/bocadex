@@ -1,5 +1,7 @@
 import { useMemo } from "react";
-import { Package, DollarSign, Clock, CheckCircle2, Truck, XCircle, TrendingUp } from "lucide-react";
+import { Package, DollarSign, Clock, CheckCircle2, Truck, XCircle, TrendingUp, Receipt } from "lucide-react";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { buildDayBuckets, fillBuckets, withDemoFallback, fmtBRL } from "@/lib/dashboardDemo";
 
 interface Delivery {
   id: string;
@@ -18,10 +20,12 @@ export default function PartnerDashboardTab({ deliveries }: { deliveries: Delive
     const todays = deliveries.filter((d) => new Date(d.created_at).getTime() >= todayMs);
 
     const sum = (arr: Delivery[]) => arr.reduce((acc, d) => acc + Number(d.order_value || 0), 0);
+    const avg = todays.length > 0 ? sum(todays) / todays.length : 0;
 
     return {
       todayCount: todays.length,
       todayRevenue: sum(todays),
+      todayAvg: avg,
       totalCount: deliveries.length,
       totalRevenue: sum(deliveries),
       byStatus: {
@@ -34,8 +38,13 @@ export default function PartnerDashboardTab({ deliveries }: { deliveries: Delive
     };
   }, [deliveries]);
 
-  const fmt = (v: number) =>
-    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const fmt = fmtBRL;
+
+  const chart = useMemo(() => {
+    const buckets = buildDayBuckets(7);
+    const filled = fillBuckets(buckets, deliveries, (d) => new Date(d.created_at), (d) => Number(d.order_value || 0));
+    return withDemoFallback(filled, 180);
+  }, [deliveries]);
 
   return (
     <div className="space-y-3">
@@ -53,6 +62,44 @@ export default function PartnerDashboardTab({ deliveries }: { deliveries: Delive
           value={fmt(stats.todayRevenue)}
           tone="green"
         />
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-4">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-xs font-black text-foreground flex items-center gap-1">
+            <TrendingUp size={12} /> Faturamento (últimos 7 dias)
+          </p>
+          {chart.isDemo && (
+            <span className="text-[9px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase">
+              demo
+            </span>
+          )}
+        </div>
+        <ResponsiveContainer width="100%" height={140}>
+          <AreaChart data={chart.points} margin={{ top: 5, right: 8, left: -20, bottom: 0 }}>
+            <defs>
+              <linearGradient id="partnerFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+            <XAxis dataKey="label" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+            <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" width={50} />
+            <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 11 }} formatter={(v: number) => fmt(v)} />
+            <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#partnerFill)" />
+          </AreaChart>
+        </ResponsiveContainer>
+        <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
+          <div className="bg-muted/40 rounded-xl p-2">
+            <p className="text-[10px] text-muted-foreground flex items-center gap-1"><Receipt size={10} /> Ticket médio hoje</p>
+            <p className="text-sm font-black text-foreground">{fmt(stats.todayAvg)}</p>
+          </div>
+          <div className="bg-muted/40 rounded-xl p-2">
+            <p className="text-[10px] text-muted-foreground flex items-center gap-1"><CheckCircle2 size={10} /> Concluídos hoje</p>
+            <p className="text-sm font-black text-foreground">{stats.byStatus.concluida}</p>
+          </div>
+        </div>
       </div>
 
       {/* Status do dia */}
