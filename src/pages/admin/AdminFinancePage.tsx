@@ -4,6 +4,7 @@ import { DollarSign, TrendingUp, Receipt, Wallet, Download } from "lucide-react"
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
 import { format, subDays, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { withDemoFallback } from "@/lib/dashboardDemo";
 
 interface Payment { id: string; status: string; amount: number; created_at: string; partner_id: string | null; }
 interface Delivery { id: string; status: string; app_fee: number; fee: number; order_value: number; created_at: string; }
@@ -31,7 +32,8 @@ export default function AdminFinancePage() {
     const grossRevenue = paid.reduce((s, p) => s + Number(p.amount || 0), 0);
     const appFees = deliveries.reduce((s, d) => s + Number(d.app_fee || 0), 0);
     const deliveryFees = deliveries.reduce((s, d) => s + Number(d.fee || 0), 0);
-    return { grossRevenue, appFees, deliveryFees, paidCount: paid.length };
+    const partnerPayout = grossRevenue - appFees - deliveryFees;
+    return { grossRevenue, appFees, deliveryFees, paidCount: paid.length, partnerPayout };
   }, [payments, deliveries]);
 
   const byDay = useMemo(() => {
@@ -51,6 +53,13 @@ export default function AdminFinancePage() {
     });
     return days.map(({ label, receita, taxas }) => ({ label, receita: Number(receita.toFixed(2)), taxas: Number(taxas.toFixed(2)) }));
   }, [payments, deliveries]);
+
+  const isEmpty = byDay.every((d) => d.receita === 0 && d.taxas === 0);
+  const chartData = useMemo(() => {
+    if (!isEmpty) return byDay;
+    const curve = [0.5, 0.8, 0.65, 0.9, 1.1, 0.95, 1.2, 0.85, 1.0, 1.3, 1.1, 0.9, 1.15, 1.4];
+    return byDay.map((d, i) => ({ ...d, receita: Number((curve[i] * 220).toFixed(2)), taxas: Number((curve[i] * 18).toFixed(2)) }));
+  }, [byDay, isEmpty]);
 
   const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -93,11 +102,31 @@ export default function AdminFinancePage() {
         <FinCard icon={<TrendingUp size={16} />} label="Taxas do app" value={fmt(totals.appFees)} tone="orange" />
         <FinCard icon={<Wallet size={16} />} label="Taxas de entrega" value={fmt(totals.deliveryFees)} tone="purple" />
       </div>
+      <div className="bg-card border border-border rounded-2xl p-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div>
+          <p className="text-[11px] font-bold uppercase text-muted-foreground">Repasse às lojas</p>
+          <p className="text-xl font-black text-foreground">{fmt(Math.max(0, totals.partnerPayout))}</p>
+          <p className="text-[10px] text-muted-foreground">Receita − taxas do app − entregas</p>
+        </div>
+        <div>
+          <p className="text-[11px] font-bold uppercase text-muted-foreground">Pagar entregadores</p>
+          <p className="text-xl font-black text-foreground">{fmt(totals.deliveryFees)}</p>
+          <p className="text-[10px] text-muted-foreground">Soma das taxas de entrega</p>
+        </div>
+        <div>
+          <p className="text-[11px] font-bold uppercase text-muted-foreground">Lucro plataforma</p>
+          <p className="text-xl font-black text-primary">{fmt(totals.appFees)}</p>
+          <p className="text-[10px] text-muted-foreground">Comissão do app</p>
+        </div>
+      </div>
       <div className="bg-card border border-border rounded-2xl p-4">
-        <p className="text-sm font-black text-foreground mb-3">Receita vs taxas por dia</p>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-black text-foreground">Receita vs taxas por dia</p>
+          {isEmpty && <span className="text-[10px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase">demo</span>}
+        </div>
         {loading ? <div className="h-[260px] rounded-xl bg-muted animate-pulse" /> : (
           <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={byDay} margin={{ top: 10, right: 12, left: -10, bottom: 0 }}>
+            <BarChart data={chartData} margin={{ top: 10, right: 12, left: -10, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
               <XAxis dataKey="label" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
               <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
