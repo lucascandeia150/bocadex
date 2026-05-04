@@ -6,6 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { OrderTrackingMap } from "@/components/OrderTrackingMap";
+import { OrderStatusTimeline } from "@/components/OrderStatusTimeline";
 
 interface OrderRow {
   id: string;
@@ -18,6 +19,7 @@ interface OrderRow {
   delivery_code: string | null;
   partner_id?: string | null;
   partner_address?: string | null;
+  prep_status?: string | null;
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; color: string }> = {
@@ -83,7 +85,7 @@ export default function PedidosPage() {
         if (missing.length > 0) {
           const { data: legacy } = await supabase
             .from("deliveries")
-            .select("id, partner_name, order_description, order_value, status, created_at, delivery_address, delivery_code")
+            .select("id, partner_name, order_description, order_value, status, created_at, delivery_address, delivery_code, partner_id, prep_status")
             .in("id", missing)
             .order("created_at", { ascending: false });
           if (legacy) userOrders.push(...(legacy as OrderRow[]));
