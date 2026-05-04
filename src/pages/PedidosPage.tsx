@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { OrderTrackingMap } from "@/components/OrderTrackingMap";
 
 interface OrderRow {
   id: string;
@@ -15,6 +16,7 @@ interface OrderRow {
   created_at: string;
   delivery_address: string;
   delivery_code: string | null;
+  partner_id?: string | null;
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; color: string }> = {
@@ -251,6 +253,15 @@ export default function PedidosPage() {
                       Total: R${Number(o.order_value).toFixed(2)}
                     </p>
                   )}
+                    {!["concluida","completed","delivered","cancelled","cancelada"].includes(o.status) && o.delivery_address && (
+                      <div className="mt-3">
+                        <OrderTrackingMap
+                          storeAddress={o.partner_name}
+                          deliveryAddress={o.delivery_address}
+                          height={200}
+                        />
+                      </div>
+                    )}
                   {o.delivery_code && o.status !== "concluida" && o.status !== "completed" && o.status !== "delivered" && o.status !== "cancelled" && o.status !== "cancelada" && (
                     <div className="mt-3 rounded-xl bg-primary/10 border-2 border-dashed border-primary/40 p-3 text-center">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase">🔐 Código de entrega</p>
