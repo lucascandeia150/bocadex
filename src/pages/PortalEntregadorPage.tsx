@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock, History, Star, Mail, Lock } from "lucide-react";
+import { CourierDashboard } from "@/components/portal/CourierDashboard";
 
 interface Courier {
   id: string;
@@ -380,6 +381,7 @@ export default function PortalEntregadorPage() {
       )}
 
       {tab === "active" && <>
+      <CourierDashboard history={history as any} ratingAvg={stats.avg} ratingCount={stats.total} />
       <div className="grid grid-cols-2 gap-2">
         <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
           <div className="flex items-center gap-2">
