@@ -6,6 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { OrderTrackingMap } from "@/components/OrderTrackingMap";
+import { OrderStatusTimeline } from "@/components/OrderStatusTimeline";
 
 interface OrderRow {
   id: string;
@@ -18,6 +19,7 @@ interface OrderRow {
   delivery_code: string | null;
   partner_id?: string | null;
   partner_address?: string | null;
+  prep_status?: string | null;
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; color: string }> = {
@@ -83,7 +85,7 @@ export default function PedidosPage() {
         if (missing.length > 0) {
           const { data: legacy } = await supabase
             .from("deliveries")
-            .select("id, partner_name, order_description, order_value, status, created_at, delivery_address, delivery_code")
+            .select("id, partner_name, order_description, order_value, status, created_at, delivery_address, delivery_code, partner_id, prep_status")
             .in("id", missing)
             .order("created_at", { ascending: false });
           if (legacy) userOrders.push(...(legacy as OrderRow[]));
@@ -241,8 +243,7 @@ export default function PedidosPage() {
           ) : (
             <>
               {orders.map((o) => {
-              const meta = STATUS_META[o.status] ?? STATUS_META.pending;
-              const Icon = meta.icon;
+              const isFinal = ["concluida","completed","delivered","cancelled","cancelada"].includes(o.status);
               return (
                 <div
                   key={o.id}
@@ -255,9 +256,9 @@ export default function PedidosPage() {
                       </p>
                       <p className="text-[11px] text-muted-foreground">{formatDate(o.created_at)}</p>
                     </div>
-                    <span className={`flex items-center gap-1 text-[11px] font-bold ${meta.color}`}>
-                      <Icon size={12} /> {meta.label}
-                    </span>
+                  </div>
+                  <div className="mt-3">
+                    <OrderStatusTimeline status={o.status} prepStatus={o.prep_status ?? undefined} />
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-2 whitespace-pre-line line-clamp-3">
                     {o.order_description}
@@ -267,7 +268,7 @@ export default function PedidosPage() {
                       Total: R${Number(o.order_value).toFixed(2)}
                     </p>
                   )}
-                    {!["concluida","completed","delivered","cancelled","cancelada"].includes(o.status) && o.delivery_address && (
+                    {!isFinal && o.delivery_address && (
                       <div className="mt-3">
                         <OrderTrackingMap
                           storeAddress={o.partner_address ?? o.partner_name}
@@ -276,7 +277,7 @@ export default function PedidosPage() {
                         />
                       </div>
                     )}
-                  {o.delivery_code && o.status !== "concluida" && o.status !== "completed" && o.status !== "delivered" && o.status !== "cancelled" && o.status !== "cancelada" && (
+                  {o.delivery_code && !isFinal && (
                     <div className="mt-3 rounded-xl bg-primary/10 border-2 border-dashed border-primary/40 p-3 text-center">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase">🔐 Código de entrega</p>
                       <p className="text-2xl font-black text-primary tracking-[0.4em] mt-1">{o.delivery_code}</p>
