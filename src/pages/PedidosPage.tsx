@@ -17,6 +17,7 @@ interface OrderRow {
   delivery_address: string;
   delivery_code: string | null;
   partner_id?: string | null;
+  partner_address?: string | null;
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; color: string }> = {
@@ -46,6 +47,17 @@ export default function PedidosPage() {
 
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const enrichWithPartnerAddress = async (rows: OrderRow[]): Promise<OrderRow[]> => {
+    const ids = Array.from(new Set(rows.map((o) => o.partner_id).filter(Boolean))) as string[];
+    if (ids.length === 0) return rows;
+    const { data } = await supabase
+      .from("partner_applications")
+      .select("id, address")
+      .in("id", ids);
+    const map = new Map((data ?? []).map((p: any) => [p.id, p.address as string]));
+    return rows.map((o) => ({ ...o, partner_address: o.partner_id ? map.get(o.partner_id) ?? null : null }));
+  };
 
   useEffect(() => {
     setParams(tab === "historico" ? { tab: "historico" } : {}, { replace: true });
@@ -78,7 +90,9 @@ export default function PedidosPage() {
         }
       }
       if (!cancelled) {
-        setOrders(userOrders.sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at)));
+        const sorted = userOrders.sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at));
+        const enriched = await enrichWithPartnerAddress(sorted);
+        if (!cancelled) setOrders(enriched);
         setLoading(false);
       }
     };
@@ -94,8 +108,8 @@ export default function PedidosPage() {
       .on("postgres_changes",
         { event: "*", schema: "public", table: "deliveries", filter: `user_id=eq.${user.id}` },
         () => {
-          supabase.rpc("customer_list_orders").then(({ data }) => {
-            if (data) setOrders(data as OrderRow[]);
+          supabase.rpc("customer_list_orders").then(async ({ data }) => {
+            if (data) setOrders(await enrichWithPartnerAddress(data as OrderRow[]));
           });
         }
       )
@@ -256,7 +270,7 @@ export default function PedidosPage() {
                     {!["concluida","completed","delivered","cancelled","cancelada"].includes(o.status) && o.delivery_address && (
                       <div className="mt-3">
                         <OrderTrackingMap
-                          storeAddress={o.partner_name}
+                          storeAddress={o.partner_address ?? o.partner_name}
                           deliveryAddress={o.delivery_address}
                           height={200}
                         />
