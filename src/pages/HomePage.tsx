@@ -1,6 +1,6 @@
 import logo from "@/assets/logo.png";
 import { useNavigate } from "react-router-dom";
-import { Store, Briefcase, ChevronRight } from "lucide-react";
+import { Store, Briefcase, ChevronRight, Search } from "lucide-react";
 import type { Food } from "@/data/foods";
 import { HomeConversion } from "@/components/HomeConversion";
 
@@ -32,6 +32,16 @@ export default function HomePage({ onChoose }: HomePageProps) {
       <p className="text-muted-foreground text-xs text-center max-w-xs mb-6 animate-text-reveal-delayed relative z-10">
         Descubra onde comer, beber e pedir. Tudo num só lugar! 🍽️
       </p>
+
+      {/* Barra de busca estilo iFood */}
+      <button
+        onClick={() => navigate("/buscar")}
+        className="w-full max-w-md mb-5 bg-card border border-border rounded-2xl px-4 py-3.5 flex items-center gap-3 shadow-sm active:scale-[0.99] transition-transform relative z-10 animate-slide-up"
+        aria-label="Buscar lojas"
+      >
+        <Search size={18} className="text-muted-foreground" />
+        <span className="text-sm text-muted-foreground font-medium">Buscar lojas ou comidas</span>
+      </button>
 
       {/* CTAs principais estilo iFood */}
       <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-8 relative z-10 animate-button-pop">
