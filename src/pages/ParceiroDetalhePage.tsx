@@ -40,7 +40,13 @@ export default function ParceiroDetalhePage() {
   const isProductModalOpen = !!orderProduct;
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      console.warn("[ParceiroDetalhe] id ausente na rota");
+      setLoading(false);
+      return;
+    }
+    console.log("[ParceiroDetalhe] buscando loja id =", id);
+    setLoading(true);
     (async () => {
       const [pRes, prRes] = await Promise.all([
         supabase
@@ -57,6 +63,9 @@ export default function ParceiroDetalhePage() {
           .eq("is_active", true)
           .order("created_at", { ascending: true }),
       ]);
+      if (pRes.error) console.error("[ParceiroDetalhe] erro buscando loja:", pRes.error);
+      if (!pRes.data) console.warn("[ParceiroDetalhe] loja não encontrada para id:", id);
+      else console.log("[ParceiroDetalhe] loja encontrada:", pRes.data.business_name);
       if (pRes.data) setPartner(pRes.data as Partner);
       if (prRes.data) setProducts(prRes.data as Product[]);
       setLoading(false);
