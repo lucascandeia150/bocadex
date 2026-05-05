@@ -49,6 +49,9 @@ export function CardParceiro({ partner, index = 0, variant = "default" }: Props)
   const category = partner.category || partner.business_type || null;
 
   const handleClick = () => {
+    if (typeof console !== "undefined") {
+      console.log("[CardParceiro] navegando para loja id =", id, "nome =", name);
+    }
     navigate(`/loja/${id}`);
   };
 
