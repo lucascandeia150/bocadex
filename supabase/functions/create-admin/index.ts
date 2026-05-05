@@ -14,8 +14,15 @@ serve(async (req) => {
   try {
     const { email, password, setup_key } = await req.json();
 
-    // Simple setup key protection
-    if (setup_key !== "escolheai-setup-2026") {
+    // Setup key from secrets (no hardcoded fallback)
+    const expected = Deno.env.get("ADMIN_SETUP_KEY");
+    if (!expected) {
+      return new Response(JSON.stringify({ error: "Admin setup desabilitado" }), {
+        status: 503,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (!setup_key || setup_key !== expected) {
       return new Response(JSON.stringify({ error: "Invalid setup key" }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
