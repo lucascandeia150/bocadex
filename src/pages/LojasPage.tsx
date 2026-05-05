@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { StoreCategory, stores, categoryLabels, getAllCategories } from "@/data/stores";
-import { ShoppingBag, Flame, Handshake } from "lucide-react";
+import { StoreCategory, categoryLabels, getAllCategories } from "@/data/stores";
+import { ShoppingBag, Flame, Handshake, Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CardParceiro } from "@/components/CardParceiro";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
@@ -25,6 +25,7 @@ export default function LojasPage() {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<StoreCategory | "todas">("todas");
   const [dbPartners, setDbPartners] = useState<DbPartner[]>([]);
+  const [query, setQuery] = useState("");
   const categories = getAllCategories();
   const { isAdmin } = useIsAdmin();
 
@@ -54,30 +55,28 @@ export default function LojasPage() {
     return map[type.toLowerCase()] || null;
   };
 
-  // Deduplicação global: parceiros do banco têm prioridade sobre mocks com mesmo nome
-  const dbNames = new Set(dbPartners.map((p) => p.business_name.trim().toLowerCase()));
-  const uniqueMocks = stores.filter((s) => !dbNames.has(s.name.trim().toLowerCase()));
-
-  // Destaques (do DB ou dos mocks restantes) — exibidos APENAS na seção de destaque
+  // Apenas parceiros reais do banco (lojas mockadas legadas removidas para evitar "Loja não encontrada")
   const dbFeatured = dbPartners.filter((p) => p.is_featured);
-  const mockFeatured = uniqueMocks.filter((s) => s.highlighted);
   const featuredDbIds = new Set(dbFeatured.map((p) => p.id));
-  const featuredMockIds = new Set(mockFeatured.map((s) => s.id));
 
-  // Lista principal exclui destaques para evitar repetição
   const mainDb = dbPartners.filter((p) => !featuredDbIds.has(p.id));
-  const mainMocks = uniqueMocks.filter((s) => !featuredMockIds.has(s.id));
 
-  const filteredStores = activeCategory === "todas"
-    ? mainMocks
-    : mainMocks.filter((s) => s.category === activeCategory);
+  const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const filteredDbPartners = useMemo(() => {
+    let list = activeCategory === "todas"
+      ? mainDb
+      : mainDb.filter((p) => mapBusinessType(p.business_type) === activeCategory);
+    const q = norm(query.trim());
+    if (q) {
+      list = list.filter((p) =>
+        norm(`${p.business_name} ${p.business_type} ${p.description}`).includes(q)
+      );
+    }
+    return list;
+  }, [mainDb, activeCategory, query]);
 
-  const filteredDbPartners = activeCategory === "todas"
-    ? mainDb
-    : mainDb.filter((p) => mapBusinessType(p.business_type) === activeCategory);
-
-  const hasResults = filteredStores.length > 0 || filteredDbPartners.length > 0 ||
-    (activeCategory === "todas" && (dbFeatured.length > 0 || mockFeatured.length > 0));
+  const hasResults = filteredDbPartners.length > 0 ||
+    (activeCategory === "todas" && !query.trim() && dbFeatured.length > 0);
 
   return (
     <div className="px-4 pt-6 pb-10">
@@ -87,8 +86,29 @@ export default function LojasPage() {
         <p className="text-muted-foreground text-sm mt-1">Descubra parceiros perto de você</p>
       </div>
 
+      {/* Busca */}
+      <div className="max-w-sm mx-auto mb-5 relative animate-slide-up">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Buscar loja por nome ou categoria"
+          className="w-full bg-card border border-border rounded-2xl py-3 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+        />
+        {query && (
+          <button
+            onClick={() => setQuery("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            aria-label="Limpar"
+          >
+            <X size={18} />
+          </button>
+        )}
+      </div>
+
       {/* Parceiros em destaque (DB + mocks únicos) */}
-      {activeCategory === "todas" && (dbFeatured.length > 0 || mockFeatured.length > 0) && (
+      {activeCategory === "todas" && !query.trim() && dbFeatured.length > 0 && (
         <div className="max-w-sm mx-auto mb-6 animate-slide-up">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
             <Flame size={14} className="text-secondary" /> Parceiros em destaque
@@ -108,22 +128,6 @@ export default function LojasPage() {
                   offer: p.promotions,
                   highlighted: true,
                   is_demo: p.is_demo,
-                }}
-              />
-            ))}
-            {mockFeatured.map((store, i) => (
-              <CardParceiro
-                key={`mock-feat-${store.id}`}
-                index={i + dbFeatured.length}
-                variant="highlight"
-                partner={{
-                  id: store.id,
-                  name: store.name,
-                  description: store.description,
-                  logo: store.logo,
-                  emoji: store.emoji,
-                  offer: store.offer,
-                  highlighted: true,
                 }}
               />
             ))}
@@ -166,23 +170,6 @@ export default function LojasPage() {
               logo_url: p.logo_url,
               business_type: p.business_type,
               is_demo: p.is_demo,
-            }}
-          />
-        ))}
-
-        {/* Hardcoded stores */}
-        {filteredStores.map((store, i) => (
-          <CardParceiro
-            key={store.id}
-            index={i + filteredDbPartners.length}
-            partner={{
-              id: store.id,
-              name: store.name,
-              description: store.description,
-              logo: store.logo,
-              emoji: store.emoji,
-              category: `${categoryLabels[store.category].emoji} ${categoryLabels[store.category].label}`,
-              highlighted: store.highlighted,
             }}
           />
         ))}
