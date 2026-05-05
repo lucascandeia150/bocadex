@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// Slug helper: converte "Biscoito da Tetê" → "biscoito-da-tete"
 function slugify(str: string): string {
   return str
     .normalize("NFD")
@@ -15,9 +14,9 @@ function slugify(str: string): string {
 }
 
 /**
- * Página legada: /loja/:id agora apenas redireciona para /parceiro/:uuid.
- * - Se o id for um UUID válido, redireciona direto.
- * - Se for um slug, busca o parceiro no banco pelo nome correspondente.
+ * Rota legada /loja/:id — redireciona para /parceiro/:uuid.
+ * - Aceita UUID direto
+ * - Aceita slug do business_name (fallback)
  */
 export default function LojaDetalhePage() {
   const { id } = useParams<{ id: string }>();
@@ -36,16 +35,18 @@ export default function LojaDetalhePage() {
       return;
     }
     (async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("partner_applications")
         .select("id, business_name")
         .eq("status", "approved")
         .eq("is_active", true);
+      if (error) console.error("[LojaDetalhe] busca falhou:", error);
       const match = (data ?? []).find((p) => slugify(p.business_name) === id);
       if (match) {
         setResolvedId(match.id);
         setStatus("found");
       } else {
+        console.warn("[LojaDetalhe] loja não encontrada para id/slug:", id);
         setStatus("notfound");
       }
     })();
@@ -68,9 +69,21 @@ export default function LojaDetalhePage() {
     <div className="px-4 pt-12 text-center animate-slide-up">
       <span className="text-5xl block mb-3">🏪</span>
       <p className="text-foreground font-bold text-lg">Loja não encontrada</p>
-      <button onClick={() => navigate("/lojas")} className="mt-4 text-primary font-semibold text-sm">
-        ← Ver todas as lojas
-      </button>
+      <p className="text-muted-foreground text-sm mt-2">Talvez ela tenha saído do ar.</p>
+      <div className="flex flex-col gap-2 mt-5 max-w-xs mx-auto">
+        <button
+          onClick={() => navigate("/lojas")}
+          className="bg-primary text-primary-foreground font-bold py-3 rounded-2xl active:scale-95 transition-transform"
+        >
+          Ver outras lojas
+        </button>
+        <button
+          onClick={() => navigate("/buscar")}
+          className="text-primary font-semibold text-sm py-2"
+        >
+          🔍 Buscar lojas
+        </button>
+      </div>
     </div>
   );
 }
