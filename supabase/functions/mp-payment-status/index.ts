@@ -10,6 +10,20 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const authHeader = req.headers.get("Authorization") || "";
+    const jwt = authHeader.replace("Bearer ", "");
+    const authClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+    );
+    const { data: userData, error: userErr } = await authClient.auth.getUser(jwt);
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: "Login obrigatório" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const url = new URL(req.url);
     const ref = url.searchParams.get("ref");
     if (!ref) {
@@ -26,7 +40,7 @@ Deno.serve(async (req) => {
 
     const { data: payment } = await supabase
       .from("payments")
-      .select("status, amount, partner_id, order_description, customer_name")
+      .select("status, amount, partner_id, metadata")
       .eq("external_reference", ref)
       .maybeSingle();
 
@@ -37,7 +51,25 @@ Deno.serve(async (req) => {
       });
     }
 
-    return new Response(JSON.stringify({ found: true, ...payment }), {
+    // Only the owning user (or admin) may see payment details
+    const ownerId = (payment as any)?.metadata?.user_id;
+    if (ownerId && ownerId !== userData.user.id) {
+      const { data: roles } = await supabase
+        .from("user_roles").select("role").eq("user_id", userData.user.id).eq("role", "admin").maybeSingle();
+      if (!roles) {
+        return new Response(JSON.stringify({ error: "Acesso negado" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    return new Response(JSON.stringify({
+      found: true,
+      status: payment.status,
+      amount: payment.amount,
+      partner_id: payment.partner_id,
+    }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
