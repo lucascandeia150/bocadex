@@ -29,6 +29,22 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Require authenticated caller
+    const authHeader = req.headers.get("Authorization") || "";
+    const jwt = authHeader.replace("Bearer ", "");
+    const authClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+    );
+    const { data: userData, error: userErr } = await authClient.auth.getUser(jwt);
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: "Login obrigatório" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userId = userData.user.id;
+
     let body: Body;
     try {
       body = (await req.json()) as Body;
@@ -53,6 +69,12 @@ Deno.serve(async (req) => {
     const amount = Number(body.amount);
     if (!isFinite(amount) || amount <= 0) {
       return new Response(JSON.stringify({ error: "Valor inválido" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (amount > 5000) {
+      return new Response(JSON.stringify({ error: "Valor acima do permitido" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -103,7 +125,7 @@ Deno.serve(async (req) => {
       customer_phone: body.customer_phone,
       delivery_address: body.delivery_address,
       order_description: body.order_description,
-      metadata: { partner_name: partner.business_name },
+      metadata: { partner_name: partner.business_name, user_id: userId },
     });
     if (insErr) throw new Error(`Erro ao registrar pagamento: ${insErr.message}`);
 

@@ -10,7 +10,10 @@ const corsHeaders = {
 // https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks
 async function verifySignature(req: Request, dataId: string): Promise<boolean> {
   const secret = Deno.env.get("MERCADOPAGO_WEBHOOK_SECRET");
-  if (!secret) return true; // se não configurado, não bloqueia (dev)
+  if (!secret) {
+    console.error("MERCADOPAGO_WEBHOOK_SECRET ausente — rejeitando webhook");
+    return false;
+  }
 
   const xSignature = req.headers.get("x-signature");
   const xRequestId = req.headers.get("x-request-id");
