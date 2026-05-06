@@ -42,7 +42,7 @@ export default function PerfilPage() {
         <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-3xl mb-3 shadow-lg">
           👤
         </div>
-        <h1 className="text-xl font-black text-foreground">Sua conta EscolheAí</h1>
+        <h1 className="text-xl font-black text-foreground">Sua conta Bocadex</h1>
         <p className="text-xs text-muted-foreground mt-1 mb-5">
           Entre pra pedir, acompanhar status em tempo real e ver histórico completo
         </p>
@@ -620,7 +620,7 @@ function ConfigTab({ onSignOut }: { onSignOut: () => Promise<void> }) {
     { icon: Bell, label: "Notificações", desc: "Status dos pedidos em tempo real", soon: true },
     { icon: Shield, label: "Privacidade", desc: "Termos e política", soon: true },
     { icon: MessageCircle, label: "Suporte", desc: "Fale com a gente", onClick: () => navigate("/contato") },
-    { icon: Info, label: "Sobre o app", desc: "EscolheAí", onClick: () => navigate("/sobre") },
+    { icon: Info, label: "Sobre o app", desc: "Bocadex", onClick: () => navigate("/sobre") },
   ];
 
   return (

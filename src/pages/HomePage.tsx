@@ -22,12 +22,12 @@ export default function HomePage({ onChoose }: HomePageProps) {
 
       {/* Logo */}
       <div className="w-28 h-28 rounded-3xl bg-card shadow-2xl border border-border/50 flex items-center justify-center p-2.5 mb-4 animate-logo-entrance relative z-10">
-        <img src={logo} alt="EscolheAí" className="w-full h-full object-contain animate-logo-breathe" />
+        <img src={logo} alt="Bocadex" className="w-full h-full object-contain animate-logo-breathe" />
       </div>
 
       {/* Tagline */}
       <h1 className="text-2xl font-black text-foreground text-center leading-snug mb-1 animate-text-reveal relative z-10">
-        EscolheAí
+        Bocadex
       </h1>
       <p className="text-muted-foreground text-xs text-center max-w-xs mb-6 animate-text-reveal-delayed relative z-10">
         Descubra onde comer, beber e pedir. Tudo num só lugar! 🍽️
@@ -80,7 +80,7 @@ export default function HomePage({ onChoose }: HomePageProps) {
 
       {/* Footer */}
       <p className="text-[10px] text-muted-foreground text-center mt-8 animate-fade-in-late relative z-10">
-        © 2026 EscolheAí — Feito com ❤️
+        © 2026 Bocadex — Feito com ❤️
       </p>
     </div>
   );

@@ -126,9 +126,9 @@ export function AppSidebar() {
         {/* Header / Brand */}
         <div className="px-4 pt-4 pb-3 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
-            <img src={logo} alt="EscolheAí" className="w-11 h-11 rounded-2xl shadow-sm" />
+            <img src={logo} alt="Bocadex" className="w-11 h-11 rounded-2xl shadow-sm" />
             <div className="min-w-0 flex-1">
-              <p className="text-base font-black text-sidebar-foreground leading-tight">EscolheAí</p>
+              <p className="text-base font-black text-sidebar-foreground leading-tight">Bocadex</p>
               {version && (
                 <button
                   onClick={markSeen}
@@ -215,7 +215,7 @@ export function AppSidebar() {
             <span className="text-[11px] font-medium">Acesso Admin</span>
           </button>
           <p className="text-[10px] text-muted-foreground text-center pb-3 px-4">
-            © 2026 EscolheAí
+            © 2026 Bocadex
           </p>
         </div>
       </SidebarContent>

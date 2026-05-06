@@ -147,7 +147,7 @@ export default function ParceirosPage() {
       <div className="text-center space-y-2">
         <Handshake className="h-12 w-12 mx-auto text-primary" />
         <h1 className="text-2xl font-black">Área do Parceiro 🤝</h1>
-        <p className="text-sm text-muted-foreground">Cadastre seu estabelecimento e faça parte do EscolheAí!</p>
+        <p className="text-sm text-muted-foreground">Cadastre seu estabelecimento e faça parte do Bocadex!</p>
       </div>
 
       <div className="space-y-4">

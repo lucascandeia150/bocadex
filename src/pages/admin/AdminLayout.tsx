@@ -114,7 +114,7 @@ export default function AdminLayout() {
               E
             </div>
             <div>
-              <p className="text-sm font-black text-foreground leading-none">EscolheAí</p>
+              <p className="text-sm font-black text-foreground leading-none">Bocadex</p>
               <p className="text-[10px] text-muted-foreground font-bold">ADMIN</p>
             </div>
           </div>

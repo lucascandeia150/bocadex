@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
     const preferencePayload = {
       items: [
         {
-          title: `Pedido EscolheAí — ${partner.business_name}`,
+          title: `Pedido Bocadex — ${partner.business_name}`,
           description: body.order_description.slice(0, 240),
           quantity: 1,
           currency_id: "BRL",

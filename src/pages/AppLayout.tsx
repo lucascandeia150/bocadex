@@ -122,7 +122,7 @@ function AppHeader() {
           <span className="text-xs font-bold">Voltar</span>
         </button>
       )}
-      <span className="text-base font-black text-foreground ml-auto">EscolheAí</span>
+      <span className="text-base font-black text-foreground ml-auto">Bocadex</span>
     </header>
   );
 }
