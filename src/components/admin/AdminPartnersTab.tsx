@@ -94,14 +94,26 @@ export default function AdminPartnersTab({ partners, onRefresh }: Props) {
     };
 
     if (editing) {
-      const { error } = await supabase.from("partner_applications").update(payload).eq("id", editing);
-      if (error) { toast.error("Erro ao salvar"); return; }
+      const { data, error } = await supabase
+        .from("partner_applications")
+        .update(payload)
+        .eq("id", editing)
+        .select()
+        .maybeSingle();
+      if (error) { console.error("[AdminPartners] update error:", error); toast.error(`Erro ao salvar: ${error.message}`); return; }
+      if (!data) { toast.error("Nada foi atualizado (RLS ou id inexistente)"); return; }
       toast.success("Parceiro atualizado ✅");
       setEditing(null);
     } else {
-      const { error } = await supabase.from("partner_applications").insert({ ...payload, status: "approved", is_active: true });
-      if (error) { toast.error("Erro ao adicionar"); return; }
-      toast.success("Parceiro adicionado ✅");
+      const { data, error } = await supabase
+        .from("partner_applications")
+        .insert({ ...payload, status: "approved", is_active: true })
+        .select()
+        .single();
+      if (error) { console.error("[AdminPartners] insert error:", error); toast.error(`Erro ao adicionar: ${error.message}`); return; }
+      if (!data?.id) { toast.error("Insert sem retorno — verifique permissões"); return; }
+      console.log("[AdminPartners] novo parceiro id =", data.id);
+      toast.success(`Parceiro adicionado ✅ (id ${data.id.slice(0, 8)}…)`);
       setAdding(false);
     }
     setForm(emptyForm);
