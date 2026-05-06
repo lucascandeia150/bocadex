@@ -1,7 +1,7 @@
 {
-  "name": "Bocadex - Decida o que comer",
+  "name": "Bocadex - Escolheu, pediu, chegou!",
   "short_name": "Bocadex",
-  "description": "Não sabe o que comer? O Bocadex decide pra você. 🍔🔥",
+  "description": "Bocadex: escolheu, pediu, chegou! 🍔🔥",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#faf8f5",
