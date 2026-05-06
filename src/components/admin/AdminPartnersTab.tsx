@@ -300,7 +300,7 @@ export default function AdminPartnersTab({ partners, onRefresh }: Props) {
                 PIN portal: <span className="font-black text-primary text-sm tracking-widest ml-1">{p.access_pin}</span>
               </div>
               <a
-                href={`https://wa.me/${p.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Seu acesso ao portal EscolheAí:\nhttps://escolheai.today/portal/loja\nPIN: ${p.access_pin}`)}`}
+                href={`https://wa.me/${p.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Seu acesso ao portal Bocadex:\nhttps://escolheai.today/portal/loja\nPIN: ${p.access_pin}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[10px] font-bold text-primary"

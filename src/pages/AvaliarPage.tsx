@@ -65,9 +65,9 @@ export default function AvaliarPage() {
   };
 
   const openEmailFallback = (body: { rating: number; comment: string; options: string }) => {
-    const subject = encodeURIComponent("Nova avaliação do app EscolheAí");
+    const subject = encodeURIComponent("Nova avaliação do app Bocadex");
     const emailBody = encodeURIComponent(
-      `Nota: ${"⭐".repeat(body.rating)} (${body.rating}/5)\nOpções: ${body.options}\nComentário: ${body.comment || "(sem comentário)"}\n\nEnviado pelo EscolheAí`
+      `Nota: ${"⭐".repeat(body.rating)} (${body.rating}/5)\nOpções: ${body.options}\nComentário: ${body.comment || "(sem comentário)"}\n\nEnviado pelo Bocadex`
     );
     window.open(`mailto:escolheai.app@gmail.com?subject=${subject}&body=${emailBody}`, "_blank");
     setSent(true);
@@ -82,7 +82,7 @@ export default function AvaliarPage() {
           Obrigado pelo seu feedback! 🙌
         </h2>
         <p className="text-muted-foreground text-sm text-center">
-          Sua opinião nos ajuda a melhorar o EscolheAí todos os dias ❤️
+          Sua opinião nos ajuda a melhorar o Bocadex todos os dias ❤️
         </p>
       </div>
     );
@@ -92,7 +92,7 @@ export default function AvaliarPage() {
     <div className="flex flex-col items-center px-6 pt-8 pb-10 gap-6">
       
       <div className="text-center animate-bounce-in">
-        <img src={logo} alt="EscolheAí" className="w-20 h-20 mx-auto mb-2 object-contain" />
+        <img src={logo} alt="Bocadex" className="w-20 h-20 mx-auto mb-2 object-contain" />
         <h1 className="text-2xl font-black text-foreground">Avaliar app ⭐</h1>
         <p className="text-muted-foreground text-sm mt-1">
           Sua opinião é super importante pra gente!

@@ -68,7 +68,7 @@ export default function BebidasPage() {
     trackAnalyticsEvent("partner_click", { partner_name: featured.business_name, source: "bebidas_page" });
     trackAnalyticsEvent("whatsapp_click", { source: "bebidas_partner_banner" });
     const phone = (featured.whatsapp || "").replace(/\D/g, "");
-    const message = encodeURIComponent(`Olá! Vi a ${featured.business_name} no EscolheAí 🍻`);
+    const message = encodeURIComponent(`Olá! Vi a ${featured.business_name} no Bocadex 🍻`);
     window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
   };
 

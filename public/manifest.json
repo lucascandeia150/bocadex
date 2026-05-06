@@ -1,7 +1,7 @@
 {
-  "name": "EscolheAí - Decida o que comer",
-  "short_name": "EscolheAí",
-  "description": "Não sabe o que comer? O EscolheAí decide pra você. 🍔🔥",
+  "name": "Bocadex - Escolheu, pediu, chegou!",
+  "short_name": "Bocadex",
+  "description": "Bocadex: escolheu, pediu, chegou! 🍔🔥",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#faf8f5",

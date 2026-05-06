@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
     const preferencePayload = {
       items: [
         {
-          title: `Pedido EscolheAí — ${partner.business_name}`,
+          title: `Pedido Bocadex — ${partner.business_name}`,
           description: body.order_description.slice(0, 240),
           quantity: 1,
           currency_id: "BRL",
@@ -157,7 +157,7 @@ Deno.serve(async (req) => {
         ? { success: body.back_url, failure: body.back_url, pending: body.back_url }
         : undefined,
       auto_return: body.back_url ? "approved" : undefined,
-      statement_descriptor: "EscolheAi",
+      statement_descriptor: "Bocadex",
     };
 
     const mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {

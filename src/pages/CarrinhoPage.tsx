@@ -75,7 +75,7 @@ export default function CarrinhoPage() {
     const lines = [
       `Olá, ${partnerName}! 👋`,
       ``,
-      `Pedido pelo EscolheAí:`,
+      `Pedido pelo Bocadex:`,
       buildOrderDescription(),
       ``,
       `💰 Total: R$${totalValue.toFixed(2)}`,

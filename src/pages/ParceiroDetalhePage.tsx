@@ -268,7 +268,7 @@ export default function ParceiroDetalhePage() {
             </button>
           ) : (
             <button
-              onClick={() => openWhatsApp(`Olá! Vi a ${partner.business_name} no EscolheAí 😄`, "partner_page")}
+              onClick={() => openWhatsApp(`Olá! Vi a ${partner.business_name} no Bocadex 😄`, "partner_page")}
               className="w-full bg-card border-2 border-[hsl(142,70%,45%)] text-[hsl(142,70%,38%)] font-black py-3.5 rounded-2xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-sm shadow-lg"
             >
               <MessageCircle size={18} />

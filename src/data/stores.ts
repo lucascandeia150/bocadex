@@ -90,7 +90,7 @@ export const stores: Store[] = [
         description: "O clássico biscoito de nata, crocante por fora e macio por dentro",
         priceMin: 8,
         priceMax: 8,
-        whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o Nata Tradicional!",
+        whatsappMessage: "Olá! Vi os biscoitos no Bocadex 😄 Quero saber mais sobre o Nata Tradicional!",
         productCategory: "doces",
       },
       {
@@ -101,7 +101,7 @@ export const stores: Store[] = [
         description: "Biscoito recheado com goiabada caseira",
         priceMin: 8,
         priceMax: 8,
-        whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre a Goiabinha!",
+        whatsappMessage: "Olá! Vi os biscoitos no Bocadex 😄 Quero saber mais sobre a Goiabinha!",
         productCategory: "doces",
       },
       {
@@ -112,7 +112,7 @@ export const stores: Store[] = [
         description: "Biscoito com recheio cremoso de doce de leite",
         priceMin: 8,
         priceMax: 8,
-        whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o de Doce de Leite!",
+        whatsappMessage: "Olá! Vi os biscoitos no Bocadex 😄 Quero saber mais sobre o de Doce de Leite!",
         productCategory: "doces",
       },
       {
@@ -122,7 +122,7 @@ export const stores: Store[] = [
         description: "Biscoito com sabor morango irresistível",
         priceMin: 8,
         priceMax: 8,
-        whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o de Morango!",
+        whatsappMessage: "Olá! Vi os biscoitos no Bocadex 😄 Quero saber mais sobre o de Morango!",
         productCategory: "doces",
       },
       {
@@ -132,7 +132,7 @@ export const stores: Store[] = [
         description: "Biscoito com flocos de chocolate irresistível",
         priceMin: 8,
         priceMax: 8,
-        whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o de Flocos!",
+        whatsappMessage: "Olá! Vi os biscoitos no Bocadex 😄 Quero saber mais sobre o de Flocos!",
         productCategory: "doces",
       },
       {
@@ -143,7 +143,7 @@ export const stores: Store[] = [
         description: "Biscoitos caseiros de nata com recheio cremoso de chocolate, perfeitos para qualquer momento.",
         priceMin: 8,
         priceMax: 8,
-        whatsappMessage: "Olá! Vi os biscoitos no EscolheAí 😄 Quero saber mais sobre o Nata com Recheio de Chocolate!",
+        whatsappMessage: "Olá! Vi os biscoitos no Bocadex 😄 Quero saber mais sobre o Nata com Recheio de Chocolate!",
         productCategory: "doces",
       },
     ],
@@ -174,7 +174,7 @@ export const stores: Store[] = [
         description: "Cerveja Amstel bem gelada, perfeita para acompanhar os lanches.",
         priceMin: 6,
         priceMax: 8,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero uma Cerveja Amstel!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero uma Cerveja Amstel!",
         productCategory: "cervejas",
       },
       {
@@ -184,7 +184,7 @@ export const stores: Store[] = [
         description: "Cervejas geladas de diversas marcas",
         priceMin: 5,
         priceMax: 15,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as cervejas!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre as cervejas!",
         productCategory: "cervejas",
       },
       // Salgados
@@ -196,7 +196,7 @@ export const stores: Store[] = [
         description: "Coxinha crocante por fora e cremosa por dentro, recheio bem temperado.",
         priceMin: 5,
         priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as Coxinhas!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre as Coxinhas!",
         productCategory: "salgados",
       },
       {
@@ -207,7 +207,7 @@ export const stores: Store[] = [
         description: "Salgado tipo maravilha, dourado e macio, perfeito para lanches rápidos.",
         priceMin: 5,
         priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre a Maravilha!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre a Maravilha!",
         productCategory: "salgados",
       },
       {
@@ -217,7 +217,7 @@ export const stores: Store[] = [
         description: "Quibe frito crocante e saboroso.",
         priceMin: 5,
         priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre o Quibe!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre o Quibe!",
         productCategory: "salgados",
       },
       {
@@ -227,7 +227,7 @@ export const stores: Store[] = [
         description: "Enroladinho de salsicha crocante e quentinho.",
         priceMin: 5,
         priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre o Enroladinho!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre o Enroladinho!",
         productCategory: "salgados",
       },
       {
@@ -237,7 +237,7 @@ export const stores: Store[] = [
         description: "Pastel frito com recheios variados.",
         priceMin: 5,
         priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre o Pastel!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre o Pastel!",
         productCategory: "salgados",
       },
       // Bebidas
@@ -248,7 +248,7 @@ export const stores: Store[] = [
         description: "Mix tipo ice, refrescante e gelado",
         priceMin: 8,
         priceMax: 18,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os Mix!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os Mix!",
         productCategory: "bebidas",
       },
       {
@@ -258,7 +258,7 @@ export const stores: Store[] = [
         description: "Copão de whisky preparado na hora",
         priceMin: 15,
         priceMax: 25,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre o Copão de Whisky!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre o Copão de Whisky!",
         productCategory: "bebidas",
       },
       {
@@ -268,7 +268,7 @@ export const stores: Store[] = [
         description: "Refrigerantes gelados de todas as marcas",
         priceMin: 5,
         priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os refrigerantes!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os refrigerantes!",
         productCategory: "bebidas",
       },
       {
@@ -278,7 +278,7 @@ export const stores: Store[] = [
         description: "Água mineral gelada",
         priceMin: 3,
         priceMax: 5,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero uma água gelada!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero uma água gelada!",
         productCategory: "bebidas",
       },
       {
@@ -288,7 +288,7 @@ export const stores: Store[] = [
         description: "Energéticos gelados para dar aquele gás",
         priceMin: 12,
         priceMax: 20,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os energéticos!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os energéticos!",
         productCategory: "bebidas",
       },
       {
@@ -298,7 +298,7 @@ export const stores: Store[] = [
         description: "Vodkas diversas marcas",
         priceMin: 10,
         priceMax: 25,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as vodkas!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre as vodkas!",
         productCategory: "bebidas",
       },
       // Outros
@@ -309,7 +309,7 @@ export const stores: Store[] = [
         description: "Cigarros variados",
         priceMin: 8,
         priceMax: 15,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os cigarros!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os cigarros!",
         productCategory: "outros",
       },
       {
@@ -319,7 +319,7 @@ export const stores: Store[] = [
         description: "Salgadinhos e chips variados",
         priceMin: 5,
         priceMax: 12,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os chips!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os chips!",
         productCategory: "outros",
       },
       {
@@ -329,7 +329,7 @@ export const stores: Store[] = [
         description: "Chocolates e doces variados",
         priceMin: 3,
         priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os doces!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os doces!",
         productCategory: "outros",
       },
     ],
@@ -358,7 +358,7 @@ export const stores: Store[] = [
         description: "Cervejas geladas de diversas marcas",
         priceMin: 5,
         priceMax: 15,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as cervejas!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre as cervejas!",
         productCategory: "cervejas",
       },
       {
@@ -368,7 +368,7 @@ export const stores: Store[] = [
         description: "Refrigerantes gelados de todas as marcas",
         priceMin: 5,
         priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os refrigerantes!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os refrigerantes!",
         productCategory: "bebidas",
       },
       {
@@ -378,7 +378,7 @@ export const stores: Store[] = [
         description: "Água mineral gelada",
         priceMin: 3,
         priceMax: 5,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero uma água gelada!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero uma água gelada!",
         productCategory: "bebidas",
       },
       {
@@ -388,7 +388,7 @@ export const stores: Store[] = [
         description: "Energéticos gelados para dar aquele gás",
         priceMin: 12,
         priceMax: 20,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os energéticos!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os energéticos!",
         productCategory: "bebidas",
       },
       {
@@ -398,7 +398,7 @@ export const stores: Store[] = [
         description: "Whisky de diversas marcas",
         priceMin: 15,
         priceMax: 50,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os whiskys!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os whiskys!",
         productCategory: "bebidas",
       },
       {
@@ -408,7 +408,7 @@ export const stores: Store[] = [
         description: "Vodkas diversas marcas",
         priceMin: 10,
         priceMax: 30,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre as vodkas!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre as vodkas!",
         productCategory: "bebidas",
       },
       {
@@ -418,7 +418,7 @@ export const stores: Store[] = [
         description: "Salgadinhos e chips variados",
         priceMin: 5,
         priceMax: 12,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os snacks!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os snacks!",
         productCategory: "outros",
       },
       {
@@ -428,7 +428,7 @@ export const stores: Store[] = [
         description: "Balas, chocolates e doces variados",
         priceMin: 3,
         priceMax: 10,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os doces!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os doces!",
         productCategory: "outros",
       },
       {
@@ -438,7 +438,7 @@ export const stores: Store[] = [
         description: "Cigarros variados",
         priceMin: 8,
         priceMax: 15,
-        whatsappMessage: "Olá! Vi a loja no EscolheAí 😄 Quero saber mais sobre os cigarros!",
+        whatsappMessage: "Olá! Vi a loja no Bocadex 😄 Quero saber mais sobre os cigarros!",
         productCategory: "outros",
       },
     ],

@@ -160,7 +160,7 @@ export default function AdminDashboardPage() {
           <h1 className="text-lg font-black text-foreground flex items-center gap-2">
             <BarChart3 size={20} className="text-primary" /> Painel Admin
           </h1>
-          <p className="text-xs text-muted-foreground">EscolheAí Dashboard</p>
+          <p className="text-xs text-muted-foreground">Bocadex Dashboard</p>
         </div>
         <div className="flex gap-2">
           <button onClick={loadData} className="p-2 rounded-xl bg-muted active:scale-90 transition-transform">

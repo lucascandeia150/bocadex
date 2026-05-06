@@ -19,7 +19,7 @@ export default function SejaParceiroPage() {
 
   const handleIndicate = () => {
     trackAnalyticsEvent("partner_indicate_click", { source: "seja_parceiro_page" });
-    const msg = encodeURIComponent("Olá! Quero indicar um estabelecimento para entrar no app EscolheAí");
+    const msg = encodeURIComponent("Olá! Quero indicar um estabelecimento para entrar no app Bocadex");
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank");
   };
 
@@ -28,7 +28,7 @@ export default function SejaParceiroPage() {
       {/* Header */}
       <div className="text-center space-y-2 animate-bounce-in">
         <span className="text-5xl block">🔥</span>
-        <h1 className="text-2xl font-black text-foreground">Seja parceiro do EscolheAí</h1>
+        <h1 className="text-2xl font-black text-foreground">Seja parceiro do Bocadex</h1>
         <p className="text-sm text-muted-foreground leading-relaxed">
           Divulgue seu negócio no app e nas redes sociais e alcance mais clientes todos os dias!
         </p>
