@@ -48,13 +48,12 @@ export default function ParceiroDetalhePage() {
     console.log("[ParceiroDetalhe] buscando loja id =", id);
     setLoading(true);
     (async () => {
+      // Primeiro, tenta sem filtros restritivos para distinguir "não existe" de "inativo/pendente"
       const [pRes, prRes] = await Promise.all([
         supabase
           .from("partner_applications")
-          .select("id, business_name, business_type, address, description, whatsapp, promotions, logo_url, uses_app_courier, is_demo")
+          .select("id, business_name, business_type, address, description, whatsapp, promotions, logo_url, uses_app_courier, is_demo, status, is_active, visibility")
           .eq("id", id)
-          .eq("status", "approved")
-          .eq("is_active", true)
           .maybeSingle(),
         supabase
           .from("products")
@@ -63,10 +62,18 @@ export default function ParceiroDetalhePage() {
           .eq("is_active", true)
           .order("created_at", { ascending: true }),
       ]);
-      if (pRes.error) console.error("[ParceiroDetalhe] erro buscando loja:", pRes.error);
-      if (!pRes.data) console.warn("[ParceiroDetalhe] loja não encontrada para id:", id);
-      else console.log("[ParceiroDetalhe] loja encontrada:", pRes.data.business_name);
-      if (pRes.data) setPartner(pRes.data as Partner);
+      if (pRes.error) {
+        console.error("[ParceiroDetalhe] erro buscando loja:", pRes.error);
+      }
+      const row = pRes.data as (Partner & { status?: string; is_active?: boolean; visibility?: string }) | null;
+      if (!row) {
+        console.warn("[ParceiroDetalhe] loja não encontrada (id ausente ou bloqueado por RLS):", id);
+      } else if (row.status !== "approved" || row.is_active === false) {
+        console.warn("[ParceiroDetalhe] loja existe mas não disponível:", { status: row.status, is_active: row.is_active });
+      } else {
+        console.log("[ParceiroDetalhe] loja encontrada:", row.business_name);
+        setPartner(row as Partner);
+      }
       if (prRes.data) setProducts(prRes.data as Product[]);
       setLoading(false);
     })();
