@@ -61,7 +61,7 @@ export default function ContatoPage() {
             <h2 className="text-lg font-bold text-foreground">WhatsApp</h2>
           </div>
           <a
-            href="https://wa.me/5533998669482?text=Ol%C3%A1!%20Entrei%20em%20contato%20pelo%20app%20EscolheA%C3%AD%20%F0%9F%98%84"
+            href="https://wa.me/5533998669482?text=Ol%C3%A1!%20Entrei%20em%20contato%20pelo%20app%20Bocadex%20%F0%9F%98%84"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 shadow-md mb-3"
@@ -118,7 +118,7 @@ export default function ContatoPage() {
             É dono de restaurante ou quer ser parceiro? Entre em contato conosco!
           </p>
           <a
-            href="https://wa.me/5533998669482?text=Ol%C3%A1!%20Tenho%20interesse%20em%20ser%20parceiro%20do%20EscolheA%C3%AD%20%F0%9F%A4%9D"
+            href="https://wa.me/5533998669482?text=Ol%C3%A1!%20Tenho%20interesse%20em%20ser%20parceiro%20do%20Bocadex%20%F0%9F%A4%9D"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 shadow-md"

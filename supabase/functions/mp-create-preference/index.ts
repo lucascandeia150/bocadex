@@ -157,7 +157,7 @@ Deno.serve(async (req) => {
         ? { success: body.back_url, failure: body.back_url, pending: body.back_url }
         : undefined,
       auto_return: body.back_url ? "approved" : undefined,
-      statement_descriptor: "EscolheAi",
+      statement_descriptor: "Bocadex",
     };
 
     const mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
