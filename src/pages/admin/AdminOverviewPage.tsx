@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  ShoppingBag, DollarSign, Store, Users, TrendingUp, ArrowUpRight, ArrowDownRight, Clock, Flame, Trophy, BarChart3
+  ShoppingBag, DollarSign, Store, Users, TrendingUp, ArrowUpRight, ArrowDownRight, Clock, Flame, Trophy, BarChart3,
+  Bike, Activity, XCircle, Percent, CalendarRange, DoorOpen, Radio
 } from "lucide-react";
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -16,8 +17,9 @@ interface Payment {
   id: string; status: string; amount: number; created_at: string;
   customer_phone: string | null; partner_id: string | null;
 }
-interface Delivery { id: string; status: string; created_at: string; order_value: number; is_demo?: boolean; }
-interface Partner { id: string; status: string; is_active: boolean; is_demo?: boolean; }
+interface Delivery { id: string; status: string; created_at: string; order_value: number; app_fee?: number; is_demo?: boolean; courier_id?: string | null; }
+interface Partner { id: string; status: string; is_active: boolean; is_open?: boolean; is_demo?: boolean; business_name?: string; logo_url?: string | null; business_type?: string | null; }
+interface Courier { id: string; name: string; vehicle: string; is_active: boolean; }
 interface PartnerLite { id: string; business_name: string; logo_url: string | null; business_type: string | null; }
 interface ProductLite { id: string; name: string; image_url: string | null; partner_id: string | null; }
 
@@ -43,16 +45,18 @@ export default function AdminOverviewPage() {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [partnerInfo, setPartnerInfo] = useState<Record<string, PartnerLite>>({});
   const [products, setProducts] = useState<ProductLite[]>([]);
+  const [couriers, setCouriers] = useState<Courier[]>([]);
 
   const load = async () => {
     setLoading(true);
     const since = subDays(new Date(), 30).toISOString();
-    const [pRes, dRes, ptRes, ptInfoRes, prodRes] = await Promise.all([
+    const [pRes, dRes, ptRes, ptInfoRes, prodRes, cRes] = await Promise.all([
       supabase.from("payments").select("id,status,amount,created_at,customer_phone,partner_id").gte("created_at", since).order("created_at", { ascending: false }),
-      supabase.from("deliveries").select("id,status,created_at,order_value,is_demo").eq("is_demo", false).gte("created_at", since).order("created_at", { ascending: false }),
-      supabase.from("partner_applications").select("id,status,is_active,is_demo"),
+      supabase.from("deliveries").select("id,status,created_at,order_value,app_fee,is_demo,courier_id").eq("is_demo", false).gte("created_at", since).order("created_at", { ascending: false }),
+      supabase.from("partner_applications").select("id,status,is_active,is_open,is_demo,business_name,logo_url,business_type"),
       supabase.from("partner_applications").select("id,business_name,logo_url,business_type").eq("status","approved").eq("is_active",true).eq("is_demo",false),
       supabase.from("products").select("id,name,image_url,partner_id").eq("is_active", true).eq("is_demo", false),
+      supabase.from("couriers").select("id,name,vehicle,is_active"),
     ]);
     setPayments((pRes.data as Payment[]) || []);
     setDeliveries((dRes.data as Delivery[]) || []);
@@ -61,6 +65,7 @@ export default function AdminOverviewPage() {
     ((ptInfoRes.data as PartnerLite[]) || []).forEach(p => { map[p.id] = p; });
     setPartnerInfo(map);
     setProducts((prodRes.data as ProductLite[]) || []);
+    setCouriers((cRes.data as Courier[]) || []);
     setLoading(false);
   };
 
@@ -69,6 +74,8 @@ export default function AdminOverviewPage() {
     const ch = supabase.channel("admin-overview")
       .on("postgres_changes", { event: "*", schema: "public", table: "payments" }, load)
       .on("postgres_changes", { event: "*", schema: "public", table: "deliveries" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "couriers" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "partner_applications" }, load)
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, []);
@@ -76,35 +83,49 @@ export default function AdminOverviewPage() {
   const metrics = useMemo(() => {
     const todayStart = startOfDay(new Date());
     const yesterdayStart = startOfDay(subDays(new Date(), 1));
+    const monthStart = startOfDay(subDays(new Date(), 30));
     const paid = payments.filter((p) => p.status === "approved");
     const paidToday = paid.filter((p) => isAfter(new Date(p.created_at), todayStart));
     const paidYesterday = paid.filter((p) => {
       const t = new Date(p.created_at);
       return isAfter(t, yesterdayStart) && !isAfter(t, todayStart);
     });
+    const paidMonth = paid.filter((p) => isAfter(new Date(p.created_at), monthStart));
     const revenue = paid.reduce((s, p) => s + Number(p.amount || 0), 0);
     const revenueToday = paidToday.reduce((s, p) => s + Number(p.amount || 0), 0);
     const revenueYesterday = paidYesterday.reduce((s, p) => s + Number(p.amount || 0), 0);
+    const revenueMonth = paidMonth.reduce((s, p) => s + Number(p.amount || 0), 0);
     const customers = new Set(paid.map((p) => p.customer_phone).filter(Boolean)).size;
     const activeStores = partners.filter((p) => p.status === "approved" && p.is_active).length;
+    const openStores = partners.filter((p) => p.status === "approved" && p.is_active && p.is_open && !p.is_demo).length;
+    const onlineCouriers = couriers.filter((c) => c.is_active).length;
+    const platformProfit = deliveries.reduce((s, d) => s + Number(d.app_fee || 0), 0);
 
     const ordersToday = deliveries.filter((d) => isAfter(new Date(d.created_at), todayStart));
     const ordersYesterday = deliveries.filter((d) => {
       const t = new Date(d.created_at);
       return isAfter(t, yesterdayStart) && !isAfter(t, todayStart);
     });
+    const ordersInProgress = deliveries.filter((d) => ["disponivel","aceita","em_andamento"].includes(d.status)).length;
+    const ordersCancelledToday = ordersToday.filter((d) => d.status === "cancelada").length;
 
     return {
       totalOrders: deliveries.length,
       ordersToday: ordersToday.length,
       ordersDelta: pctDelta(ordersToday.length, ordersYesterday.length),
+      ordersInProgress,
+      ordersCancelledToday,
       revenue,
       revenueToday,
       revenueDelta: pctDelta(revenueToday, revenueYesterday),
+      revenueMonth,
+      platformProfit,
       activeStores,
+      openStores,
+      onlineCouriers,
       customers,
     };
-  }, [payments, deliveries, partners]);
+  }, [payments, deliveries, partners, couriers]);
 
   const highlights = useMemo(() => {
     // Top loja por receita
@@ -206,6 +227,66 @@ export default function AdminOverviewPage() {
           value={String(metrics.customers)}
           subtitle="Telefones únicos / 30d"
           tone="purple"
+        />
+      </div>
+
+      {/* Operação em tempo real */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <KpiCard
+          icon={<Activity size={16} />}
+          label="Em andamento"
+          value={String(metrics.ordersInProgress)}
+          subtitle="Pedidos abertos agora"
+          tone="blue"
+        />
+        <KpiCard
+          icon={<XCircle size={16} />}
+          label="Cancelados hoje"
+          value={String(metrics.ordersCancelledToday)}
+          subtitle="Pedidos cancelados"
+          tone="orange"
+        />
+        <KpiCard
+          icon={<CalendarRange size={16} />}
+          label="Faturamento mensal"
+          value={fmt(metrics.revenueMonth)}
+          subtitle="Últimos 30 dias"
+          tone="green"
+        />
+        <KpiCard
+          icon={<Percent size={16} />}
+          label="Lucro plataforma"
+          value={fmt(metrics.platformProfit)}
+          subtitle="Taxa do app · 30d"
+          tone="purple"
+        />
+      </div>
+
+      {/* Live ops panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <LiveOpsCard
+          icon={<DoorOpen size={14} />}
+          title="Lojas abertas agora"
+          count={metrics.openStores}
+          total={metrics.activeStores}
+          color="orange"
+          items={partners
+            .filter((p) => p.status === "approved" && p.is_active && p.is_open && !p.is_demo)
+            .slice(0, 6)
+            .map((p) => ({ id: p.id, name: p.business_name || "—", sub: p.business_type || "", img: p.logo_url || null }))}
+          emptyLabel="Nenhuma loja aberta no momento"
+        />
+        <LiveOpsCard
+          icon={<Bike size={14} />}
+          title="Entregadores online"
+          count={metrics.onlineCouriers}
+          total={couriers.length}
+          color="blue"
+          items={couriers
+            .filter((c) => c.is_active)
+            .slice(0, 6)
+            .map((c) => ({ id: c.id, name: c.name, sub: (c.vehicle || "").toUpperCase(), img: null }))}
+          emptyLabel="Nenhum entregador ativo"
         />
       </div>
 
