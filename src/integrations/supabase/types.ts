@@ -1711,6 +1711,7 @@ export type Database = {
           is_demo: boolean
           is_open: boolean
           logo_url: string
+          store_status: string
           uses_app_courier: boolean
           whatsapp: string
         }[]
@@ -1734,6 +1735,44 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "ratings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      partner_set_pause: {
+        Args: { _paused: boolean; _pin: string }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          commission_percent: number | null
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_demo: boolean
+          is_featured: boolean
+          is_open: boolean
+          last_payment_at: string | null
+          logo_url: string | null
+          owner_name: string | null
+          payment_status: string
+          plan: string
+          promotions: string | null
+          status: string
+          store_status: string
+          subscription_active_until: string | null
+          user_id: string | null
+          uses_app_courier: boolean
+          visibility: string
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
           isOneToOne: true
           isSetofReturn: false
         }
