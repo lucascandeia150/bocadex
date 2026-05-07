@@ -42,14 +42,39 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
+    // Auth: require logged-in user, owner of partner or admin
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const userClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } },
+    );
+    const jwt = authHeader.replace("Bearer ", "");
+    const { data: claims, error: cErr } = await userClient.auth.getClaims(jwt);
+    if (cErr || !claims?.claims?.sub) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const uid = claims.claims.sub as string;
+
     const { data: partner, error: pErr } = await supabase
       .from("partner_applications")
-      .select("id, business_name, whatsapp, owner_name")
+      .select("id, business_name, whatsapp, owner_name, user_id")
       .eq("id", body.partner_id)
       .maybeSingle();
     if (pErr || !partner) {
       return new Response(JSON.stringify({ error: "Loja não encontrada" }), {
         status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { data: roles } = await supabase.from("user_roles")
+      .select("role").eq("user_id", uid).eq("role", "admin");
+    const isAdmin = !!(roles && roles.length > 0);
+    if (!isAdmin && partner.user_id && partner.user_id !== uid) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
