@@ -7,6 +7,7 @@ import { CartFab } from "@/components/CartFab";
 import { BottomNav } from "@/components/BottomNav";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ArrowLeft } from "lucide-react";
+import UserNotificationBell from "@/components/UserNotificationBell";
 import { useHistory } from "@/hooks/useHistory";
 import type { Food } from "@/data/foods";
 import HomePage from "./HomePage";
@@ -123,6 +124,7 @@ function AppHeader() {
         </button>
       )}
       <span className="text-base font-black text-foreground ml-auto">Bocadex</span>
+      <UserNotificationBell />
     </header>
   );
 }
