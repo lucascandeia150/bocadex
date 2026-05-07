@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  ShoppingBag, DollarSign, Store, Users, TrendingUp, ArrowUpRight, ArrowDownRight, Clock
+  ShoppingBag, DollarSign, Store, Users, TrendingUp, ArrowUpRight, ArrowDownRight, Clock, Flame, Trophy, BarChart3
 } from "lucide-react";
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -18,6 +18,8 @@ interface Payment {
 }
 interface Delivery { id: string; status: string; created_at: string; order_value: number; is_demo?: boolean; }
 interface Partner { id: string; status: string; is_active: boolean; is_demo?: boolean; }
+interface PartnerLite { id: string; business_name: string; logo_url: string | null; business_type: string | null; }
+interface ProductLite { id: string; name: string; image_url: string | null; partner_id: string | null; }
 
 const STATUS_COLORS: Record<string, string> = {
   disponivel: "hsl(217 91% 60%)",
@@ -39,18 +41,26 @@ export default function AdminOverviewPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [partners, setPartners] = useState<Partner[]>([]);
+  const [partnerInfo, setPartnerInfo] = useState<Record<string, PartnerLite>>({});
+  const [products, setProducts] = useState<ProductLite[]>([]);
 
   const load = async () => {
     setLoading(true);
     const since = subDays(new Date(), 30).toISOString();
-    const [pRes, dRes, ptRes] = await Promise.all([
+    const [pRes, dRes, ptRes, ptInfoRes, prodRes] = await Promise.all([
       supabase.from("payments").select("id,status,amount,created_at,customer_phone,partner_id").gte("created_at", since).order("created_at", { ascending: false }),
       supabase.from("deliveries").select("id,status,created_at,order_value,is_demo").eq("is_demo", false).gte("created_at", since).order("created_at", { ascending: false }),
       supabase.from("partner_applications").select("id,status,is_active,is_demo"),
+      supabase.from("partner_applications").select("id,business_name,logo_url,business_type").eq("status","approved").eq("is_active",true).eq("is_demo",false),
+      supabase.from("products").select("id,name,image_url,partner_id").eq("is_active", true).eq("is_demo", false),
     ]);
     setPayments((pRes.data as Payment[]) || []);
     setDeliveries((dRes.data as Delivery[]) || []);
     setPartners((ptRes.data as Partner[]) || []);
+    const map: Record<string, PartnerLite> = {};
+    ((ptInfoRes.data as PartnerLite[]) || []).forEach(p => { map[p.id] = p; });
+    setPartnerInfo(map);
+    setProducts((prodRes.data as ProductLite[]) || []);
     setLoading(false);
   };
 
@@ -95,6 +105,34 @@ export default function AdminOverviewPage() {
       customers,
     };
   }, [payments, deliveries, partners]);
+
+  const highlights = useMemo(() => {
+    // Top loja por receita
+    const revByPartner: Record<string, number> = {};
+    payments.filter(p => p.status === "approved" && p.partner_id).forEach(p => {
+      revByPartner[p.partner_id!] = (revByPartner[p.partner_id!] || 0) + Number(p.amount || 0);
+    });
+    const topPartnerId = Object.entries(revByPartner).sort((a,b) => b[1]-a[1])[0]?.[0];
+    const topPartner = topPartnerId ? partnerInfo[topPartnerId] : null;
+    const topPartnerRev = topPartnerId ? revByPartner[topPartnerId] : 0;
+
+    // Crescimento semanal: receita 7d vs 7d anteriores
+    const now = new Date();
+    const w1 = subDays(now, 7).getTime();
+    const w2 = subDays(now, 14).getTime();
+    const paid = payments.filter(p => p.status === "approved");
+    const last7 = paid.filter(p => new Date(p.created_at).getTime() >= w1).reduce((s,p) => s + Number(p.amount||0), 0);
+    const prev7 = paid.filter(p => {
+      const t = new Date(p.created_at).getTime();
+      return t >= w2 && t < w1;
+    }).reduce((s,p) => s + Number(p.amount||0), 0);
+    const growth = pctDelta(last7, prev7);
+
+    // Produto mais "popular" — placeholder simples por contagem (não temos itens de pedido aqui)
+    const top = products[0] || null;
+
+    return { topPartner, topPartnerRev, growth, last7, topProduct: top };
+  }, [payments, partnerInfo, products]);
 
   const salesByDay = useMemo(() => {
     const days = Array.from({ length: 14 }).map((_, i) => {
@@ -168,6 +206,41 @@ export default function AdminOverviewPage() {
           value={String(metrics.customers)}
           subtitle="Telefones únicos / 30d"
           tone="purple"
+        />
+      </div>
+
+      {/* Highlight strip */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <HighlightCard
+          tone="orange"
+          icon={<Flame size={16} />}
+          tag="Loja destaque"
+          title={highlights.topPartner?.business_name || "Sem dados"}
+          subtitle={highlights.topPartner?.business_type || "Aguardando primeiro pedido"}
+          value={highlights.topPartner ? fmt(highlights.topPartnerRev) : "—"}
+          valueLabel="receita 30d"
+          imgUrl={highlights.topPartner?.logo_url || null}
+        />
+        <HighlightCard
+          tone="green"
+          icon={<Trophy size={16} />}
+          tag="Produto em alta"
+          title={highlights.topProduct?.name || "Sem produtos"}
+          subtitle="Catálogo ativo"
+          value={String(products.length)}
+          valueLabel="produtos ativos"
+          imgUrl={highlights.topProduct?.image_url || null}
+        />
+        <HighlightCard
+          tone="blue"
+          icon={<BarChart3 size={16} />}
+          tag="Crescimento semanal"
+          title={fmt(highlights.last7)}
+          subtitle="Últimos 7 dias vs anteriores"
+          value={highlights.growth === null ? "—" : `${highlights.growth >= 0 ? "+" : ""}${highlights.growth}%`}
+          valueLabel="vs semana anterior"
+          imgUrl={null}
+          positive={(highlights.growth ?? 0) >= 0}
         />
       </div>
 
@@ -331,6 +404,44 @@ function ChartCard({
 
 function ChartSkeleton() {
   return <div className="h-[220px] rounded-xl bg-muted animate-pulse" />;
+}
+
+const HIGHLIGHT_TONES: Record<string, string> = {
+  orange: "bg-[hsl(24,95%,53%)]/10 text-[hsl(24,95%,45%)]",
+  green: "bg-primary/10 text-primary",
+  blue: "bg-blue-500/10 text-blue-600",
+};
+
+function HighlightCard({
+  tone, icon, tag, title, subtitle, value, valueLabel, imgUrl, positive,
+}: {
+  tone: keyof typeof HIGHLIGHT_TONES;
+  icon: React.ReactNode;
+  tag: string; title: string; subtitle?: string;
+  value: string; valueLabel?: string;
+  imgUrl?: string | null;
+  positive?: boolean;
+}) {
+  return (
+    <div className="bg-card border border-border rounded-2xl p-4 flex items-center gap-3 hover:shadow-md transition-shadow">
+      <div className="w-12 h-12 rounded-xl overflow-hidden bg-muted flex items-center justify-center shrink-0">
+        {imgUrl ? (
+          <img src={imgUrl} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <div className={`w-full h-full flex items-center justify-center ${HIGHLIGHT_TONES[tone]}`}>{icon}</div>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={`text-[10px] font-black uppercase tracking-wider ${HIGHLIGHT_TONES[tone].split(" ")[1]}`}>{tag}</p>
+        <p className="text-sm font-black text-foreground truncate">{title}</p>
+        {subtitle && <p className="text-[11px] text-muted-foreground truncate">{subtitle}</p>}
+      </div>
+      <div className="text-right shrink-0">
+        <p className={`text-base font-black ${positive === false ? "text-red-600" : "text-foreground"}`}>{value}</p>
+        {valueLabel && <p className="text-[10px] text-muted-foreground">{valueLabel}</p>}
+      </div>
+    </div>
+  );
 }
 
 function DemoStoreCard({ onReset }: { onReset: () => void }) {
