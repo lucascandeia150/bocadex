@@ -998,6 +998,54 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_create_partner: {
+        Args: {
+          _address: string
+          _business_name: string
+          _business_type: string
+          _description?: string
+          _is_featured?: boolean
+          _logo_url?: string
+          _owner_name: string
+          _plan?: string
+          _promotions?: string
+          _uses_app_courier?: boolean
+          _whatsapp: string
+        }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_demo: boolean
+          is_featured: boolean
+          is_open: boolean
+          last_payment_at: string | null
+          logo_url: string | null
+          owner_name: string | null
+          payment_status: string
+          plan: string
+          promotions: string | null
+          status: string
+          subscription_active_until: string | null
+          user_id: string | null
+          uses_app_courier: boolean
+          visibility: string
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_reject_courier: {
         Args: { _application_id: string }
         Returns: {
