@@ -1,4 +1,4 @@
-import { Home, Search, Package, User } from "lucide-react";
+import { Home, Search, Package, User, Heart } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 
@@ -6,6 +6,7 @@ const tabs = [
   { to: "/", label: "Início", icon: Home, end: true },
   { to: "/buscar", label: "Buscar", icon: Search },
   { to: "/pedidos", label: "Pedidos", icon: Package, badge: true },
+  { to: "/perfil?tab=favoritos", label: "Favoritos", icon: Heart },
   { to: "/perfil", label: "Perfil", icon: User },
 ];
 
