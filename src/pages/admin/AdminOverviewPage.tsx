@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ShoppingBag, DollarSign, Store, Users, TrendingUp, ArrowUpRight, ArrowDownRight, Clock, Flame, Trophy, BarChart3,
-  Bike, Activity, XCircle, Percent, CalendarRange, DoorOpen, Radio
+  Bike, Activity, XCircle, Percent, CalendarRange, DoorOpen
 } from "lucide-react";
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
