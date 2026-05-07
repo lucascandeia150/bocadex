@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound, BarChart3, ChefHat, Bike, CheckCircle2, Power, Clock, DollarSign, Bell } from "lucide-react";
+import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound, BarChart3, ChefHat, Bike, CheckCircle2, Power, Clock, DollarSign, Bell, Pause, Play, Ban } from "lucide-react";
 import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
 import PartnerStoreTab from "@/components/portal/PartnerStoreTab";
 import PartnerDashboardTab from "@/components/portal/PartnerDashboardTab";
@@ -14,6 +14,7 @@ interface Partner {
   uses_app_courier?: boolean;
   is_open?: boolean;
   is_demo?: boolean;
+  store_status?: string;
 }
 
 interface Delivery {
@@ -162,6 +163,7 @@ export default function PortalLojaPage() {
       uses_app_courier: !!p.uses_app_courier,
       is_open: p.is_open !== false,
       is_demo: !!p.is_demo,
+      store_status: p.store_status || "active",
     };
     setPartner(merged);
     setAddress(p.address);
@@ -424,11 +426,34 @@ export default function PortalLojaPage() {
   const newOrdersCount = deliveries.filter(d => d.status === "disponivel").length;
 
   const toggleStoreOpen = async () => {
+    if (partner?.store_status === "blocked") {
+      toast.error("Loja bloqueada pelo administrador");
+      return;
+    }
+    if (partner?.store_status === "paused") {
+      toast.error("Loja pausada — retome a operação para abrir");
+      return;
+    }
     const { data, error } = await supabase.rpc("partner_toggle_open", { _pin: pin });
     if (error) { toast.error(error.message || "Erro"); return; }
     const s = data as any;
     setPartner((prev) => prev ? { ...prev, is_open: s.is_open } : prev);
     toast.success(s.is_open ? "🟢 Loja aberta" : "🔴 Loja fechada");
+  };
+
+  const togglePause = async () => {
+    if (!partner) return;
+    if (partner.store_status === "blocked") {
+      toast.error("Loja bloqueada pelo administrador. Entre em contato com o suporte.");
+      return;
+    }
+    const willPause = partner.store_status !== "paused";
+    if (willPause && !window.confirm("Pausar operação? Sua loja deixará de receber pedidos até você retomar.")) return;
+    const { data, error } = await supabase.rpc("partner_set_pause", { _pin: pin, _paused: willPause });
+    if (error) { toast.error(error.message || "Erro"); return; }
+    const s = data as any;
+    setPartner((prev) => prev ? { ...prev, store_status: s.store_status, is_open: s.is_open } : prev);
+    toast.success(willPause ? "⏸️ Operação pausada" : "▶️ Operação retomada");
   };
 
   const tabs: { id: typeof tab; label: string; icon: React.ReactNode; badge?: number }[] = [
@@ -463,14 +488,26 @@ export default function PortalLojaPage() {
           </p>
         )}
 
+        {partner.store_status === "blocked" && (
+          <p className="mt-2 text-[11px] bg-red-500/30 border border-white/20 rounded-lg px-2 py-1.5 font-bold flex items-center gap-1">
+            <Ban size={12} /> Loja bloqueada pelo administrador. Entre em contato com o suporte.
+          </p>
+        )}
+        {partner.store_status === "paused" && (
+          <p className="mt-2 text-[11px] bg-yellow-500/30 border border-white/20 rounded-lg px-2 py-1.5 font-bold flex items-center gap-1">
+            <Pause size={12} /> Operação pausada — você não está recebendo pedidos.
+          </p>
+        )}
+
         {/* Open/Close toggle */}
         <button
           onClick={toggleStoreOpen}
+          disabled={partner.store_status === "blocked" || partner.store_status === "paused"}
           className={`mt-3 w-full flex items-center justify-between gap-2 rounded-2xl px-4 py-2.5 font-bold text-xs active:scale-[.98] transition-all ${
             partner.is_open
               ? "bg-white text-green-600 shadow-md"
               : "bg-red-500/90 text-white"
-          }`}
+          } disabled:opacity-60 disabled:cursor-not-allowed`}
         >
           <span className="flex items-center gap-2">
             <span className={`relative flex h-2.5 w-2.5`}>
@@ -483,6 +520,20 @@ export default function PortalLojaPage() {
             <Power size={11} /> {partner.is_open ? "Fechar" : "Abrir"}
           </span>
         </button>
+
+        {/* Pause / Resume operation */}
+        {partner.store_status !== "blocked" && (
+          <button
+            onClick={togglePause}
+            className={`mt-2 w-full flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2 text-[11px] font-bold active:scale-[.98] transition-all ${
+              partner.store_status === "paused"
+                ? "bg-white text-yellow-600 shadow-md"
+                : "bg-white/15 hover:bg-white/25 text-white"
+            }`}
+          >
+            {partner.store_status === "paused" ? (<><Play size={12} /> Retomar operação</>) : (<><Pause size={12} /> Pausar operação</>)}
+          </button>
+        )}
 
         {/* Quick stats */}
         <div className="grid grid-cols-3 gap-2 mt-3">
