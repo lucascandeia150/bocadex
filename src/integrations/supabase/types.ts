@@ -375,6 +375,39 @@ export type Database = {
         }
         Relationships: []
       }
+      device_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          last_seen_at: string
+          platform: string
+          token: string
+          topic_tags: string[]
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          platform?: string
+          token: string
+          topic_tags?: string[]
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          platform?: string
+          token?: string
+          topic_tags?: string[]
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       feedbacks: {
         Row: {
           comment: string | null
@@ -671,6 +704,42 @@ export type Database = {
           name?: string
           phone?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      push_logs: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          data: Json
+          failed_count: number
+          id: string
+          sent_count: number
+          target: string
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by?: string | null
+          data?: Json
+          failed_count?: number
+          id?: string
+          sent_count?: number
+          target?: string
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          data?: Json
+          failed_count?: number
+          id?: string
+          sent_count?: number
+          target?: string
+          title?: string
         }
         Relationships: []
       }
@@ -1556,6 +1625,25 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      register_device_token: {
+        Args: { _platform?: string; _token: string; _user_agent?: string }
+        Returns: {
+          created_at: string
+          id: string
+          last_seen_at: string
+          platform: string
+          token: string
+          topic_tags: string[]
+          user_agent: string | null
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "device_tokens"
           isOneToOne: true
           isSetofReturn: false
         }
