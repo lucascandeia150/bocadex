@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Mail, Lock, User as UserIcon, Phone, ArrowLeft } from "lucide-react";
+import { Mail, Lock, User as UserIcon, Phone, ArrowLeft, Eye, EyeOff, Check, X } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,41 @@ const signInSchema = z.object({
   password: z.string().min(1, "Informe a senha"),
 });
 
+// Mapeia erros (Supabase + códigos estilo Firebase) para mensagens amigáveis em PT-BR
+function friendlyAuthError(err: unknown): string {
+  const raw = (err as { message?: string; code?: string } | null);
+  const msg = (raw?.message || "").toLowerCase();
+  const code = (raw?.code || "").toLowerCase();
+
+  if (code.includes("weak-password") || msg.includes("weak") || msg.includes("password is known"))
+    return "Sua senha está muito fraca. Use pelo menos 6 caracteres com letras e números.";
+  if (code.includes("email-already-in-use") || msg.includes("already registered") || msg.includes("already") || msg.includes("user already"))
+    return "Este email já está cadastrado.";
+  if (code.includes("invalid-email") || msg.includes("invalid email") || msg.includes("invalid format"))
+    return "Digite um email válido.";
+  if (code.includes("network-request-failed") || msg.includes("network") || msg.includes("failed to fetch"))
+    return "Sem conexão com a internet.";
+  if (code.includes("too-many-requests") || msg.includes("rate limit") || msg.includes("too many"))
+    return "Muitas tentativas. Aguarde um momento e tente novamente.";
+  if (msg.includes("invalid login") || msg.includes("invalid credentials"))
+    return "Email ou senha inválidos.";
+  if (msg.includes("password should be at least") || msg.includes("password is too short"))
+    return "Sua senha está muito curta. Use pelo menos 6 caracteres.";
+  return raw?.message || "Não foi possível concluir. Tente novamente.";
+}
+
+type Strength = { score: 0 | 1 | 2 | 3; label: string; color: string; pct: number };
+function evaluateStrength(pwd: string): Strength {
+  let score = 0;
+  if (pwd.length >= 6) score++;
+  if (/[A-Za-z]/.test(pwd) && /\d/.test(pwd)) score++;
+  if (pwd.length >= 10 && /[^A-Za-z0-9]/.test(pwd)) score++;
+  if (!pwd) return { score: 0, label: "", color: "bg-muted", pct: 0 };
+  if (score <= 1) return { score: 1, label: "Fraca", color: "bg-destructive", pct: 33 };
+  if (score === 2) return { score: 2, label: "Média", color: "bg-yellow-500", pct: 66 };
+  return { score: 3, label: "Forte", color: "bg-green-500", pct: 100 };
+}
+
 export default function AuthPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -28,6 +63,8 @@ export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [pwdTouched, setPwdTouched] = useState(false);
 
   const redirectTo = params.get("redirect") || "/";
 
@@ -35,10 +72,17 @@ export default function AuthPage() {
     if (!loading && user) navigate(redirectTo, { replace: true });
   }, [user, loading, navigate, redirectTo]);
 
+  const strength = evaluateStrength(password);
+  const pwdInvalid = tab === "signup" && pwdTouched && password.length > 0 && password.length < 6;
+
   const handleSignUp = async () => {
     const parsed = signUpSchema.safeParse({ name, phone, email, password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    if (strength.score < 2) {
+      toast.error("Sua senha está muito fraca. Use letras e números (mín. 6 caracteres).");
       return;
     }
     setBusy(true);
@@ -52,7 +96,7 @@ export default function AuthPage() {
     });
     setBusy(false);
     if (error) {
-      toast.error(error.message.includes("already") ? "Email já cadastrado" : error.message);
+      toast.error(friendlyAuthError(error));
       return;
     }
     toast.success("Conta criada! Você já está logado.");
@@ -71,7 +115,7 @@ export default function AuthPage() {
     });
     setBusy(false);
     if (error) {
-      toast.error("Email ou senha inválidos");
+      toast.error(friendlyAuthError(error));
       return;
     }
     toast.success("Login realizado ✅");
@@ -116,7 +160,58 @@ export default function AuthPage() {
           </>
         )}
         <FieldIcon icon={<Mail size={14} />} label="Email" placeholder="seu@email.com" value={email} onChange={setEmail} type="email" />
-        <FieldIcon icon={<Lock size={14} />} label="Senha" placeholder="Mín. 6 caracteres" value={password} onChange={setPassword} type="password" />
+        <div>
+          <label className="text-[10px] font-bold text-muted-foreground mb-1 block uppercase">Senha</label>
+          <div
+            className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border bg-background transition-colors ${
+              pwdInvalid ? "border-destructive ring-1 ring-destructive/30" : "border-border"
+            }`}
+          >
+            <Lock size={14} className="text-muted-foreground" />
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onBlur={() => setPwdTouched(true)}
+              placeholder="Mín. 6 caracteres"
+              className="flex-1 bg-transparent outline-none text-sm text-foreground"
+              autoComplete={tab === "signup" ? "new-password" : "current-password"}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+
+          {tab === "signup" && password.length > 0 && (
+            <div className="mt-2 space-y-1.5 animate-slide-up">
+              <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className={`h-full ${strength.color} transition-all duration-300 ease-out`}
+                  style={{ width: `${strength.pct}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="font-bold text-muted-foreground">
+                  Força: <span className="text-foreground">{strength.label}</span>
+                </span>
+                <span className={`flex items-center gap-1 ${password.length >= 6 ? "text-green-600" : "text-muted-foreground"}`}>
+                  {password.length >= 6 ? <Check size={11} /> : <X size={11} />} 6+ caracteres
+                </span>
+              </div>
+            </div>
+          )}
+
+          {pwdInvalid && (
+            <p className="text-[10px] text-destructive mt-1 animate-slide-up">
+              A senha precisa ter pelo menos 6 caracteres.
+            </p>
+          )}
+        </div>
 
         <button
           disabled={busy}
