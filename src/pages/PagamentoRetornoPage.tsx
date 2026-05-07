@@ -19,6 +19,8 @@ export default function PagamentoRetornoPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const ref = params.get("ref") ?? params.get("external_reference");
+  const flowType = params.get("type"); // "partner" para assinatura
+  const isPartner = flowType === "partner" || (ref?.startsWith("sub_") ?? false);
   const [status, setStatus] = useState<Status>("loading");
   const [info, setInfo] = useState<{ amount?: number; partner?: string } | null>(null);
   const [delivery, setDelivery] = useState<DeliveryRow | null>(null);
@@ -73,7 +75,7 @@ export default function PagamentoRetornoPage() {
   // Realtime: assim que o pagamento for aprovado, o webhook cria o delivery
   // ligado a esse external_reference (payment_id). Buscamos e escutamos updates.
   useEffect(() => {
-    if (!ref || status !== "approved") return;
+    if (!ref || status !== "approved" || isPartner) return;
     let channel: ReturnType<typeof supabase.channel> | null = null;
     let cancelled = false;
 
@@ -117,7 +119,7 @@ export default function PagamentoRetornoPage() {
       clearTimeout(retry);
       if (channel) supabase.removeChannel(channel);
     };
-  }, [ref, status]);
+  }, [ref, status, isPartner]);
 
   const heroBg =
     status === "approved"
@@ -135,7 +137,7 @@ export default function PagamentoRetornoPage() {
 
   const heroTitle = () => {
     if (status === "loading") return "Confirmando pagamento...";
-    if (status === "approved") return "Pagamento aprovado!";
+    if (status === "approved") return isPartner ? "Loja ativada! 🎉" : "Pagamento aprovado!";
     if (status === "pending") return "Pagamento em análise";
     if (status === "failed") return "Pagamento não aprovado";
     return "Pagamento não encontrado";
@@ -143,7 +145,9 @@ export default function PagamentoRetornoPage() {
 
   const heroMsg = () => {
     if (status === "approved")
-      return "Seu pedido foi enviado para a loja e já está sendo preparado.";
+      return isPartner
+        ? "Sua loja já está visível no Bocadex. Bons pedidos!"
+        : "Seu pedido foi enviado para a loja e já está sendo preparado.";
     if (status === "pending")
       return "Aguardando confirmação do Mercado Pago. PIX leva alguns segundos.";
     if (status === "failed")
@@ -177,7 +181,7 @@ export default function PagamentoRetornoPage() {
 
       <div className="max-w-sm mx-auto px-4 -mt-10 relative z-10 space-y-4">
         {/* Loading do delivery */}
-        {status === "approved" && !delivery && (
+        {status === "approved" && !isPartner && !delivery && (
           <div className="rounded-2xl bg-card border border-border shadow-lg p-5 text-center animate-slide-up">
             <Loader2 className="animate-spin text-primary mx-auto" size={28} />
             <p className="text-sm font-bold text-foreground mt-2">Preparando seu pedido...</p>
@@ -185,12 +189,28 @@ export default function PagamentoRetornoPage() {
           </div>
         )}
 
-        {status === "approved" && delivery && (
+        {status === "approved" && !isPartner && delivery && (
           <OrderTimeline
             status={delivery.status}
             code={delivery.delivery_code}
             partner={delivery.partner_name}
           />
+        )}
+
+        {status === "approved" && isPartner && (
+          <div className="rounded-2xl bg-card border border-border shadow-lg p-5 text-center animate-slide-up space-y-2">
+            <Sparkles className="text-primary mx-auto" size={28} />
+            <p className="text-sm font-black text-foreground">Bem-vindo ao Bocadex! 🚀</p>
+            <p className="text-xs text-muted-foreground">
+              Sua loja foi publicada automaticamente. Acesse o portal do parceiro para gerenciar produtos e pedidos.
+            </p>
+            <button
+              onClick={() => navigate("/acesso-parceiro")}
+              className="mt-2 inline-flex items-center gap-1.5 bg-primary text-primary-foreground font-black text-xs px-4 py-2.5 rounded-full"
+            >
+              Acessar painel da loja →
+            </button>
+          </div>
         )}
 
         {status === "approved" && (
