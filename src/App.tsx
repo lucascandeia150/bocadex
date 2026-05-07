@@ -20,6 +20,7 @@ import AdminReviewsPage from "./pages/admin/AdminReviewsPage";
 import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 import AdminLogsPage from "./pages/admin/AdminLogsPage";
 import AdminCouriersPage from "./pages/admin/AdminCouriersPage";
+import PushPermissionBanner from "./components/PushPermissionBanner";
 
 const queryClient = new QueryClient({});
 
@@ -48,6 +49,7 @@ const App = () => (
             </Route>
             <Route path="/*" element={<AppLayout />} />
           </Routes>
+          <PushPermissionBanner />
           </BrowserRouter>
         </CartProvider>
       </AuthProvider>
