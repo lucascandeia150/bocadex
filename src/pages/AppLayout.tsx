@@ -36,6 +36,7 @@ import CarrinhoPage from "./CarrinhoPage";
 import PedidosPage from "./PedidosPage";
 import PerfilPage from "./PerfilPage";
 import AuthPage from "./AuthPage";
+import ResetPasswordPage from "./ResetPasswordPage";
 import PagamentoRetornoPage from "./PagamentoRetornoPage";
 import NotFound from "./NotFound";
 
@@ -64,6 +65,7 @@ export default function AppLayout() {
               <Route path="/pedidos" element={<PedidosPage />} />
               <Route path="/perfil" element={<PerfilPage />} />
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/parceiro/:id" element={<ParceiroDetalhePage />} />
               <Route path="/descobrir-hub" element={<DescobrirHubPage />} />
               <Route path="/trabalhe" element={<TrabalhePage />} />

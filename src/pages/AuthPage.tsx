@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Mail, Lock, User as UserIcon, Phone, ArrowLeft, Eye, EyeOff, Check, X, MailCheck, Send } from "lucide-react";
+import { Mail, Lock, User as UserIcon, Phone, ArrowLeft, Eye, EyeOff, Check, X, MailCheck, Send, KeyRound } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +36,8 @@ function friendlyAuthError(err: unknown): string {
     return "Muitas tentativas. Aguarde um momento e tente novamente.";
   if (msg.includes("invalid login") || msg.includes("invalid credentials"))
     return "Email ou senha inválidos.";
+  if (code.includes("user-not-found") || msg.includes("user not found") || msg.includes("no user"))
+    return "Não encontramos uma conta com este email.";
   if (msg.includes("password should be at least") || msg.includes("password is too short"))
     return "Sua senha está muito curta. Use pelo menos 6 caracteres.";
   return raw?.message || "Não foi possível concluir. Tente novamente.";
@@ -69,6 +71,10 @@ export default function AuthPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resending, setResending] = useState(false);
   const cooldownRef = useRef<number | null>(null);
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotBusy, setForgotBusy] = useState(false);
 
   const redirectTo = params.get("redirect") || "/";
 
@@ -83,6 +89,30 @@ export default function AuthPage() {
   }, [resendCooldown]);
 
   const startCooldown = () => setResendCooldown(60);
+
+  const handleForgotPassword = async () => {
+    const parsed = z.string().trim().email("Digite um email válido.").safeParse(forgotEmail);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    if (resendCooldown > 0) {
+      toast.error(`Aguarde ${resendCooldown}s para reenviar.`);
+      return;
+    }
+    setForgotBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setForgotBusy(false);
+    if (error) {
+      toast.error(friendlyAuthError(error));
+      return;
+    }
+    setForgotSent(true);
+    startCooldown();
+    toast.success("Email enviado com sucesso 📩");
+  };
 
   const strength = evaluateStrength(password);
   const pwdInvalid = tab === "signup" && pwdTouched && password.length > 0 && password.length < 6;
@@ -220,6 +250,95 @@ export default function AuthPage() {
     );
   }
 
+  if (forgotMode) {
+    return (
+      <div className="px-4 pt-8 pb-32 max-w-sm mx-auto animate-slide-up">
+        <button
+          onClick={() => { setForgotMode(false); setForgotSent(false); setForgotEmail(""); }}
+          className="inline-flex items-center gap-1 text-xs text-muted-foreground mb-4"
+        >
+          <ArrowLeft size={14} /> Voltar para login
+        </button>
+
+        <div className="rounded-3xl border border-border bg-card p-6 space-y-4 shadow-lg">
+          {!forgotSent ? (
+            <>
+              <div className="text-center space-y-2">
+                <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center animate-bounce-in">
+                  <KeyRound className="text-primary" size={32} />
+                </div>
+                <h2 className="text-xl font-black text-foreground">Esqueci minha senha</h2>
+                <p className="text-xs text-muted-foreground">
+                  Informe o email da sua conta. Vamos enviar um link para você criar uma nova senha.
+                </p>
+              </div>
+
+              <FieldIcon
+                icon={<Mail size={14} />}
+                label="Email"
+                placeholder="seu@email.com"
+                value={forgotEmail}
+                onChange={setForgotEmail}
+                type="email"
+              />
+
+              <button
+                onClick={handleForgotPassword}
+                disabled={forgotBusy}
+                className="w-full bg-primary text-primary-foreground font-black py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <Send size={16} />
+                {forgotBusy ? "Enviando..." : "Enviar link de recuperação"}
+              </button>
+
+              <p className="text-[10px] text-center text-muted-foreground">
+                Por segurança, não revelamos se o email está cadastrado.
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="text-center space-y-3 animate-bounce-in">
+                <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                  <MailCheck className="text-primary" size={40} />
+                </div>
+                <h2 className="text-xl font-black text-foreground">Email enviado com sucesso 📩</h2>
+                <p className="text-sm text-muted-foreground">
+                  Enviamos um link de recuperação para
+                </p>
+                <p className="text-sm font-bold text-foreground break-all">{forgotEmail}</p>
+              </div>
+
+              <div className="rounded-2xl bg-muted/60 px-4 py-3 text-left space-y-1">
+                <p className="text-xs text-foreground">📥 Verifique sua caixa de entrada e spam para redefinir sua senha.</p>
+                <p className="text-xs text-muted-foreground">⏱️ O link expira em 1 hora.</p>
+              </div>
+
+              <button
+                onClick={handleForgotPassword}
+                disabled={resendCooldown > 0 || forgotBusy}
+                className="w-full bg-primary text-primary-foreground font-black py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <Send size={16} />
+                {forgotBusy
+                  ? "Reenviando..."
+                  : resendCooldown > 0
+                    ? `Reenviar em ${resendCooldown}s`
+                    : "Reenviar email"}
+              </button>
+
+              <button
+                onClick={() => { setForgotMode(false); setForgotSent(false); setForgotEmail(""); }}
+                className="w-full bg-muted text-foreground font-bold py-3 rounded-2xl active:scale-95 transition-all"
+              >
+                Voltar para login
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-4 pt-6 pb-32 max-w-sm mx-auto">
       <Link to="/" className="inline-flex items-center gap-1 text-xs text-muted-foreground mb-3">
@@ -319,6 +438,16 @@ export default function AuthPage() {
         >
           {busy ? "Aguarde..." : tab === "signin" ? "Entrar" : "Criar conta"}
         </button>
+
+        {tab === "signin" && (
+          <button
+            type="button"
+            onClick={() => { setForgotEmail(email); setForgotMode(true); }}
+            className="w-full text-center text-xs font-bold text-primary hover:underline pt-1"
+          >
+            Esqueci minha senha
+          </button>
+        )}
 
         <p className="text-[10px] text-center text-muted-foreground pt-1">
           Ao continuar você aceita os termos do Bocadex Delivery's.
