@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import AdminPartnersTab from "@/components/admin/AdminPartnersTab";
 import AdminCreatePartnerDialog from "@/components/admin/AdminCreatePartnerDialog";
+import AdminManageStoreDialog from "@/components/admin/AdminManageStoreDialog";
 
 interface Partner {
   id: string;
@@ -23,6 +24,8 @@ interface Partner {
   access_pin: string | null;
   logo_url: string | null;
   created_at: string;
+  store_status?: string | null;
+  commission_percent?: number | null;
 }
 
 const STATUSES = [
@@ -44,6 +47,7 @@ export default function AdminStoresPage() {
   const [showLegacy, setShowLegacy] = useState(false);
   const [legacyPartners, setLegacyPartners] = useState<any[]>([]);
   const [createOpen, setCreateOpen] = useState(false);
+  const [managePartner, setManagePartner] = useState<Partner | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -119,6 +123,12 @@ export default function AdminStoresPage() {
       </div>
 
       <AdminCreatePartnerDialog open={createOpen} onOpenChange={setCreateOpen} onCreated={load} />
+      <AdminManageStoreDialog
+        partner={managePartner}
+        open={!!managePartner}
+        onOpenChange={(v) => { if (!v) setManagePartner(null); }}
+        onUpdated={load}
+      />
 
       {showLegacy ? (
         <div className="bg-card border border-border rounded-2xl p-4">
