@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import AdminPartnersTab from "@/components/admin/AdminPartnersTab";
 import AdminCreatePartnerDialog from "@/components/admin/AdminCreatePartnerDialog";
+import AdminManageStoreDialog from "@/components/admin/AdminManageStoreDialog";
 
 interface Partner {
   id: string;
@@ -23,6 +24,8 @@ interface Partner {
   access_pin: string | null;
   logo_url: string | null;
   created_at: string;
+  store_status?: string | null;
+  commission_percent?: number | null;
 }
 
 const STATUSES = [
@@ -44,6 +47,7 @@ export default function AdminStoresPage() {
   const [showLegacy, setShowLegacy] = useState(false);
   const [legacyPartners, setLegacyPartners] = useState<any[]>([]);
   const [createOpen, setCreateOpen] = useState(false);
+  const [managePartner, setManagePartner] = useState<Partner | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -119,6 +123,12 @@ export default function AdminStoresPage() {
       </div>
 
       <AdminCreatePartnerDialog open={createOpen} onOpenChange={setCreateOpen} onCreated={load} />
+      <AdminManageStoreDialog
+        partner={managePartner}
+        open={!!managePartner}
+        onOpenChange={(v) => { if (!v) setManagePartner(null); }}
+        onUpdated={load}
+      />
 
       {showLegacy ? (
         <div className="bg-card border border-border rounded-2xl p-4">
@@ -163,7 +173,7 @@ export default function AdminStoresPage() {
               </div>
             ) : (
               <div className="divide-y divide-border">
-                {rows.map((p) => <PartnerRow key={p.id} p={p} onUpdate={update} onSetStatus={setStatusOf} />)}
+                {rows.map((p) => <PartnerRow key={p.id} p={p} onUpdate={update} onSetStatus={setStatusOf} onManage={() => setManagePartner(p)} />)}
               </div>
             )}
           </div>
@@ -175,10 +185,11 @@ export default function AdminStoresPage() {
   );
 }
 
-function PartnerRow({ p, onUpdate, onSetStatus }: {
+function PartnerRow({ p, onUpdate, onSetStatus, onManage }: {
   p: Partner;
   onUpdate: (p: Partner, patch: Partial<Partner>, label: string) => void;
   onSetStatus: (p: Partner, s: "approved" | "rejected") => void;
+  onManage: () => void;
 }) {
   const copyPin = () => {
     if (!p.access_pin) return;
@@ -216,6 +227,7 @@ function PartnerRow({ p, onUpdate, onSetStatus }: {
             <IconToggle active={p.is_active} onClick={() => onUpdate(p, { is_active: !p.is_active }, "Ativo")} on={<Power size={14} />} off={<Power size={14} />} title={p.is_active ? "Desativar loja" : "Ativar loja"} />
             <IconToggle active={p.is_open} onClick={() => onUpdate(p, { is_open: !p.is_open }, "Aberto")} on={<DoorOpen size={14} />} off={<DoorClosed size={14} />} title={p.is_open ? "Fechar loja" : "Abrir loja"} />
             <IconToggle active={p.is_featured} onClick={() => onUpdate(p, { is_featured: !p.is_featured }, "Destaque")} on={<Star size={14} className="fill-current" />} off={<Star size={14} />} title="Destacar loja" />
+            <button onClick={onManage} title="Gerenciar (status, comissão, PIN)" className="p-1.5 rounded-lg bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground"><Settings2 size={14} /></button>
           </>
         )}
       </div>
