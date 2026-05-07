@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Mail, Lock, User as UserIcon, Phone, ArrowLeft, Eye, EyeOff, Check, X } from "lucide-react";
+import { Mail, Lock, User as UserIcon, Phone, ArrowLeft, Eye, EyeOff, Check, X, MailCheck, Send } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,12 +65,24 @@ export default function AuthPage() {
   const [busy, setBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [pwdTouched, setPwdTouched] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resending, setResending] = useState(false);
+  const cooldownRef = useRef<number | null>(null);
 
   const redirectTo = params.get("redirect") || "/";
 
   useEffect(() => {
-    if (!loading && user) navigate(redirectTo, { replace: true });
-  }, [user, loading, navigate, redirectTo]);
+    if (!loading && user && !pendingEmail) navigate(redirectTo, { replace: true });
+  }, [user, loading, navigate, redirectTo, pendingEmail]);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    cooldownRef.current = window.setTimeout(() => setResendCooldown((s) => s - 1), 1000);
+    return () => { if (cooldownRef.current) window.clearTimeout(cooldownRef.current); };
+  }, [resendCooldown]);
+
+  const startCooldown = () => setResendCooldown(60);
 
   const strength = evaluateStrength(password);
   const pwdInvalid = tab === "signup" && pwdTouched && password.length > 0 && password.length < 6;
@@ -86,7 +98,7 @@ export default function AuthPage() {
       return;
     }
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
       options: {
@@ -99,7 +111,14 @@ export default function AuthPage() {
       toast.error(friendlyAuthError(error));
       return;
     }
-    toast.success("Conta criada! Você já está logado.");
+    // Sem sessão = precisa confirmar email; com sessão = auto-confirm já ligado
+    if (!data.session) {
+      setPendingEmail(parsed.data.email);
+      startCooldown();
+      toast.success("Email de confirmação enviado com sucesso.");
+    } else {
+      toast.success("Conta criada! Você já está logado.");
+    }
   };
 
   const handleSignIn = async () => {
@@ -115,11 +134,91 @@ export default function AuthPage() {
     });
     setBusy(false);
     if (error) {
+      const msg = (error.message || "").toLowerCase();
+      if (msg.includes("not confirmed") || msg.includes("email not confirmed")) {
+        setPendingEmail(parsed.data.email);
+        startCooldown();
+        toast.error("Confirme seu email para continuar.");
+        return;
+      }
       toast.error(friendlyAuthError(error));
       return;
     }
     toast.success("Login realizado ✅");
   };
+
+  const handleResend = async () => {
+    if (!pendingEmail || resendCooldown > 0 || resending) return;
+    setResending(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: pendingEmail,
+      options: { emailRedirectTo: `${window.location.origin}/` },
+    });
+    setResending(false);
+    if (error) {
+      toast.error(friendlyAuthError(error));
+      return;
+    }
+    startCooldown();
+    toast.success("Email reenviado. Verifique sua caixa de entrada.");
+  };
+
+  if (pendingEmail) {
+    return (
+      <div className="px-4 pt-8 pb-32 max-w-sm mx-auto animate-slide-up">
+        <button
+          onClick={() => { setPendingEmail(null); setTab("signin"); }}
+          className="inline-flex items-center gap-1 text-xs text-muted-foreground mb-4"
+        >
+          <ArrowLeft size={14} /> Voltar
+        </button>
+
+        <div className="rounded-3xl border border-border bg-card p-6 text-center space-y-4 shadow-lg">
+          <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center animate-bounce-in">
+            <MailCheck className="text-primary" size={40} />
+          </div>
+
+          <div className="space-y-1.5">
+            <h2 className="text-xl font-black text-foreground">Confirme seu email</h2>
+            <p className="text-sm text-muted-foreground">
+              Enviamos um link de confirmação para
+            </p>
+            <p className="text-sm font-bold text-foreground break-all">{pendingEmail}</p>
+          </div>
+
+          <div className="rounded-2xl bg-muted/60 px-4 py-3 text-left space-y-1">
+            <p className="text-xs text-foreground">📥 Verifique sua caixa de entrada.</p>
+            <p className="text-xs text-muted-foreground">📨 Confira também a pasta de spam ou lixo eletrônico.</p>
+          </div>
+
+          <button
+            onClick={handleResend}
+            disabled={resendCooldown > 0 || resending}
+            className="w-full bg-primary text-primary-foreground font-black py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <Send size={16} />
+            {resending
+              ? "Reenviando..."
+              : resendCooldown > 0
+                ? `Reenviar em ${resendCooldown}s`
+                : "Reenviar email"}
+          </button>
+
+          <button
+            onClick={() => { setPendingEmail(null); setTab("signin"); }}
+            className="w-full bg-muted text-foreground font-bold py-3 rounded-2xl active:scale-95 transition-all"
+          >
+            Ir para login
+          </button>
+
+          <p className="text-[10px] text-muted-foreground pt-1">
+            Após confirmar, faça login normalmente para acessar o app.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 pt-6 pb-32 max-w-sm mx-auto">
