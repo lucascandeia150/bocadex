@@ -182,6 +182,20 @@ Deno.serve(async (req) => {
           _metadata: { external_reference: externalRef, mp_payment_id: String(payment_id) },
         });
       } catch (e) { console.warn("audit partner.activated falhou", e); }
+      // push para o parceiro recém-aprovado
+      try {
+        await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-push`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            internal_secret: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
+            title: "Loja ativada! 🎉",
+            body: "Sua assinatura foi confirmada. Seu negócio já está visível no Bocadex.",
+            target: "all",
+            data: { click_url: "/portal-loja" },
+          }),
+        });
+      } catch (e) { console.warn("push partner.activated falhou", e); }
       return new Response(JSON.stringify({ ok: true, type: "partner_subscription", partner_id: payment.partner_id }), {
         status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -254,6 +268,28 @@ Deno.serve(async (req) => {
       delivery_id: delivery.id,
       external_reference: externalRef,
     });
+
+    // push: notifica o cliente que o pedido foi confirmado
+    try {
+      const { data: payRow } = await supabase
+        .from("payments").select("metadata").eq("id", payment.id).maybeSingle();
+      const meta = (payRow?.metadata ?? {}) as Record<string, unknown>;
+      const userId = (meta.user_id as string | undefined) ?? null;
+      if (userId) {
+        await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-push`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            internal_secret: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
+            title: "Pedido confirmado! 🛵",
+            body: `${partner?.business_name ?? "A loja"} recebeu seu pedido e já está preparando.`,
+            target: "user",
+            user_id: userId,
+            data: { click_url: "/pedidos" },
+          }),
+        });
+      }
+    } catch (e) { console.warn("push delivery created falhou", e); }
 
     try {
       await supabase.rpc("log_audit_event", {
