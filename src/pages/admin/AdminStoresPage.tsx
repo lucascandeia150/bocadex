@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Store, Search, Filter, RefreshCw, ChevronLeft, ChevronRight, Power, Star, DoorOpen, DoorClosed,
-  Copy, CheckCircle2, XCircle, Clock, Settings2,
+  Copy, CheckCircle2, XCircle, Clock, Settings2, Plus,
 } from "lucide-react";
 import AdminPartnersTab from "@/components/admin/AdminPartnersTab";
+import AdminCreatePartnerDialog from "@/components/admin/AdminCreatePartnerDialog";
 
 interface Partner {
   id: string;
@@ -42,6 +43,7 @@ export default function AdminStoresPage() {
   const [search, setSearch] = useState("");
   const [showLegacy, setShowLegacy] = useState(false);
   const [legacyPartners, setLegacyPartners] = useState<any[]>([]);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -104,6 +106,9 @@ export default function AdminStoresPage() {
           <p className="text-sm text-muted-foreground">{total} lojas · página {page + 1} de {totalPages}</p>
         </div>
         <div className="flex items-center gap-2">
+          <button onClick={() => setCreateOpen(true)} className="flex items-center gap-1 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-2 rounded-lg">
+            <Plus size={12} /> Cadastrar parceiro
+          </button>
           <button onClick={() => setShowLegacy((v) => !v)} className="flex items-center gap-1 text-xs font-bold bg-muted hover:bg-muted/70 px-3 py-2 rounded-lg">
             <Settings2 size={12} /> {showLegacy ? "Ver lista" : "Gestão completa"}
           </button>
@@ -112,6 +117,8 @@ export default function AdminStoresPage() {
           </button>
         </div>
       </div>
+
+      <AdminCreatePartnerDialog open={createOpen} onOpenChange={setCreateOpen} onCreated={load} />
 
       {showLegacy ? (
         <div className="bg-card border border-border rounded-2xl p-4">
