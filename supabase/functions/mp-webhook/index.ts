@@ -163,6 +163,30 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Se for assinatura de parceiro: ativa loja e encerra
+    if (payment.payment_type === "partner_subscription") {
+      const { error: actErr } = await supabase.rpc("activate_partner_subscription", {
+        _partner_id: payment.partner_id,
+        _payment_id: payment.id,
+      });
+      if (actErr) throw new Error(`Erro ao ativar parceiro: ${actErr.message}`);
+      try {
+        await supabase.rpc("log_audit_event", {
+          _actor_type: "webhook",
+          _actor_id: String(payment_id),
+          _actor_label: "Mercado Pago",
+          _action: "partner.activated",
+          _entity_type: "partner",
+          _entity_id: payment.partner_id,
+          _description: `Assinatura paga — parceiro ativado por 30 dias (R$ ${Number(payment.amount).toFixed(2)})`,
+          _metadata: { external_reference: externalRef, mp_payment_id: String(payment_id) },
+        });
+      } catch (e) { console.warn("audit partner.activated falhou", e); }
+      return new Response(JSON.stringify({ ok: true, type: "partner_subscription", partner_id: payment.partner_id }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // idempotência: já existe delivery para esse payment?
     const { data: existing } = await supabase
       .from("deliveries")

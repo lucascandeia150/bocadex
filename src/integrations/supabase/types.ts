@@ -456,10 +456,14 @@ export type Database = {
           is_demo: boolean
           is_featured: boolean
           is_open: boolean
+          last_payment_at: string | null
           logo_url: string | null
           owner_name: string | null
+          payment_status: string
+          plan: string
           promotions: string | null
           status: string
+          subscription_active_until: string | null
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -479,10 +483,14 @@ export type Database = {
           is_demo?: boolean
           is_featured?: boolean
           is_open?: boolean
+          last_payment_at?: string | null
           logo_url?: string | null
           owner_name?: string | null
+          payment_status?: string
+          plan?: string
           promotions?: string | null
           status?: string
+          subscription_active_until?: string | null
           user_id?: string | null
           uses_app_courier?: boolean
           visibility?: string
@@ -502,10 +510,14 @@ export type Database = {
           is_demo?: boolean
           is_featured?: boolean
           is_open?: boolean
+          last_payment_at?: string | null
           logo_url?: string | null
           owner_name?: string | null
+          payment_status?: string
+          plan?: string
           promotions?: string | null
           status?: string
+          subscription_active_until?: string | null
           user_id?: string | null
           uses_app_courier?: boolean
           visibility?: string
@@ -527,6 +539,7 @@ export type Database = {
           mp_preference_id: string | null
           order_description: string
           partner_id: string | null
+          payment_type: string
           status: string
           updated_at: string
         }
@@ -543,6 +556,7 @@ export type Database = {
           mp_preference_id?: string | null
           order_description: string
           partner_id?: string | null
+          payment_type?: string
           status?: string
           updated_at?: string
         }
@@ -559,6 +573,7 @@ export type Database = {
           mp_preference_id?: string | null
           order_description?: string
           partner_id?: string | null
+          payment_type?: string
           status?: string
           updated_at?: string
         }
@@ -823,6 +838,42 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_partner_subscription: {
+        Args: { _partner_id: string; _payment_id: string }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_demo: boolean
+          is_featured: boolean
+          is_open: boolean
+          last_payment_at: string | null
+          logo_url: string | null
+          owner_name: string | null
+          payment_status: string
+          plan: string
+          promotions: string | null
+          status: string
+          subscription_active_until: string | null
+          user_id: string | null
+          uses_app_courier: boolean
+          visibility: string
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_approve_courier: {
         Args: { _application_id: string }
         Returns: {
@@ -1263,10 +1314,14 @@ export type Database = {
           is_demo: boolean
           is_featured: boolean
           is_open: boolean
+          last_payment_at: string | null
           logo_url: string | null
           owner_name: string | null
+          payment_status: string
+          plan: string
           promotions: string | null
           status: string
+          subscription_active_until: string | null
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -1385,10 +1440,14 @@ export type Database = {
           is_demo: boolean
           is_featured: boolean
           is_open: boolean
+          last_payment_at: string | null
           logo_url: string | null
           owner_name: string | null
+          payment_status: string
+          plan: string
           promotions: string | null
           status: string
+          subscription_active_until: string | null
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -1481,10 +1540,14 @@ export type Database = {
           is_demo: boolean
           is_featured: boolean
           is_open: boolean
+          last_payment_at: string | null
           logo_url: string | null
           owner_name: string | null
+          payment_status: string
+          plan: string
           promotions: string | null
           status: string
+          subscription_active_until: string | null
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -1498,6 +1561,51 @@ export type Database = {
         }
       }
       reset_demo_store: { Args: never; Returns: Json }
+      submit_partner_application: {
+        Args: {
+          _address: string
+          _business_name: string
+          _business_type: string
+          _description: string
+          _logo_url: string
+          _owner_name: string
+          _uses_app_courier: boolean
+          _whatsapp: string
+        }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_demo: boolean
+          is_featured: boolean
+          is_open: boolean
+          last_payment_at: string | null
+          logo_url: string | null
+          owner_name: string | null
+          payment_status: string
+          plan: string
+          promotions: string | null
+          status: string
+          subscription_active_until: string | null
+          user_id: string | null
+          uses_app_courier: boolean
+          visibility: string
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
