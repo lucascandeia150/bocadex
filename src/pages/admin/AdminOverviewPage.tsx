@@ -487,6 +487,60 @@ function ChartSkeleton() {
   return <div className="h-[220px] rounded-xl bg-muted animate-pulse" />;
 }
 
+const LIVE_TONES: Record<string, string> = {
+  orange: "bg-orange-500/10 text-orange-600",
+  blue: "bg-blue-500/10 text-blue-600",
+};
+
+function LiveOpsCard({
+  icon, title, count, total, color, items, emptyLabel,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  count: number;
+  total: number;
+  color: keyof typeof LIVE_TONES;
+  items: { id: string; name: string; sub: string; img: string | null }[];
+  emptyLabel: string;
+}) {
+  return (
+    <div className="bg-card border border-border rounded-2xl p-4">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm font-black text-foreground flex items-center gap-1.5">
+          {icon} {title}
+        </p>
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+          </span>
+          <span className={`text-[11px] font-black px-2 py-0.5 rounded-full ${LIVE_TONES[color]}`}>
+            {count}/{total}
+          </span>
+        </div>
+      </div>
+      {items.length === 0 ? (
+        <p className="text-xs text-muted-foreground py-6 text-center">{emptyLabel}</p>
+      ) : (
+        <div className="space-y-2">
+          {items.map((it) => (
+            <div key={it.id} className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-muted/50">
+              <div className="w-8 h-8 rounded-lg overflow-hidden bg-muted flex items-center justify-center text-[10px] font-black text-muted-foreground shrink-0">
+                {it.img ? <img src={it.img} alt="" className="w-full h-full object-cover" /> : it.name.slice(0, 2).toUpperCase()}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-foreground truncate">{it.name}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{it.sub}</p>
+              </div>
+              <span className="text-[10px] font-bold text-green-600">online</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const HIGHLIGHT_TONES: Record<string, string> = {
   orange: "bg-[hsl(24,95%,53%)]/10 text-[hsl(24,95%,45%)]",
   green: "bg-primary/10 text-primary",
