@@ -69,7 +69,7 @@ export default function HomePage({ onChoose: _onChoose }: HomePageProps) {
             <div className="flex items-center gap-1.5 mt-1.5 text-white">
               <MapPin size={16} strokeWidth={2.5} />
               <span className="text-sm font-extrabold truncate max-w-[220px]">
-                {address || (user ? "Adicionar endereço" : "Entrar para entregar"))}
+                {address || (user ? "Adicionar endereço" : "Entrar para entregar")}
               </span>
               <ChevronDown size={16} strokeWidth={2.5} className="opacity-90" />
             </div>
