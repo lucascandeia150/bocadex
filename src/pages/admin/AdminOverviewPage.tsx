@@ -406,6 +406,44 @@ function ChartSkeleton() {
   return <div className="h-[220px] rounded-xl bg-muted animate-pulse" />;
 }
 
+const HIGHLIGHT_TONES: Record<string, string> = {
+  orange: "bg-[hsl(24,95%,53%)]/10 text-[hsl(24,95%,45%)]",
+  green: "bg-primary/10 text-primary",
+  blue: "bg-blue-500/10 text-blue-600",
+};
+
+function HighlightCard({
+  tone, icon, tag, title, subtitle, value, valueLabel, imgUrl, positive,
+}: {
+  tone: keyof typeof HIGHLIGHT_TONES;
+  icon: React.ReactNode;
+  tag: string; title: string; subtitle?: string;
+  value: string; valueLabel?: string;
+  imgUrl?: string | null;
+  positive?: boolean;
+}) {
+  return (
+    <div className="bg-card border border-border rounded-2xl p-4 flex items-center gap-3 hover:shadow-md transition-shadow">
+      <div className="w-12 h-12 rounded-xl overflow-hidden bg-muted flex items-center justify-center shrink-0">
+        {imgUrl ? (
+          <img src={imgUrl} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <div className={`w-full h-full flex items-center justify-center ${HIGHLIGHT_TONES[tone]}`}>{icon}</div>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={`text-[10px] font-black uppercase tracking-wider ${HIGHLIGHT_TONES[tone].split(" ")[1]}`}>{tag}</p>
+        <p className="text-sm font-black text-foreground truncate">{title}</p>
+        {subtitle && <p className="text-[11px] text-muted-foreground truncate">{subtitle}</p>}
+      </div>
+      <div className="text-right shrink-0">
+        <p className={`text-base font-black ${positive === false ? "text-red-600" : "text-foreground"}`}>{value}</p>
+        {valueLabel && <p className="text-[10px] text-muted-foreground">{valueLabel}</p>}
+      </div>
+    </div>
+  );
+}
+
 function DemoStoreCard({ onReset }: { onReset: () => void }) {
   const [demoId, setDemoId] = useState<string | null>(null);
   const [pin, setPin] = useState<string>("");
