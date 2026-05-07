@@ -94,13 +94,27 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
     let tokens: string[] = Array.isArray(explicitTokens) ? explicitTokens : [];
+    let targetUserIds: string[] = [];
     if (tokens.length === 0) {
       let q = admin.from('device_tokens').select('token, user_id');
       if (target === 'user' && user_id) q = q.eq('user_id', user_id);
       const { data: rows, error: rErr } = await q;
       if (rErr) throw rErr;
       tokens = (rows ?? []).map((r: { token: string }) => r.token);
+      targetUserIds = Array.from(new Set(((rows ?? []) as { user_id: string | null }[])
+        .map((r) => r.user_id).filter((u): u is string => !!u)));
     }
+    if (target === 'user' && user_id) targetUserIds = [user_id];
+
+    // Persist into user_notifications history
+    if (targetUserIds.length > 0) {
+      const click_url = (data && (data as Record<string, unknown>).click_url) as string | undefined;
+      const rows = targetUserIds.map((uid) => ({
+        user_id: uid, title, body: msgBody, click_url: click_url ?? null, data,
+      }));
+      await admin.from('user_notifications').insert(rows);
+    }
+
     if (tokens.length === 0) {
       return new Response(JSON.stringify({ ok: true, sent: 0, failed: 0, info: 'sem tokens' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
