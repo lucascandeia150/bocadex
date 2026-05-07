@@ -480,6 +480,7 @@ export type Database = {
           address: string
           business_name: string
           business_type: string
+          commission_percent: number | null
           created_at: string
           created_by: string | null
           description: string
@@ -496,6 +497,7 @@ export type Database = {
           plan: string
           promotions: string | null
           status: string
+          store_status: string
           subscription_active_until: string | null
           user_id: string | null
           uses_app_courier: boolean
@@ -507,6 +509,7 @@ export type Database = {
           address: string
           business_name: string
           business_type: string
+          commission_percent?: number | null
           created_at?: string
           created_by?: string | null
           description: string
@@ -523,6 +526,7 @@ export type Database = {
           plan?: string
           promotions?: string | null
           status?: string
+          store_status?: string
           subscription_active_until?: string | null
           user_id?: string | null
           uses_app_courier?: boolean
@@ -534,6 +538,7 @@ export type Database = {
           address?: string
           business_name?: string
           business_type?: string
+          commission_percent?: number | null
           created_at?: string
           created_by?: string | null
           description?: string
@@ -550,6 +555,7 @@ export type Database = {
           plan?: string
           promotions?: string | null
           status?: string
+          store_status?: string
           subscription_active_until?: string | null
           user_id?: string | null
           uses_app_courier?: boolean
@@ -947,6 +953,7 @@ export type Database = {
           address: string
           business_name: string
           business_type: string
+          commission_percent: number | null
           created_at: string
           created_by: string | null
           description: string
@@ -963,6 +970,7 @@ export type Database = {
           plan: string
           promotions: string | null
           status: string
+          store_status: string
           subscription_active_until: string | null
           user_id: string | null
           uses_app_courier: boolean
@@ -1017,6 +1025,7 @@ export type Database = {
           address: string
           business_name: string
           business_type: string
+          commission_percent: number | null
           created_at: string
           created_by: string | null
           description: string
@@ -1033,6 +1042,7 @@ export type Database = {
           plan: string
           promotions: string | null
           status: string
+          store_status: string
           subscription_active_until: string | null
           user_id: string | null
           uses_app_courier: boolean
@@ -1068,6 +1078,158 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "courier_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_reset_partner_pin: {
+        Args: { _partner_id: string }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          commission_percent: number | null
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_demo: boolean
+          is_featured: boolean
+          is_open: boolean
+          last_payment_at: string | null
+          logo_url: string | null
+          owner_name: string | null
+          payment_status: string
+          plan: string
+          promotions: string | null
+          status: string
+          store_status: string
+          subscription_active_until: string | null
+          user_id: string | null
+          uses_app_courier: boolean
+          visibility: string
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_set_partner_commission: {
+        Args: { _partner_id: string; _percent: number }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          commission_percent: number | null
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_demo: boolean
+          is_featured: boolean
+          is_open: boolean
+          last_payment_at: string | null
+          logo_url: string | null
+          owner_name: string | null
+          payment_status: string
+          plan: string
+          promotions: string | null
+          status: string
+          store_status: string
+          subscription_active_until: string | null
+          user_id: string | null
+          uses_app_courier: boolean
+          visibility: string
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_set_store_status: {
+        Args: { _partner_id: string; _status: string }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          commission_percent: number | null
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_demo: boolean
+          is_featured: boolean
+          is_open: boolean
+          last_payment_at: string | null
+          logo_url: string | null
+          owner_name: string | null
+          payment_status: string
+          plan: string
+          promotions: string | null
+          status: string
+          store_status: string
+          subscription_active_until: string | null
+          user_id: string | null
+          uses_app_courier: boolean
+          visibility: string
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_toggle_uses_app_courier: {
+        Args: { _partner_id: string; _value: boolean }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          commission_percent: number | null
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_demo: boolean
+          is_featured: boolean
+          is_open: boolean
+          last_payment_at: string | null
+          logo_url: string | null
+          owner_name: string | null
+          payment_status: string
+          plan: string
+          promotions: string | null
+          status: string
+          store_status: string
+          subscription_active_until: string | null
+          user_id: string | null
+          uses_app_courier: boolean
+          visibility: string
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1455,6 +1617,7 @@ export type Database = {
           address: string
           business_name: string
           business_type: string
+          commission_percent: number | null
           created_at: string
           created_by: string | null
           description: string
@@ -1471,6 +1634,7 @@ export type Database = {
           plan: string
           promotions: string | null
           status: string
+          store_status: string
           subscription_active_until: string | null
           user_id: string | null
           uses_app_courier: boolean
@@ -1581,6 +1745,7 @@ export type Database = {
           address: string
           business_name: string
           business_type: string
+          commission_percent: number | null
           created_at: string
           created_by: string | null
           description: string
@@ -1597,6 +1762,7 @@ export type Database = {
           plan: string
           promotions: string | null
           status: string
+          store_status: string
           subscription_active_until: string | null
           user_id: string | null
           uses_app_courier: boolean
@@ -1681,6 +1847,7 @@ export type Database = {
           address: string
           business_name: string
           business_type: string
+          commission_percent: number | null
           created_at: string
           created_by: string | null
           description: string
@@ -1697,6 +1864,7 @@ export type Database = {
           plan: string
           promotions: string | null
           status: string
+          store_status: string
           subscription_active_until: string | null
           user_id: string | null
           uses_app_courier: boolean
@@ -1746,6 +1914,7 @@ export type Database = {
           address: string
           business_name: string
           business_type: string
+          commission_percent: number | null
           created_at: string
           created_by: string | null
           description: string
@@ -1762,6 +1931,7 @@ export type Database = {
           plan: string
           promotions: string | null
           status: string
+          store_status: string
           subscription_active_until: string | null
           user_id: string | null
           uses_app_courier: boolean
