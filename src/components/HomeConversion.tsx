@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Flame, Store as StoreIcon, Zap, Plus, ChevronRight, Star, Dumbbell } from "lucide-react";
+import { Flame, Store as StoreIcon, Plus, ChevronRight, Star, TrendingUp, Clock, Bike } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { CardParceiro } from "@/components/CardParceiro";
 import { ProductOrderModal } from "@/components/ProductOrderModal";
 
 interface Partner {
@@ -36,20 +35,6 @@ function priceLabel(p: Product) {
   return "Consulte";
 }
 
-// Gradiente placeholder consistente baseado no id do produto
-const PLACEHOLDER_GRADIENTS = [
-  "from-[hsl(142,70%,55%)] to-[hsl(142,70%,40%)]",
-  "from-[hsl(24,95%,60%)] to-[hsl(24,95%,48%)]",
-  "from-[hsl(142,60%,60%)] to-[hsl(180,60%,45%)]",
-  "from-[hsl(24,90%,60%)] to-[hsl(0,80%,55%)]",
-  "from-[hsl(45,90%,60%)] to-[hsl(24,95%,53%)]",
-  "from-[hsl(160,60%,50%)] to-[hsl(142,70%,40%)]",
-];
-function gradientFor(id: string) {
-  let h = 0;
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
-  return PLACEHOLDER_GRADIENTS[h % PLACEHOLDER_GRADIENTS.length];
-}
 function emojiFor(p: { name: string; description?: string }) {
   const text = `${p.name} ${p.description || ""}`.toLowerCase();
   if (/pizz/.test(text)) return "🍕";
@@ -62,6 +47,75 @@ function emojiFor(p: { name: string; description?: string }) {
   if (/marmit|prato|comida|almoço|jantar/.test(text)) return "🍱";
   if (/café|cafe|capp/.test(text)) return "☕";
   return "🍽️";
+}
+
+function StoreCard({ p, onClick }: { p: Partner; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="text-left bg-card rounded-2xl border border-border/60 p-3 flex items-center gap-3 active:scale-[0.98] transition-transform shadow-sm hover:shadow-md w-full"
+    >
+      <div className="w-14 h-14 rounded-xl bg-[hsl(142,50%,96%)] flex items-center justify-center overflow-hidden shrink-0">
+        {p.logo_url ? (
+          <img src={p.logo_url} alt={p.business_name} className="w-full h-full object-cover" loading="lazy" />
+        ) : (
+          <StoreIcon size={22} className="text-primary" />
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="text-sm font-black text-foreground truncate">{p.business_name}</h3>
+        <p className="text-[11px] text-muted-foreground truncate">{p.business_type || "Loja parceira"}</p>
+        <div className="flex items-center gap-2 mt-1 text-[10px] font-bold text-muted-foreground">
+          <span className="flex items-center gap-0.5"><Star size={10} className="fill-secondary text-secondary" /> 4.8</span>
+          <span className="flex items-center gap-0.5"><Clock size={10} /> 30–45 min</span>
+          {p.uses_app_courier && <span className="flex items-center gap-0.5 text-primary"><Bike size={10} /> Entrega</span>}
+        </div>
+      </div>
+      <ChevronRight size={16} className="text-muted-foreground shrink-0" />
+    </button>
+  );
+}
+
+function ProductCard({ p, onAdd, onOpen, badge }: {
+  p: ProductWithPartner;
+  onAdd: () => void;
+  onOpen: () => void;
+  badge?: { label: string; tone: "promo" | "new" };
+}) {
+  return (
+    <article className="bg-card rounded-2xl border border-border/60 shadow-sm overflow-hidden flex flex-col">
+      <button onClick={onOpen} className="relative aspect-[4/3] overflow-hidden bg-[hsl(142,50%,96%)]">
+        {p.image_url ? (
+          <img src={p.image_url} alt={p.name} loading="lazy" className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-5xl">{emojiFor(p)}</div>
+        )}
+        {badge && (
+          <span className={`absolute top-2 left-2 text-[10px] font-black px-2 py-0.5 rounded-full uppercase shadow-sm ${
+            badge.tone === "promo"
+              ? "bg-[hsl(24,95%,53%)] text-white"
+              : "bg-white/95 text-foreground"
+          }`}>
+            {badge.label}
+          </span>
+        )}
+      </button>
+      <div className="p-3 flex flex-col gap-0.5 flex-1">
+        <h3 className="text-sm font-extrabold text-foreground line-clamp-1 leading-tight">{p.name}</h3>
+        <p className="text-[10px] text-muted-foreground truncate">{p.partner?.business_name}</p>
+        <div className="flex items-end justify-between mt-1.5 gap-2">
+          <p className="text-sm font-black text-primary leading-none">{priceLabel(p)}</p>
+          <button
+            onClick={onAdd}
+            className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center active:scale-90 transition-transform shadow-md shrink-0"
+            aria-label={`Adicionar ${p.name}`}
+          >
+            <Plus size={16} strokeWidth={3} />
+          </button>
+        </div>
+      </div>
+    </article>
+  );
 }
 
 export function HomeConversion() {
@@ -89,7 +143,6 @@ export function HomeConversion() {
         .limit(30);
 
       if (!active) return;
-      // Deduplicar parceiros por id (defesa) e por nome normalizado
       const seenIds = new Set<string>();
       const seenNames = new Set<string>();
       const partnersList = ((pData as Partner[]) || []).filter((p) => {
@@ -101,13 +154,12 @@ export function HomeConversion() {
       setPartners(partnersList);
 
       const partnerMap = new Map(partnersList.map((p) => [p.id, p]));
-      const seenProd = new Set<string>();
+      const seen = new Set<string>();
       const enriched: ProductWithPartner[] = ((prodData as Product[]) || [])
         .map((p) => ({ ...p, partner: p.partner_id ? partnerMap.get(p.partner_id) ?? null : null }))
         .filter((p) => {
-          if (!p.partner) return false;
-          if (seenProd.has(p.id)) return false;
-          seenProd.add(p.id);
+          if (!p.partner || seen.has(p.id)) return false;
+          seen.add(p.id);
           return true;
         });
       setProducts(enriched);
@@ -115,102 +167,108 @@ export function HomeConversion() {
     return () => { active = false; };
   }, []);
 
-  // Promoções: produtos cujo parceiro tem promotion preenchida, ou nome/desc contém "promo"
   const promos = products.filter(
     (p) =>
       (p.partner?.promotions && p.partner.promotions.trim().length > 0) ||
       /promo|oferta|desconto/i.test(`${p.name} ${p.description}`)
   ).slice(0, 6);
 
-  // Pedidos rápidos: exclui produtos já exibidos em "Promoções" para não duplicar
   const promoIds = new Set(promos.map((p) => p.id));
-  const quick = products.filter((p) => !promoIds.has(p.id)).slice(0, 8);
+  const trending = products.filter((p) => !promoIds.has(p.id)).slice(0, 6);
+  const featured = partners.filter((p) => p.is_featured).slice(0, 5);
+  const featuredIds = new Set(featured.map((p) => p.id));
+  const open = partners.filter((p) => !featuredIds.has(p.id)).slice(0, 6);
 
   if (partners.length === 0 && products.length === 0) return null;
 
   return (
-    <div className="w-full max-w-md space-y-6 mb-8 relative z-10">
-      {/* SHAPE TURBO BANNER */}
+    <div className="w-full max-w-md space-y-7 mb-8 relative z-10">
+      {/* BANNER PROMOCIONAL BOCADEX */}
       <a
-        href="https://shapeturbo.escolheai.today"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block rounded-2xl overflow-hidden shadow-lg active:scale-[0.98] transition-transform animate-slide-up"
+        href="/seja-parceiro"
+        className="block rounded-2xl overflow-hidden shadow-md active:scale-[0.99] transition-transform"
       >
-        <div className="bg-gradient-to-br from-[hsl(280,70%,45%)] to-[hsl(24,95%,53%)] p-4 text-white relative overflow-hidden">
-          <div className="absolute -right-4 -top-4 opacity-20">
-            <Dumbbell size={96} strokeWidth={2.5} />
-          </div>
+        <div className="bg-gradient-to-r from-[hsl(142,71%,42%)] to-[hsl(160,70%,38%)] p-4 text-white relative overflow-hidden">
+          <div className="absolute -right-6 -top-6 text-7xl opacity-15">🛵</div>
           <div className="relative">
-            <p className="text-base font-black leading-tight">
-              💪 Quer resultado de verdade?
+            <p className="text-[11px] font-bold uppercase opacity-90 tracking-wide">Bocadex Parceiros</p>
+            <p className="text-base font-black leading-tight mt-1">
+              Sua loja no Bocadex por R$ 9,90/mês
             </p>
-            <p className="text-xs opacity-95 mt-1">Conheça o Shape Turbo</p>
-            <span className="inline-flex items-center gap-1.5 mt-3 bg-white text-[hsl(280,70%,40%)] text-xs font-black px-3.5 py-2 rounded-full shadow-md">
-              Começar agora →
+            <span className="inline-flex items-center gap-1 mt-2.5 bg-white text-primary text-xs font-black px-3 py-1.5 rounded-full">
+              Quero ser parceiro <ChevronRight size={12} />
             </span>
           </div>
         </div>
       </a>
 
-      {/* PROMOÇÕES */}
+      {/* MAIS PEDIDOS HOJE */}
+      {trending.length > 0 && (
+        <section className="animate-slide-up">
+          <header className="flex items-center justify-between mb-3 px-1">
+            <h2 className="text-base font-black text-foreground flex items-center gap-1.5">
+              <TrendingUp size={16} className="text-primary" /> Mais pedidos hoje
+            </h2>
+          </header>
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 snap-x snap-mandatory scrollbar-hide">
+            {trending.map((p) => (
+              <div key={p.id} className="snap-start shrink-0 w-44">
+                <ProductCard
+                  p={p}
+                  badge={{ label: "🔥 Em alta", tone: "new" }}
+                  onAdd={() => setOrder(p)}
+                  onOpen={() => p.partner && navigate(`/loja/${p.partner.id}`)}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* PROMOÇÕES DO DIA */}
       {promos.length > 0 && (
         <section className="animate-slide-up">
           <header className="flex items-center justify-between mb-3 px-1">
-            <h2 className="text-lg font-black text-foreground flex items-center gap-2">
-              <Flame size={18} className="text-secondary" />
-              Promoções do dia
+            <h2 className="text-base font-black text-foreground flex items-center gap-1.5">
+              <Flame size={16} className="text-[hsl(24,95%,53%)]" /> Promoções do dia
             </h2>
           </header>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory scrollbar-hide">
-            {promos.map((p) => (
-              <article
+          <div className="grid grid-cols-2 gap-3">
+            {promos.slice(0, 4).map((p) => (
+              <ProductCard
                 key={p.id}
-                className="snap-start shrink-0 w-48 bg-card rounded-2xl border border-border shadow-md hover:shadow-lg transition-shadow overflow-hidden flex flex-col"
-              >
-                <button
-                  onClick={() => p.partner && navigate(`/loja/${p.partner.id}`)}
-                  className={`relative aspect-[4/3] overflow-hidden bg-gradient-to-br ${gradientFor(p.id)}`}
-                  aria-label={`Ver ${p.name}`}
-                >
-                  {p.image_url ? (
-                    <img src={p.image_url} alt={p.name} loading="lazy" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-5xl drop-shadow-lg">
-                      {emojiFor(p)}
-                    </div>
-                  )}
-                  <span className="absolute top-2 left-2 bg-secondary text-secondary-foreground text-[10px] font-black px-2 py-1 rounded-full uppercase shadow-md flex items-center gap-1">
-                    <Flame size={10} /> Promo
-                  </span>
-                </button>
-                <div className="p-3 flex flex-col gap-1 flex-1">
-                  <h3 className="text-sm font-black text-foreground line-clamp-1 leading-tight">{p.name}</h3>
-                  <p className="text-[11px] text-muted-foreground truncate">{p.partner?.business_name}</p>
-                  <div className="flex items-end justify-between mt-2 gap-2">
-                    <p className="text-base font-black text-primary leading-none">{priceLabel(p)}</p>
-                    <button
-                      onClick={() => setOrder(p)}
-                      className="w-9 h-9 rounded-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white flex items-center justify-center active:scale-90 transition-transform shadow-md shrink-0"
-                      aria-label={`Adicionar ${p.name}`}
-                    >
-                      <Plus size={18} strokeWidth={3} />
-                    </button>
-                  </div>
-                </div>
-              </article>
+                p={p}
+                badge={{ label: "Promo", tone: "promo" }}
+                onAdd={() => setOrder(p)}
+                onOpen={() => p.partner && navigate(`/loja/${p.partner.id}`)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* LOJAS EM DESTAQUE */}
+      {featured.length > 0 && (
+        <section className="animate-slide-up">
+          <header className="flex items-center justify-between mb-3 px-1">
+            <h2 className="text-base font-black text-foreground flex items-center gap-1.5">
+              <Star size={16} className="fill-secondary text-secondary" /> Lojas em destaque
+            </h2>
+          </header>
+          <div className="space-y-2.5">
+            {featured.map((p) => (
+              <StoreCard key={p.id} p={p} onClick={() => navigate(`/loja/${p.id}`)} />
             ))}
           </div>
         </section>
       )}
 
       {/* LOJAS ABERTAS */}
-      {partners.length > 0 && (
+      {open.length > 0 && (
         <section className="animate-slide-up">
           <header className="flex items-center justify-between mb-3 px-1">
-            <h2 className="text-lg font-black text-foreground flex items-center gap-2">
-              <StoreIcon size={18} className="text-primary" />
-              Lojas abertas
+            <h2 className="text-base font-black text-foreground flex items-center gap-1.5">
+              <StoreIcon size={16} className="text-primary" /> Lojas abertas
             </h2>
             <button
               onClick={() => navigate("/lojas")}
@@ -219,71 +277,9 @@ export function HomeConversion() {
               Ver todas <ChevronRight size={12} />
             </button>
           </header>
-          <div className="space-y-2">
-            {partners.slice(0, 4).map((p, i) => (
-              <CardParceiro
-                key={p.id}
-                index={i}
-                partner={{
-                  id: p.id,
-                  business_name: p.business_name,
-                  description: p.description,
-                  logo_url: p.logo_url,
-                  business_type: p.business_type,
-                  offer: p.promotions,
-                }}
-              />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* PEDIDOS RÁPIDOS */}
-      {quick.length > 0 && (
-        <section className="animate-slide-up">
-          <header className="flex items-center justify-between mb-3 px-1">
-            <h2 className="text-lg font-black text-foreground flex items-center gap-2">
-              <Zap size={18} className="text-accent-foreground" />
-              Pedidos rápidos
-            </h2>
-          </header>
-          <div className="grid grid-cols-2 gap-3">
-            {quick.map((p) => (
-              <article
-                key={p.id}
-                className="bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col"
-              >
-                <button
-                  onClick={() => p.partner && navigate(`/loja/${p.partner.id}`)}
-                  className={`relative aspect-[4/3] overflow-hidden bg-gradient-to-br ${gradientFor(p.id)}`}
-                  aria-label={`Ver ${p.name}`}
-                >
-                  {p.image_url ? (
-                    <img src={p.image_url} alt={p.name} loading="lazy" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl drop-shadow-lg">
-                      {emojiFor(p)}
-                    </div>
-                  )}
-                  <span className="absolute top-1.5 right-1.5 bg-white/95 backdrop-blur text-[10px] font-black px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm">
-                    <Star size={9} className="fill-secondary text-secondary" /> Novo
-                  </span>
-                </button>
-                <div className="p-2.5 flex flex-col gap-0.5 flex-1">
-                  <h3 className="text-sm font-black text-foreground line-clamp-1 leading-tight">{p.name}</h3>
-                  <p className="text-[10px] text-muted-foreground truncate">{p.partner?.business_name}</p>
-                  <div className="flex items-end justify-between mt-1.5 gap-2">
-                    <p className="text-sm font-black text-primary leading-none">{priceLabel(p)}</p>
-                    <button
-                      onClick={() => setOrder(p)}
-                      className="w-8 h-8 rounded-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white flex items-center justify-center active:scale-90 transition-transform shadow-md shrink-0"
-                      aria-label={`Adicionar ${p.name}`}
-                    >
-                      <Plus size={16} strokeWidth={3} />
-                    </button>
-                  </div>
-                </div>
-              </article>
+          <div className="space-y-2.5">
+            {open.map((p) => (
+              <StoreCard key={p.id} p={p} onClick={() => navigate(`/loja/${p.id}`)} />
             ))}
           </div>
         </section>
