@@ -20,6 +20,7 @@ import AdminReviewsPage from "./pages/admin/AdminReviewsPage";
 import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 import AdminLogsPage from "./pages/admin/AdminLogsPage";
 import AdminCouriersPage from "./pages/admin/AdminCouriersPage";
+import AdminPushPage from "./pages/admin/AdminPushPage";
 import PushPermissionBanner from "./components/PushPermissionBanner";
 
 const queryClient = new QueryClient({});
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="reviews" element={<AdminReviewsPage />} />
               <Route path="settings" element={<AdminSettingsPage />} />
               <Route path="logs" element={<AdminLogsPage />} />
+              <Route path="push" element={<AdminPushPage />} />
             </Route>
             <Route path="/*" element={<AppLayout />} />
           </Routes>
