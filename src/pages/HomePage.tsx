@@ -11,12 +11,20 @@ interface HomePageProps {
 }
 
 const CATEGORIES = [
-  { label: "Hambúrguer", emoji: "🍔", q: "Hambúrguer", from: "from-[hsl(24,95%,60%)]", to: "to-[hsl(24,95%,48%)]" },
-  { label: "Pizza", emoji: "🍕", q: "Pizza", from: "from-[hsl(45,95%,60%)]", to: "to-[hsl(24,95%,53%)]" },
-  { label: "Bebidas", emoji: "🥤", q: "Bebidas", from: "from-[hsl(200,80%,55%)]", to: "to-[hsl(180,70%,45%)]" },
-  { label: "Doces", emoji: "🍰", q: "Doces", from: "from-[hsl(330,75%,65%)]", to: "to-[hsl(300,60%,55%)]" },
-  { label: "Marmitex", emoji: "🍱", q: "Marmitex", from: "from-[hsl(142,60%,50%)]", to: "to-[hsl(142,71%,38%)]" },
-  { label: "Salgados", emoji: "🥟", q: "Salgados", from: "from-[hsl(35,85%,58%)]", to: "to-[hsl(20,85%,50%)]" },
+  { label: "Hambúrguer", emoji: "🍔", q: "Hambúrguer" },
+  { label: "Pizza", emoji: "🍕", q: "Pizza" },
+  { label: "Salgados", emoji: "🥟", q: "Salgados" },
+  { label: "Bebidas", emoji: "🥤", q: "Bebidas" },
+  { label: "Açaí", emoji: "🍧", q: "Açaí" },
+  { label: "Doces", emoji: "🍰", q: "Doces" },
+  { label: "Marmitex", emoji: "🍱", q: "Marmitex" },
+];
+
+const TAGLINES = [
+  "Tá com fome hoje?",
+  "Escolheu, pediu, chegou.",
+  "O que vai ser agora?",
+  "Bora pedir algo bom?",
 ];
 
 function greeting() {
@@ -50,91 +58,82 @@ export default function HomePage({ onChoose: _onChoose }: HomePageProps) {
     return n ? n.split(" ")[0] : "";
   }, [profile, user]);
 
-  return (
-    <div className="relative pb-10 overflow-hidden">
-      {/* HEADER GRADIENT */}
-      <div className="relative bg-gradient-to-br from-[hsl(142,71%,42%)] via-[hsl(142,65%,38%)] to-[hsl(160,70%,32%)] pt-5 pb-20 px-5 rounded-b-[2rem] shadow-lg">
-        <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-        <div className="absolute bottom-0 -left-10 w-40 h-40 rounded-full bg-[hsl(24,95%,60%)]/20 blur-2xl pointer-events-none" />
+  const tagline = useMemo(() => TAGLINES[new Date().getDate() % TAGLINES.length], []);
 
-        <div className="relative flex items-start justify-between gap-3">
+  return (
+    <div className="relative pb-10 bg-background min-h-screen">
+      {/* HEADER compacto */}
+      <div className="relative bg-[hsl(142,71%,45%)] pt-4 pb-14 px-5 rounded-b-3xl">
+        <div className="flex items-center justify-between gap-3">
           <button
             onClick={() => navigate(user ? "/perfil" : "/auth")}
-            className="flex-1 text-left active:scale-[0.98] transition-transform"
-            aria-label="Trocar endereço"
+            className="flex-1 text-left active:scale-[0.98] transition-transform min-w-0"
+            aria-label="Endereço de entrega"
           >
-            <p className="text-white/90 text-xs font-bold tracking-wide uppercase">
-              {greeting()}{firstName ? `, ${firstName}` : " 👋"}
+            <p className="text-white/90 text-[11px] font-bold">
+              {greeting()}{firstName ? `, ${firstName}` : ""} 👋
             </p>
-            <div className="flex items-center gap-1.5 mt-1.5 text-white">
-              <MapPin size={16} strokeWidth={2.5} />
-              <span className="text-sm font-extrabold truncate max-w-[220px]">
+            <div className="flex items-center gap-1 mt-0.5 text-white">
+              <MapPin size={14} strokeWidth={2.5} />
+              <span className="text-[13px] font-extrabold truncate">
                 {address || (user ? "Adicionar endereço" : "Entrar para entregar")}
               </span>
-              <ChevronDown size={16} strokeWidth={2.5} className="opacity-90" />
+              <ChevronDown size={14} strokeWidth={2.5} className="opacity-90 shrink-0" />
             </div>
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => navigate("/pedidos")}
               aria-label="Notificações"
-              className="w-10 h-10 rounded-full bg-white/15 backdrop-blur flex items-center justify-center text-white active:scale-90 transition-transform"
+              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white active:scale-90 transition-transform"
             >
-              <Bell size={18} strokeWidth={2.5} />
+              <Bell size={16} strokeWidth={2.5} />
             </button>
             <button
               onClick={() => navigate(user ? "/perfil" : "/auth")}
               aria-label="Perfil"
-              className="w-10 h-10 rounded-full bg-white text-[hsl(142,71%,38%)] flex items-center justify-center font-black text-sm shadow-md active:scale-90 transition-transform"
+              className="w-9 h-9 rounded-full bg-white text-[hsl(142,71%,38%)] flex items-center justify-center font-black text-sm shadow-sm active:scale-90 transition-transform"
             >
-              {firstName ? firstName.charAt(0).toUpperCase() : <UserIcon size={18} strokeWidth={2.5} />}
+              {firstName ? firstName.charAt(0).toUpperCase() : <UserIcon size={16} strokeWidth={2.5} />}
             </button>
           </div>
         </div>
 
-        {/* SLOGAN */}
-        <div className="relative mt-5">
-          <h1 className="text-white text-2xl font-black leading-tight">
-            Escolheu, pediu, <span className="text-[hsl(45,100%,70%)]">chegou.</span>
-          </h1>
-          <p className="text-white/85 text-xs font-semibold mt-1">
-            Sua fome resolvida em poucos toques.
-          </p>
-        </div>
+        <h1 className="text-white text-[15px] font-extrabold mt-3">
+          {tagline}
+        </h1>
       </div>
 
       {/* SEARCH (overlapping header) */}
-      <div className="px-5 -mt-12 relative z-20">
+      <div className="px-5 -mt-8 relative z-20">
         <button
           onClick={() => navigate("/buscar")}
-          className="w-full bg-card border border-border rounded-2xl px-4 py-4 flex items-center gap-3 shadow-xl active:scale-[0.99] transition-transform"
+          className="w-full bg-card border border-border/60 rounded-2xl px-4 py-3.5 flex items-center gap-3 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.15)] active:scale-[0.99] transition-transform"
           aria-label="Buscar lojas, comidas ou produtos"
         >
-          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Search size={18} className="text-primary" strokeWidth={2.5} />
-          </div>
-          <span className="text-sm text-muted-foreground font-semibold flex-1 text-left">
-            Buscar lojas, comidas ou produtos
+          <Search size={18} className="text-primary" strokeWidth={2.5} />
+          <span className="text-[13px] text-muted-foreground font-semibold flex-1 text-left">
+            Buscar pratos, lojas ou bebidas…
           </span>
         </button>
       </div>
 
-      {/* CATEGORIES */}
-      <section className="mt-6 px-5 animate-slide-up">
-        <h2 className="text-base font-black text-foreground mb-3 px-1">Categorias</h2>
-        <div className="grid grid-cols-3 gap-3">
+      {/* CATEGORIES — scroll horizontal */}
+      <section className="mt-5 animate-slide-up">
+        <h2 className="text-[13px] font-black text-foreground mb-2.5 px-5 uppercase tracking-wide opacity-70">
+          Categorias
+        </h2>
+        <div className="flex gap-2.5 overflow-x-auto px-5 pb-2 scrollbar-hide snap-x snap-mandatory">
           {CATEGORIES.map((c) => (
             <button
               key={c.label}
               onClick={() => navigate(`/buscar?q=${encodeURIComponent(c.q)}`)}
-              className="group flex flex-col items-center gap-2 p-3 rounded-2xl bg-card border border-border shadow-sm active:scale-95 transition-all hover:shadow-md hover:-translate-y-0.5"
+              className="snap-start shrink-0 flex flex-col items-center gap-1.5 px-3 py-3 min-w-[78px] rounded-2xl bg-card border border-border/60 shadow-sm active:scale-95 transition-all hover:border-primary/40"
             >
-              <div
-                className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${c.from} ${c.to} flex items-center justify-center text-2xl shadow-md group-active:scale-90 transition-transform`}
-              >
-                <span className="drop-shadow-sm">{c.emoji}</span>
+              <div className="w-12 h-12 rounded-2xl bg-[hsl(142,50%,96%)] flex items-center justify-center text-2xl">
+                <span>{c.emoji}</span>
               </div>
-              <span className="text-[11px] font-extrabold text-foreground text-center leading-tight">
+              <span className="text-[11px] font-extrabold text-foreground">
                 {c.label}
               </span>
             </button>
@@ -142,8 +141,8 @@ export default function HomePage({ onChoose: _onChoose }: HomePageProps) {
         </div>
       </section>
 
-      {/* CONTENT (Promoções, Lojas, Pedidos rápidos) */}
-      <div className="px-5 mt-2 flex flex-col items-center">
+      {/* CONTENT */}
+      <div className="px-5 mt-3 flex flex-col items-center">
         <HomeConversion />
       </div>
 
