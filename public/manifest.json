@@ -1,7 +1,7 @@
 {
-  "name": "Bocadex - Escolheu, pediu, chegou!",
-  "short_name": "Bocadex",
-  "description": "Bocadex: escolheu, pediu, chegou! 🍔🔥",
+  "name": "Bocadex Delivery's - Escolheu, pediu, chegou!",
+  "short_name": "Bocadex Delivery's",
+  "description": "Bocadex Delivery's: escolheu, pediu, chegou! 🍔🔥",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#faf8f5",

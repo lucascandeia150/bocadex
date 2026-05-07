@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
 
 const benefits = [
-  "Sua loja na home do Bocadex",
+  "Sua loja na home do Bocadex Delivery's",
   "Pedidos via WhatsApp ou pelo app",
   "Divulgação nas redes sociais",
   "Painel para gerenciar produtos",
@@ -81,7 +81,7 @@ export default function SejaParceiroPage() {
     <div className="px-4 pt-6 pb-12 max-w-md mx-auto space-y-6">
       <div className="text-center space-y-2 animate-bounce-in">
         <span className="text-5xl block">🚀</span>
-        <h1 className="text-2xl font-black text-foreground">Seja parceiro do Bocadex</h1>
+        <h1 className="text-2xl font-black text-foreground">Seja parceiro do Bocadex Delivery's</h1>
         <p className="text-sm text-muted-foreground leading-relaxed">
           Cadastre sua loja em 2 minutos e comece a receber pedidos hoje mesmo.
         </p>

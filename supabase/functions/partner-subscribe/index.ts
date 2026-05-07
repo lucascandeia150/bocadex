@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 const PLAN_AMOUNT = 9.9;
-const PLAN_NAME = "Bocadex Parceiros — Mensal";
+const PLAN_NAME = "Bocadex Delivery's Parceiros — Mensal";
 
 interface Body {
   partner_id: string;
@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
         ? { success: body.back_url, failure: body.back_url, pending: body.back_url }
         : undefined,
       auto_return: body.back_url ? "approved" : undefined,
-      statement_descriptor: "Bocadex",
+      statement_descriptor: "Bocadex Delivery's",
     };
 
     const mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {

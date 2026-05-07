@@ -42,7 +42,7 @@ export function PartnerBanner() {
     trackAnalyticsEvent("partner_click", { partner_name: p.business_name, source: "partner_banner" });
     trackAnalyticsEvent("whatsapp_click", { source: "partner_banner" });
     const phone = (p.whatsapp || "").replace(/\D/g, "");
-    const msg = `Olá! Vi a ${p.business_name} no Bocadex 😄`;
+    const msg = `Olá! Vi a ${p.business_name} no Bocadex Delivery's 😄`;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
   };
 

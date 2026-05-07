@@ -122,7 +122,7 @@ export default function AdminLayout() {
               B
             </div>
             <div>
-              <p className="text-sm font-black text-foreground leading-none">Bocadex</p>
+              <p className="text-sm font-black text-foreground leading-none">Bocadex Delivery's</p>
               <p className="text-[10px] text-muted-foreground font-bold tracking-widest">ADMIN PANEL</p>
             </div>
           </div>

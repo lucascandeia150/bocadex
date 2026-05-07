@@ -87,10 +87,10 @@ export default function AdminCourierApplicationsTab() {
     const phone = c.phone.replace(/\D/g, "");
     const pin = pinByApp[c.id];
     const msg = c.status === "aprovado" && pin
-      ? `🚀 Olá ${c.full_name}! Seu cadastro de entregador foi APROVADO no Bocadex!\n\n🔐 Seu PIN: ${pin}\n\nAcesse: https://escolheai.today/portal/entregador\n\n👉 Faça login com seu email (${c.email || "—"}) e senha cadastrados ou use o PIN acima.\n\nBoas entregas! 🛵`
+      ? `🚀 Olá ${c.full_name}! Seu cadastro de entregador foi APROVADO no Bocadex Delivery's!\n\n🔐 Seu PIN: ${pin}\n\nAcesse: https://escolheai.today/portal/entregador\n\n👉 Faça login com seu email (${c.email || "—"}) e senha cadastrados ou use o PIN acima.\n\nBoas entregas! 🛵`
       : c.status === "recusado"
-      ? `Olá ${c.full_name}, infelizmente não pudemos aprovar seu cadastro no Bocadex no momento. Qualquer dúvida estamos à disposição.`
-      : `Olá ${c.full_name}! Recebemos seu cadastro de entregador no Bocadex e estamos analisando. Em breve retornaremos.`;
+      ? `Olá ${c.full_name}, infelizmente não pudemos aprovar seu cadastro no Bocadex Delivery's no momento. Qualquer dúvida estamos à disposição.`
+      : `Olá ${c.full_name}! Recebemos seu cadastro de entregador no Bocadex Delivery's e estamos analisando. Em breve retornaremos.`;
     return `https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`;
   };
 

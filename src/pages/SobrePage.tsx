@@ -7,16 +7,16 @@ export default function SobrePage() {
 
   return (
     <div className="px-4 pt-6 pb-24 space-y-6 animate-in fade-in duration-500">
-      <h1 className="text-2xl font-extrabold text-foreground">Por que o Bocadex existe? 🍔</h1>
+      <h1 className="text-2xl font-extrabold text-foreground">Por que o Bocadex Delivery's existe? 🍔</h1>
 
       <div className="bg-card rounded-2xl p-5 shadow-sm space-y-4 text-[15px] leading-relaxed text-foreground/90">
         <p>
-          O Bocadex foi criado para resolver <strong className="text-foreground">a indecisão na hora de escolher o que comer ou beber</strong>, trazendo sugestões rápidas, práticas e acessíveis direto no seu celular.
+          O Bocadex Delivery's foi criado para resolver <strong className="text-foreground">a indecisão na hora de escolher o que comer ou beber</strong>, trazendo sugestões rápidas, práticas e acessíveis direto no seu celular.
         </p>
       </div>
 
       <div className="bg-card rounded-2xl p-5 shadow-sm space-y-3">
-        <p className="font-bold text-foreground text-base">Com o Bocadex, você pode:</p>
+        <p className="font-bold text-foreground text-base">Com o Bocadex Delivery's, você pode:</p>
         <ul className="space-y-3 text-[15px] text-foreground/85">
           <li className="flex items-start gap-3">
             <Utensils size={18} className="text-primary mt-0.5 shrink-0" />

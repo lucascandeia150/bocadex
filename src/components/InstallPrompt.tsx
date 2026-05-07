@@ -7,7 +7,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const messages = [
-  { title: "Instale o Bocadex e decida mais rápido 🚀", sub: "Acesse com 1 toque na tela inicial" },
+  { title: "Instale o Bocadex Delivery's e decida mais rápido 🚀", sub: "Acesse com 1 toque na tela inicial" },
   { title: "Use como app e economize tempo ⚡", sub: "Sem precisar abrir o navegador" },
   { title: "Acesse com 1 toque 📱", sub: "Instale grátis e use offline" },
 ];
