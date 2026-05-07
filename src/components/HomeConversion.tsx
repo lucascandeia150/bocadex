@@ -191,9 +191,9 @@ export function HomeConversion() {
         <div className="bg-gradient-to-r from-[hsl(142,71%,42%)] to-[hsl(160,70%,38%)] p-4 text-white relative overflow-hidden">
           <div className="absolute -right-6 -top-6 text-7xl opacity-15">🛵</div>
           <div className="relative">
-            <p className="text-[11px] font-bold uppercase opacity-90 tracking-wide">Bocadex Parceiros</p>
+            <p className="text-[11px] font-bold uppercase opacity-90 tracking-wide">Bocadex Delivery's Parceiros</p>
             <p className="text-base font-black leading-tight mt-1">
-              Sua loja no Bocadex por R$ 9,90/mês
+              Sua loja no Bocadex Delivery's por R$ 9,90/mês
             </p>
             <span className="inline-flex items-center gap-1 mt-2.5 bg-white text-primary text-xs font-black px-3 py-1.5 rounded-full">
               Quero ser parceiro <ChevronRight size={12} />

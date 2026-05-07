@@ -7,7 +7,7 @@ export default function TrabalhePage() {
   const items = [
     {
       title: "Quero ser parceiro",
-      desc: "Cadastre sua loja no Bocadex",
+      desc: "Cadastre sua loja no Bocadex Delivery's",
       emoji: "🚀",
       icon: Rocket,
       to: "/seja-parceiro",
@@ -30,7 +30,7 @@ export default function TrabalhePage() {
       <div className="text-center space-y-1">
         <h1 className="text-2xl font-black text-foreground">🤝 Trabalhe com a gente</h1>
         <p className="text-xs text-muted-foreground">
-          Faça parte da rede Bocadex
+          Faça parte da rede Bocadex Delivery's
         </p>
       </div>
 

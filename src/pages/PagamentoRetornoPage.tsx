@@ -146,7 +146,7 @@ export default function PagamentoRetornoPage() {
   const heroMsg = () => {
     if (status === "approved")
       return isPartner
-        ? "Sua loja já está visível no Bocadex. Bons pedidos!"
+        ? "Sua loja já está visível no Bocadex Delivery's. Bons pedidos!"
         : "Seu pedido foi enviado para a loja e já está sendo preparado.";
     if (status === "pending")
       return "Aguardando confirmação do Mercado Pago. PIX leva alguns segundos.";
@@ -200,7 +200,7 @@ export default function PagamentoRetornoPage() {
         {status === "approved" && isPartner && (
           <div className="rounded-2xl bg-card border border-border shadow-lg p-5 text-center animate-slide-up space-y-2">
             <Sparkles className="text-primary mx-auto" size={28} />
-            <p className="text-sm font-black text-foreground">Bem-vindo ao Bocadex! 🚀</p>
+            <p className="text-sm font-black text-foreground">Bem-vindo ao Bocadex Delivery's! 🚀</p>
             <p className="text-xs text-muted-foreground">
               Sua loja foi publicada automaticamente. Acesse o portal do parceiro para gerenciar produtos e pedidos.
             </p>

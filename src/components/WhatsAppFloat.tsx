@@ -50,7 +50,7 @@ export function WhatsAppFloat() {
 
   const openWhatsApp = () => {
     trackAnalyticsEvent("whatsapp_click", { source: "fab_menu" });
-    const message = encodeURIComponent("Olá! Entrei em contato pelo app Bocadex 😄");
+    const message = encodeURIComponent("Olá! Entrei em contato pelo app Bocadex Delivery's 😄");
     window.open(`https://wa.me/5533998669482?text=${message}`, "_blank");
   };
 

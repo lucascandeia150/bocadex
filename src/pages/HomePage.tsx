@@ -147,7 +147,7 @@ export default function HomePage({ onChoose: _onChoose }: HomePageProps) {
       </div>
 
       <p className="text-[10px] text-muted-foreground text-center mt-6">
-        © 2026 Bocadex — Feito com ❤️ no Brasil
+        © 2026 Bocadex Delivery's — Feito com ❤️ no Brasil
       </p>
     </div>
   );

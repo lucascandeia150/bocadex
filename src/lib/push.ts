@@ -50,7 +50,7 @@ export async function registerPush(): Promise<{ ok: boolean; reason?: string; to
 
   // Foreground messages → show toast-like native notification
   onMessage(messaging, (payload) => {
-    const title = payload.notification?.title || payload.data?.title || "Bocadex";
+    const title = payload.notification?.title || payload.data?.title || "Bocadex Delivery's";
     const body = payload.notification?.body || payload.data?.body || "";
     try { new Notification(title, { body, icon: "/icon-192.png" }); } catch { /* noop */ }
   });

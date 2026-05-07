@@ -1,4 +1,4 @@
-/* Bocadex push service worker - FCM background handler */
+/* Bocadex Delivery's push service worker - FCM background handler */
 importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js');
 
@@ -8,7 +8,7 @@ self.addEventListener('message', (event) => {
       firebase.initializeApp(event.data.config);
       const messaging = firebase.messaging();
       messaging.onBackgroundMessage((payload) => {
-        const title = payload.notification?.title || payload.data?.title || 'Bocadex';
+        const title = payload.notification?.title || payload.data?.title || 'Bocadex Delivery's';
         const body = payload.notification?.body || payload.data?.body || '';
         self.registration.showNotification(title, {
           body,

@@ -190,7 +190,7 @@ Deno.serve(async (req) => {
           body: JSON.stringify({
             internal_secret: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
             title: "Loja ativada! 🎉",
-            body: "Sua assinatura foi confirmada. Seu negócio já está visível no Bocadex.",
+            body: "Sua assinatura foi confirmada. Seu negócio já está visível no Bocadex Delivery's.",
             target: "all",
             data: { click_url: "/portal-loja" },
           }),

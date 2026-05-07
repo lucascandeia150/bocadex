@@ -87,7 +87,7 @@ export default function AuthPage() {
         <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-3xl mb-2 shadow-lg">
           🍔
         </div>
-        <h1 className="text-2xl font-black text-foreground">Bocadex</h1>
+        <h1 className="text-2xl font-black text-foreground">Bocadex Delivery's</h1>
         <p className="text-xs text-muted-foreground mt-0.5">
           {tab === "signin" ? "Entre pra pedir e acompanhar tudo" : "Crie sua conta em 30 segundos"}
         </p>
@@ -127,7 +127,7 @@ export default function AuthPage() {
         </button>
 
         <p className="text-[10px] text-center text-muted-foreground pt-1">
-          Ao continuar você aceita os termos do Bocadex.
+          Ao continuar você aceita os termos do Bocadex Delivery's.
         </p>
       </div>
     </div>
