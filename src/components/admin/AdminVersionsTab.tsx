@@ -6,8 +6,11 @@ import { Plus, Trash2, Check, RefreshCw } from "lucide-react";
 interface Version {
   id: string;
   version: string;
+  title: string;
   changelog: string;
   is_current: boolean;
+  active: boolean;
+  force_update: boolean;
   created_at: string;
 }
 
@@ -15,7 +18,9 @@ export default function AdminVersionsTab() {
   const [versions, setVersions] = useState<Version[]>([]);
   const [loading, setLoading] = useState(false);
   const [newVer, setNewVer] = useState("");
+  const [newTitle, setNewTitle] = useState("");
   const [newLog, setNewLog] = useState("");
+  const [newForce, setNewForce] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -29,17 +34,34 @@ export default function AdminVersionsTab() {
   const create = async () => {
     if (!newVer.trim()) { toast.error("Informe o número da versão"); return; }
     const { error } = await supabase.from("app_versions").insert({
-      version: newVer.trim(), changelog: newLog.trim(), is_current: true,
+      version: newVer.trim(),
+      title: newTitle.trim(),
+      changelog: newLog.trim(),
+      is_current: true,
+      active: true,
+      force_update: newForce,
     });
     if (error) { toast.error(error.message); return; }
     toast.success("Versão criada e marcada como atual");
-    setNewVer(""); setNewLog(""); load();
+    setNewVer(""); setNewTitle(""); setNewLog(""); setNewForce(false); load();
   };
 
   const setCurrent = async (id: string) => {
     const { error } = await supabase.from("app_versions").update({ is_current: true }).eq("id", id);
     if (error) { toast.error(error.message); return; }
     toast.success("Definida como versão atual");
+    load();
+  };
+
+  const toggleActive = async (v: Version) => {
+    const { error } = await supabase.from("app_versions").update({ active: !v.active }).eq("id", v.id);
+    if (error) { toast.error(error.message); return; }
+    load();
+  };
+
+  const toggleForce = async (v: Version) => {
+    const { error } = await supabase.from("app_versions").update({ force_update: !v.force_update }).eq("id", v.id);
+    if (error) { toast.error(error.message); return; }
     load();
   };
 
@@ -61,6 +83,12 @@ export default function AdminVersionsTab() {
           placeholder="Ex: 1.1"
           className="w-full bg-muted rounded-xl px-3 py-2 text-sm"
         />
+        <input
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          placeholder="Título amigável (ex: Novidades de novembro)"
+          className="w-full bg-muted rounded-xl px-3 py-2 text-sm"
+        />
         <textarea
           value={newLog}
           onChange={(e) => setNewLog(e.target.value)}
@@ -68,6 +96,10 @@ export default function AdminVersionsTab() {
           rows={5}
           className="w-full bg-muted rounded-xl px-3 py-2 text-sm"
         />
+        <label className="flex items-center gap-2 text-xs font-bold text-foreground">
+          <input type="checkbox" checked={newForce} onChange={(e) => setNewForce(e.target.checked)} />
+          Atualização obrigatória (bloqueia uso até recarregar)
+        </label>
         <button onClick={create} className="w-full bg-primary text-primary-foreground font-bold py-2.5 rounded-xl active:scale-95">
           <Plus size={14} className="inline mr-1" /> Publicar versão
         </button>
@@ -91,6 +123,12 @@ export default function AdminVersionsTab() {
                     ATUAL
                   </span>
                 )}
+                {!v.active && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-muted text-muted-foreground">INATIVA</span>
+                )}
+                {v.force_update && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-destructive/10 text-destructive">OBRIGATÓRIA</span>
+                )}
               </div>
               <div className="flex gap-1">
                 {!v.is_current && (
@@ -98,11 +136,18 @@ export default function AdminVersionsTab() {
                     <Check size={12} />
                   </button>
                 )}
+                <button onClick={() => toggleActive(v)} className="px-2 py-1 rounded-lg bg-muted text-foreground text-[10px] font-bold" title="Ativar/desativar">
+                  {v.active ? "Desativar" : "Ativar"}
+                </button>
+                <button onClick={() => toggleForce(v)} className="px-2 py-1 rounded-lg bg-muted text-foreground text-[10px] font-bold" title="Atualização obrigatória">
+                  {v.force_update ? "Sem força" : "Forçar"}
+                </button>
                 <button onClick={() => remove(v.id)} className="p-2 rounded-lg bg-destructive/10 text-destructive">
                   <Trash2 size={12} />
                 </button>
               </div>
             </div>
+            {v.title && <p className="text-xs font-bold text-foreground">{v.title}</p>}
             {v.changelog && (
               <pre className="text-xs text-muted-foreground whitespace-pre-wrap font-sans">{v.changelog}</pre>
             )}
