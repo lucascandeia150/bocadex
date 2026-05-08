@@ -294,6 +294,53 @@ Deno.serve(async (req) => {
       }
     } catch (e) { console.warn("push delivery created falhou", e); }
 
+    // push: notifica a LOJA (parceiro) sobre novo pedido pago
+    try {
+      const { data: partnerRow } = await supabase
+        .from("partner_applications")
+        .select("user_id, business_name")
+        .eq("id", payment.partner_id)
+        .maybeSingle();
+      if (partnerRow?.user_id) {
+        await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-push`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            internal_secret: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
+            title: "Novo pedido pago! 💰",
+            body: `${payment.customer_name} fez um pedido de R$ ${Number(payment.amount).toFixed(2)}.`,
+            target: "user",
+            user_id: partnerRow.user_id,
+            data: { click_url: "/portal/loja" },
+          }),
+        });
+      }
+    } catch (e) { console.warn("push partner falhou", e); }
+
+    // push: notifica entregadores ONLINE quando o pedido já é entregue pelo app
+    try {
+      if (partner?.uses_app_courier) {
+        const { data: onlineCouriers } = await supabase.rpc("courier_list_online");
+        const ids = (onlineCouriers ?? [])
+          .map((c: { user_id: string | null }) => c.user_id)
+          .filter((u: string | null): u is string => !!u);
+        for (const uid of ids) {
+          await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-push`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              internal_secret: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
+              title: "Nova entrega disponível! 🛵",
+              body: `${partner?.business_name ?? "Loja"} — R$ ${Number(fee).toFixed(2)} de taxa.`,
+              target: "user",
+              user_id: uid,
+              data: { click_url: "/portal/entregador" },
+            }),
+          });
+        }
+      }
+    } catch (e) { console.warn("push couriers falhou", e); }
+
     try {
       await supabase.rpc("log_audit_event", {
         _actor_type: "webhook",
