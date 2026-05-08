@@ -269,16 +269,10 @@ export default function PortalLojaPage() {
     };
     toast.success(labels[next]);
     // Push to customer when pickup order is ready
-    if (isPickup && next === "em_andamento" && target?.user_id) {
+    if (isPickup && next === "em_andamento") {
       try {
-        await supabase.functions.invoke("send-push", {
-          body: {
-            title: "Seu pedido está pronto para retirada 🎉",
-            body: `${partner?.business_name ?? "A loja"} já preparou seu pedido. Pode buscar!`,
-            target: "user",
-            user_id: target.user_id,
-            data: { click_url: "/pedidos" },
-          },
+        await supabase.functions.invoke("partner-notify-pickup", {
+          body: { pin, delivery_id: deliveryId },
         });
       } catch (e) { console.warn("push pickup ready falhou", e); }
     }
