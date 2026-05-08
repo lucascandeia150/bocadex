@@ -9,6 +9,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ArrowLeft } from "lucide-react";
 import UserNotificationBell from "@/components/UserNotificationBell";
 import PushPermissionBanner from "@/components/PushPermissionBanner";
+import ForceUpdateModal from "@/components/ForceUpdateModal";
 import { useHistory } from "@/hooks/useHistory";
 import type { Food } from "@/data/foods";
 import HomePage from "./HomePage";
@@ -102,6 +103,7 @@ export default function AppLayout() {
       <WhatsAppFloat />
       <InstallPrompt />
       <BottomNav />
+      <ForceUpdateModal />
     </SidebarProvider>
   );
 }
