@@ -2,8 +2,14 @@
   "name": "Bocadex Delivery's - Escolheu, pediu, chegou!",
   "short_name": "Bocadex Delivery's",
   "description": "Bocadex Delivery's: escolheu, pediu, chegou! 🍔🔥",
+  "id": "/",
+  "scope": "/",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["food", "shopping", "lifestyle"],
   "background_color": "#faf8f5",
   "theme_color": "#22c55e",
   "orientation": "portrait",
@@ -12,13 +18,25 @@
       "src": "/logo-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/logo-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
