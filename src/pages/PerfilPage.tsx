@@ -676,21 +676,3 @@ function ConfigTab({ onSignOut }: { onSignOut: () => Promise<void> }) {
     </div>
   );
 }
-
-/* ============================================================ */
-/* Coming soon genérico                                         */
-/* ============================================================ */
-function ComingSoon({ icon: Icon, title, desc }: { icon: typeof Sparkles; title: string; desc: string }) {
-  return (
-    <div className="text-center py-10 px-4 rounded-2xl border-2 border-dashed border-border bg-card animate-slide-up">
-      <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-3">
-        <Icon size={26} className="text-primary" />
-      </div>
-      <p className="text-base font-black text-foreground">{title}</p>
-      <p className="text-xs text-muted-foreground mt-1.5 max-w-[260px] mx-auto">{desc}</p>
-      <span className="inline-block mt-3 text-[10px] font-black px-2.5 py-1 rounded-full bg-secondary/20 text-secondary uppercase">
-        Em breve
-      </span>
-    </div>
-  );
-}
