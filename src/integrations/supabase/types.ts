@@ -1110,6 +1110,36 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_assign_courier: {
+        Args: { _courier_id: string; _delivery_id: string }
+        Returns: {
+          app_fee: number
+          courier_id: string | null
+          courier_payout: number
+          created_at: string
+          delivery_address: string
+          delivery_code: string | null
+          fee: number
+          id: string
+          is_demo: boolean
+          notes: string | null
+          order_description: string
+          order_value: number
+          partner_id: string | null
+          partner_name: string
+          payment_id: string | null
+          prep_status: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deliveries"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_create_partner: {
         Args: {
           _address: string
@@ -1159,6 +1189,17 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      admin_list_active_couriers: {
+        Args: never
+        Returns: {
+          id: string
+          is_online: boolean
+          last_seen_at: string
+          name: string
+          phone: string
+          vehicle: string
+        }[]
       }
       admin_reject_courier: {
         Args: { _application_id: string }
@@ -1559,6 +1600,36 @@ export type Database = {
         }
       }
       current_partner_id: { Args: never; Returns: string }
+      customer_cancel_delivery: {
+        Args: { _delivery_id: string }
+        Returns: {
+          app_fee: number
+          courier_id: string | null
+          courier_payout: number
+          created_at: string
+          delivery_address: string
+          delivery_code: string | null
+          fee: number
+          id: string
+          is_demo: boolean
+          notes: string | null
+          order_description: string
+          order_value: number
+          partner_id: string | null
+          partner_name: string
+          payment_id: string | null
+          prep_status: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deliveries"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       customer_create_delivery: {
         Args: {
           _customer_name: string
