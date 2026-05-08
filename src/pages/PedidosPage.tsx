@@ -348,7 +348,7 @@ export default function PedidosPage() {
                       Total: R${Number(o.order_value).toFixed(2)}
                     </p>
                   )}
-                    {!isFinal && o.delivery_address && (
+                    {!isFinal && o.delivery_address && o.fulfillment_type !== "pickup" && (
                       <div className="mt-3">
                         <OrderTrackingMap
                           storeAddress={o.partner_address ?? o.partner_name}
