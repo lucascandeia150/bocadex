@@ -22,6 +22,7 @@ import AdminLogsPage from "./pages/admin/AdminLogsPage";
 import AdminCouriersPage from "./pages/admin/AdminCouriersPage";
 import AdminPushPage from "./pages/admin/AdminPushPage";
 import AdminCouponsPage from "./pages/admin/AdminCouponsPage";
+import AdminZonesPage from "./pages/admin/AdminZonesPage";
 
 const queryClient = new QueryClient({});
 
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="logs" element={<AdminLogsPage />} />
               <Route path="push" element={<AdminPushPage />} />
               <Route path="coupons" element={<AdminCouponsPage />} />
+              <Route path="zones" element={<AdminZonesPage />} />
             </Route>
             <Route path="/*" element={<AppLayout />} />
           </Routes>

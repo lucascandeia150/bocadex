@@ -35,8 +35,38 @@ export default function CarrinhoPage() {
   const [couponCode, setCouponCode] = useState("");
   const [couponApplied, setCouponApplied] = useState<{ id: string; code: string; discount: number } | null>(null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [deliveryFee, setDeliveryFee] = useState<number>(0);
+  const [feeSource, setFeeSource] = useState<string>("");
+  const [feeZoneName, setFeeZoneName] = useState<string>("");
+  const [loadingFee, setLoadingFee] = useState(false);
 
-  const finalValue = Math.max(totalValue - (couponApplied?.discount ?? 0), 0);
+  const includeDelivery = mode === "entrega" && partnerHasDelivery;
+  const subtotalAfterCoupon = Math.max(totalValue - (couponApplied?.discount ?? 0), 0);
+  const finalValue = subtotalAfterCoupon + (includeDelivery ? deliveryFee : 0);
+
+  // Resolve taxa de entrega em tempo real
+  useEffect(() => {
+    if (!includeDelivery || !partnerId) {
+      setDeliveryFee(0); setFeeSource(""); setFeeZoneName("");
+      return;
+    }
+    let cancel = false;
+    setLoadingFee(true);
+    const t = setTimeout(async () => {
+      const { data, error } = await supabase.rpc("resolve_delivery_fee", {
+        _partner_id: partnerId,
+        _address: address || "",
+      });
+      if (cancel) return;
+      setLoadingFee(false);
+      const row = (data as Array<{ fee: number; source: string; zone_name: string }> | null)?.[0];
+      if (error || !row) return;
+      setDeliveryFee(Number(row.fee || 0));
+      setFeeSource(row.source);
+      setFeeZoneName(row.zone_name || "");
+    }, 300);
+    return () => { cancel = true; clearTimeout(t); };
+  }, [partnerId, address, includeDelivery]);
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -484,10 +514,23 @@ export default function CarrinhoPage() {
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Taxa de entrega</span>
-            <span className="font-bold text-muted-foreground text-xs">
-              {mode === "entrega" && partnerHasDelivery ? "Combinada na entrega" : "—"}
-            </span>
+            {includeDelivery ? (
+              loadingFee ? (
+                <span className="text-xs text-muted-foreground">Calculando...</span>
+              ) : (
+                <span className="font-bold text-foreground">R${deliveryFee.toFixed(2)}</span>
+              )
+            ) : (
+              <span className="font-bold text-muted-foreground text-xs">—</span>
+            )}
           </div>
+          {includeDelivery && feeZoneName && (
+            <p className="text-[10px] text-muted-foreground -mt-1">
+              {feeSource === "partner" && "🏪 Taxa da loja"}
+              {feeSource === "zone" && `📍 Zona: ${feeZoneName}`}
+              {feeSource === "default" && "📦 Taxa padrão"}
+            </p>
+          )}
           {couponApplied && (
             <div className="flex items-center justify-between text-sm">
               <span className="text-primary font-bold flex items-center gap-1"><Ticket size={12} /> {couponApplied.code}</span>
