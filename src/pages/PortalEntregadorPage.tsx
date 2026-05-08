@@ -533,6 +533,26 @@ function DeliveryCard({
         <p className="text-xs font-bold text-foreground leading-snug">{d.delivery_address}</p>
       </div>
       {d.notes && <p className="text-xs text-muted-foreground italic">"{d.notes}"</p>}
+      {accepted && (
+        <div className="grid grid-cols-2 gap-2 pt-1">
+          <a
+            href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(d.delivery_address)}&travelmode=driving`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-blue-600 text-white font-black text-sm py-3 rounded-xl active:scale-95 text-center shadow-lg shadow-blue-600/20 inline-flex items-center justify-center gap-1"
+          >
+            <MapPin size={14} /> Google Maps
+          </a>
+          <a
+            href={`https://waze.com/ul?q=${encodeURIComponent(d.delivery_address)}&navigate=yes`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[hsl(195,100%,45%)] text-white font-black text-sm py-3 rounded-xl active:scale-95 text-center shadow-lg shadow-cyan-500/20 inline-flex items-center justify-center gap-1"
+          >
+            <MapPin size={14} /> Waze
+          </a>
+        </div>
+      )}
       <div className="flex flex-wrap gap-2 pt-1">
         {!accepted && onAccept && (
           <button onClick={onAccept} className="flex-1 bg-primary text-primary-foreground font-black text-sm py-3 rounded-xl active:scale-95 shadow-lg shadow-primary/20">
