@@ -238,8 +238,8 @@ export default function CarrinhoPage() {
       navigate(`/auth?redirect=${encodeURIComponent("/carrinho")}`);
       return;
     }
-    if (mode !== "entrega" || !partnerHasDelivery) {
-      toast.error("Pagamento online disponível apenas para entrega");
+    if (mode === "entrega" && !partnerHasDelivery) {
+      toast.error("Esta loja não trabalha com entrega via app");
       return;
     }
     if (validation) {
@@ -255,10 +255,11 @@ export default function CarrinhoPage() {
           partner_id: partnerId,
           customer_name: name.trim(),
           customer_phone: phone.trim(),
-          delivery_address: address.trim(),
+          delivery_address: mode === "entrega" ? address.trim() : "Retirada na loja",
           order_description: buildOrderDescription(),
           amount: Number(finalValue.toFixed(2)),
           coupon_code: couponApplied?.code ?? null,
+          fulfillment_type: mode === "retirar" ? "pickup" : "delivery",
           back_url: backUrl,
         },
       });
