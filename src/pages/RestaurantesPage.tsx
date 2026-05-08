@@ -283,7 +283,7 @@ export default function RestaurantesPage() {
               Ainda não temos parceria com este restaurante
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              Em breve você poderá ver o cardápio e pedir direto pelo app! 🚀
+              Estamos expandindo nossa rede de parceiros toda semana. 🚀
             </p>
           </div>
           <button
