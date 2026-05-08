@@ -179,6 +179,17 @@ export default function CarrinhoPage() {
 
     toast.success("Pedido enviado! Procurando entregador...");
     const code = (data as { delivery_code?: string } | null)?.delivery_code;
+    const newDeliveryId = (data as { id?: string } | null)?.id;
+    if (newDeliveryId) {
+      // Dispara push para entregadores online (sem bloquear UX)
+      supabase.functions.invoke("notify-couriers", {
+        body: {
+          delivery_id: newDeliveryId,
+          partner_name: partnerName,
+          address: address.trim(),
+        },
+      }).catch((e) => console.warn("[notify-couriers] falhou", e));
+    }
     const extra = code
       ? `✅ Pedido criado no app — entregador a caminho.\n🔐 Código de entrega: ${code}\n(informe ao entregador na entrega)`
       : "✅ Pedido criado no app — entregador a caminho.";

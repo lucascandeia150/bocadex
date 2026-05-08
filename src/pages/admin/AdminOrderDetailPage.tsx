@@ -82,6 +82,33 @@ export default function AdminOrderDetailPage() {
   const [refundOpen, setRefundOpen] = useState(false);
   const [refundAmount, setRefundAmount] = useState<string>("");
   const [refundReason, setRefundReason] = useState<string>("");
+  const [couriers, setCouriers] = useState<Array<{ id: string; name: string; is_online: boolean; vehicle: string }>>([]);
+  const [assigning, setAssigning] = useState(false);
+
+  useEffect(() => {
+    supabase.rpc("admin_list_active_couriers").then(({ data }) => {
+      if (data) setCouriers(data as any);
+    });
+  }, []);
+
+  const assignCourier = async (courierId: string) => {
+    if (!delivery || !courierId) return;
+    setAssigning(true);
+    const { error } = await supabase.rpc("admin_assign_courier", {
+      _delivery_id: delivery.id, _courier_id: courierId,
+    });
+    setAssigning(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Entregador atribuído");
+    await supabase.rpc("log_audit_event", {
+      _actor_type: "admin", _actor_id: null, _actor_label: "Admin",
+      _action: "delivery.courier.assigned", _entity_type: "delivery",
+      _entity_id: delivery.id,
+      _description: `Atribuído ao entregador ${courierId}`,
+      _metadata: { courier_id: courierId },
+    });
+    load();
+  };
 
   const load = async () => {
     if (!id) return;
@@ -262,6 +289,35 @@ export default function AdminOrderDetailPage() {
             </button>
           )}
         </div>
+
+        {/* Atribuição manual de entregador */}
+        {delivery.status !== "concluida" && delivery.status !== "cancelada" && (
+          <div className="mt-4 rounded-xl border border-border bg-muted/30 p-3">
+            <p className="text-[11px] font-black text-muted-foreground uppercase mb-2 flex items-center gap-1">
+              <Truck size={11} /> Entregador {delivery.courier_id ? "(reatribuir)" : "(atribuir manualmente)"}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <select
+                value={delivery.courier_id || ""}
+                onChange={(e) => e.target.value && assignCourier(e.target.value)}
+                disabled={assigning}
+                className="text-xs bg-background border border-border rounded-lg px-3 py-2 font-bold flex-1 min-w-[180px]"
+              >
+                <option value="">— Selecione um entregador —</option>
+                {couriers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.is_online ? "🟢 " : "⚪ "} {c.name} · {c.vehicle}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {couriers.filter((c) => c.is_online).length === 0 && (
+              <p className="text-[10px] text-muted-foreground mt-2">
+                Nenhum entregador online no momento. Você ainda pode atribuir manualmente.
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Cliente + Entrega */}
