@@ -82,6 +82,33 @@ export default function AdminOrderDetailPage() {
   const [refundOpen, setRefundOpen] = useState(false);
   const [refundAmount, setRefundAmount] = useState<string>("");
   const [refundReason, setRefundReason] = useState<string>("");
+  const [couriers, setCouriers] = useState<Array<{ id: string; name: string; is_online: boolean; vehicle: string }>>([]);
+  const [assigning, setAssigning] = useState(false);
+
+  useEffect(() => {
+    supabase.rpc("admin_list_active_couriers").then(({ data }) => {
+      if (data) setCouriers(data as any);
+    });
+  }, []);
+
+  const assignCourier = async (courierId: string) => {
+    if (!delivery || !courierId) return;
+    setAssigning(true);
+    const { error } = await supabase.rpc("admin_assign_courier", {
+      _delivery_id: delivery.id, _courier_id: courierId,
+    });
+    setAssigning(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Entregador atribuído");
+    await supabase.rpc("log_audit_event", {
+      _actor_type: "admin", _actor_id: null, _actor_label: "Admin",
+      _action: "delivery.courier.assigned", _entity_type: "delivery",
+      _entity_id: delivery.id,
+      _description: `Atribuído ao entregador ${courierId}`,
+      _metadata: { courier_id: courierId },
+    });
+    load();
+  };
 
   const load = async () => {
     if (!id) return;
