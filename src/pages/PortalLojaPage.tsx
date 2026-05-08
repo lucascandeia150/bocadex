@@ -690,6 +690,25 @@ export default function PortalLojaPage() {
 
       {tab === "list" && (
         <div className="space-y-2">
+          <div className="flex gap-1.5 mb-1">
+            {([
+              { id: "all", label: "Todos" },
+              { id: "delivery", label: "🛵 Entrega" },
+              { id: "pickup", label: "🛍 Retirada" },
+            ] as const).map((f) => (
+              <button
+                key={f.id}
+                onClick={() => setOrderFilter(f.id)}
+                className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition-all active:scale-95 ${
+                  orderFilter === f.id
+                    ? "bg-foreground text-background"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
           {deliveries.length === 0 && (
             <div className="text-center py-12 space-y-2">
               <div className="text-5xl">📭</div>
@@ -697,9 +716,16 @@ export default function PortalLojaPage() {
               <p className="text-xs text-muted-foreground">Os pedidos aparecerão aqui em tempo real.</p>
             </div>
           )}
-          {deliveries.map((d) => {
+          {deliveries
+            .filter((d) => {
+              if (orderFilter === "all") return true;
+              const ft = d.fulfillment_type === "pickup" ? "pickup" : "delivery";
+              return ft === orderFilter;
+            })
+            .map((d) => {
             const s = STATUS_LABEL[d.status] || STATUS_LABEL.disponivel;
             const isPaidNew = d.status === "disponivel";
+            const isPickup = d.fulfillment_type === "pickup";
             return (
               <div
                 key={d.id}
@@ -711,16 +737,27 @@ export default function PortalLojaPage() {
               >
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-bold text-foreground flex-1">{d.order_description}</p>
-                  <span className={`text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap ${s.color}`}>{s.label}</span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap ${s.color}`}>{s.label}</span>
+                    {isPickup && (
+                      <span className="text-[10px] font-black bg-orange-500/15 text-orange-700 border border-orange-500/30 px-2 py-0.5 rounded-lg whitespace-nowrap">
+                        🛍 Retirada
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground flex items-start gap-1">
-                  <MapPin size={10} className="mt-0.5 shrink-0" /> {d.delivery_address}
-                </p>
+                {!isPickup && (
+                  <p className="text-xs text-muted-foreground flex items-start gap-1">
+                    <MapPin size={10} className="mt-0.5 shrink-0" /> {d.delivery_address}
+                  </p>
+                )}
                 {d.notes && <p className="text-xs text-muted-foreground italic">"{d.notes}"</p>}
-                <p className="text-xs text-foreground">Taxa: <b>R$ {Number(d.fee).toFixed(2)}</b></p>
+                <p className="text-xs text-foreground">
+                  {isPickup ? "Sem taxa de entrega" : <>Taxa: <b>R$ {Number(d.fee).toFixed(2)}</b></>}
+                </p>
                 <p className="text-[10px] text-muted-foreground">{new Date(d.created_at).toLocaleString("pt-BR")}</p>
 
-                {d.prep_status && d.prep_status !== "ready" && d.status === "disponivel" && (
+                {!isPickup && d.prep_status && d.prep_status !== "ready" && d.status === "disponivel" && (
                   <div className="mt-2 rounded-xl bg-yellow-500/10 border border-yellow-500/40 p-2 flex items-center justify-between gap-2">
                     <span className="text-[11px] font-bold text-yellow-700">
                       {d.prep_status === "pending" ? "⏳ Aguardando preparo" : "👨‍🍳 Em preparo"}
@@ -750,7 +787,7 @@ export default function PortalLojaPage() {
                         onClick={() => advanceStatus(d.id, "em_andamento")}
                         className="col-span-2 bg-orange-500/15 border border-orange-500/40 text-orange-700 font-bold text-xs py-2 rounded-xl active:scale-95 flex items-center justify-center gap-1"
                       >
-                        <Bike size={12} /> Saiu para entrega
+                        {isPickup ? <><Package size={12} /> Pronto para retirada</> : <><Bike size={12} /> Saiu para entrega</>}
                       </button>
                     )}
                     {d.status === "em_andamento" && (
@@ -758,7 +795,7 @@ export default function PortalLojaPage() {
                         onClick={() => advanceStatus(d.id, "concluida")}
                         className="col-span-2 bg-green-500/15 border border-green-500/40 text-green-700 font-bold text-xs py-2 rounded-xl active:scale-95 flex items-center justify-center gap-1"
                       >
-                        <CheckCircle2 size={12} /> Marcar como entregue
+                        <CheckCircle2 size={12} /> {isPickup ? "Marcar como retirado" : "Marcar como entregue"}
                       </button>
                     )}
                   </div>
