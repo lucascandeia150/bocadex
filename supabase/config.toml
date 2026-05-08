@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.firebase-config]
 verify_jwt = false
+
+[functions.mp-sync-pending]
+verify_jwt = false
