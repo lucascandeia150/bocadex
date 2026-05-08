@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ArrowLeft } from "lucide-react";
 import UserNotificationBell from "@/components/UserNotificationBell";
+import PushPermissionBanner from "@/components/PushPermissionBanner";
 import { useHistory } from "@/hooks/useHistory";
 import type { Food } from "@/data/foods";
 import HomePage from "./HomePage";
@@ -54,6 +55,7 @@ export default function AppLayout() {
         <AppSidebar />
         <div className="flex-1 flex flex-col max-w-lg mx-auto w-full">
           <AppHeader />
+          <PushPermissionBanner />
 
           <main className="flex-1 pb-24">
             <Routes>
