@@ -23,6 +23,7 @@ interface OrderRow {
   partner_address?: string | null;
   prep_status?: string | null;
   courier_id?: string | null;
+  fulfillment_type?: string | null;
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; color: string }> = {
