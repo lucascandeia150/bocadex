@@ -8,16 +8,15 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { registerPush, isPushSupported } from "@/lib/push";
 
-type TabKey = "dados" | "pedidos" | "enderecos" | "favoritos" | "cupons" | "pagamentos" | "config";
+type TabKey = "dados" | "pedidos" | "enderecos" | "favoritos" | "config";
 
 const TABS: { key: TabKey; label: string; icon: typeof User; emoji: string }[] = [
   { key: "dados", label: "Dados", icon: User, emoji: "👤" },
   { key: "pedidos", label: "Pedidos", icon: Package, emoji: "📦" },
   { key: "enderecos", label: "Endereços", icon: MapPin, emoji: "📍" },
   { key: "favoritos", label: "Favoritos", icon: Heart, emoji: "⭐" },
-  { key: "cupons", label: "Cupons", icon: Ticket, emoji: "🎟️" },
-  { key: "pagamentos", label: "Pagamento", icon: CreditCard, emoji: "💳" },
   { key: "config", label: "Config", icon: Settings, emoji: "⚙️" },
 ];
 
@@ -111,8 +110,6 @@ export default function PerfilPage() {
         {tab === "pedidos" && <PedidosTab />}
         {tab === "enderecos" && <EnderecosTab />}
         {tab === "favoritos" && <FavoritosTab />}
-        {tab === "cupons" && <ComingSoon icon={Ticket} title="Cupons em breve" desc="Em breve você poderá inserir códigos de desconto e ver promoções aqui." />}
-        {tab === "pagamentos" && <ComingSoon icon={CreditCard} title="Métodos de pagamento" desc="Em breve você poderá salvar PIX e cartões para pagar mais rápido. Por enquanto, o pagamento é feito direto no checkout." />}
         {tab === "config" && <ConfigTab onSignOut={signOut} />}
       </div>
     </div>
@@ -616,9 +613,20 @@ function ConfigTab({ onSignOut }: { onSignOut: () => Promise<void> }) {
     navigate("/");
   };
 
+  const handleEnableNotifications = async () => {
+    if (!(await isPushSupported())) {
+      toast.error("Notificações não suportadas neste dispositivo");
+      return;
+    }
+    const r = await registerPush();
+    if (r.ok) toast.success("Notificações ativadas!");
+    else if (r.reason === "denied") toast.error("Permissão negada nas configurações do navegador");
+    else toast.error("Não foi possível ativar agora");
+  };
+
   const items = [
-    { icon: Bell, label: "Notificações", desc: "Status dos pedidos em tempo real", soon: true },
-    { icon: Shield, label: "Privacidade", desc: "Termos e política", soon: true },
+    { icon: Bell, label: "Notificações", desc: "Receber status dos pedidos em tempo real", onClick: handleEnableNotifications, badge: "Ativar" },
+    { icon: Shield, label: "Privacidade", desc: "Termos, política e LGPD", onClick: () => navigate("/privacidade"), badge: "Protegido" },
     { icon: MessageCircle, label: "Suporte", desc: "Fale com a gente", onClick: () => navigate("/contato") },
     { icon: Info, label: "Sobre o app", desc: "Bocadex Delivery's", onClick: () => navigate("/sobre") },
   ];
@@ -640,9 +648,9 @@ function ConfigTab({ onSignOut }: { onSignOut: () => Promise<void> }) {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-foreground flex items-center gap-1.5">
                 {it.label}
-                {it.soon && (
-                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-secondary/20 text-secondary uppercase">
-                    Em breve
+                {it.badge && (
+                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-primary/15 text-primary uppercase">
+                    {it.badge}
                   </span>
                 )}
               </p>
@@ -665,24 +673,6 @@ function ConfigTab({ onSignOut }: { onSignOut: () => Promise<void> }) {
           <p className="text-[11px] text-muted-foreground">Encerrar sessão neste aparelho</p>
         </div>
       </button>
-    </div>
-  );
-}
-
-/* ============================================================ */
-/* Coming soon genérico                                         */
-/* ============================================================ */
-function ComingSoon({ icon: Icon, title, desc }: { icon: typeof Sparkles; title: string; desc: string }) {
-  return (
-    <div className="text-center py-10 px-4 rounded-2xl border-2 border-dashed border-border bg-card animate-slide-up">
-      <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-3">
-        <Icon size={26} className="text-primary" />
-      </div>
-      <p className="text-base font-black text-foreground">{title}</p>
-      <p className="text-xs text-muted-foreground mt-1.5 max-w-[260px] mx-auto">{desc}</p>
-      <span className="inline-block mt-3 text-[10px] font-black px-2.5 py-1 rounded-full bg-secondary/20 text-secondary uppercase">
-        Em breve
-      </span>
     </div>
   );
 }

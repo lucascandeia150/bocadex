@@ -196,7 +196,7 @@ export default function ParceiroDetalhePage() {
           {products.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-center">
               <Package size={28} className="mx-auto text-muted-foreground mb-2" />
-              <p className="text-sm text-foreground font-semibold">Catálogo em breve</p>
+              <p className="text-sm text-foreground font-semibold">Catálogo sob consulta</p>
               <p className="text-xs text-muted-foreground mt-1">
                 Fale direto com a loja pelo WhatsApp para saber o cardápio.
               </p>
