@@ -477,6 +477,42 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_zones: {
+        Row: {
+          courier_payout: number
+          created_at: string
+          display_order: number
+          fee: number
+          id: string
+          is_active: boolean
+          keywords: string[]
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          courier_payout?: number
+          created_at?: string
+          display_order?: number
+          fee?: number
+          id?: string
+          is_active?: boolean
+          keywords?: string[]
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          courier_payout?: number
+          created_at?: string
+          display_order?: number
+          fee?: number
+          id?: string
+          is_active?: boolean
+          keywords?: string[]
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       device_tokens: {
         Row: {
           created_at: string
@@ -585,6 +621,8 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
@@ -614,6 +652,8 @@ export type Database = {
           commission_percent?: number | null
           created_at?: string
           created_by?: string | null
+          custom_courier_payout?: number | null
+          custom_delivery_fee?: number | null
           description: string
           id?: string
           images?: string[] | null
@@ -643,6 +683,8 @@ export type Database = {
           commission_percent?: number | null
           created_at?: string
           created_by?: string | null
+          custom_courier_payout?: number | null
+          custom_delivery_fee?: number | null
           description?: string
           id?: string
           images?: string[] | null
@@ -1058,6 +1100,8 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
@@ -1162,6 +1206,8 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
@@ -1190,6 +1236,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_delete_zone: { Args: { _id: string }; Returns: undefined }
       admin_list_active_couriers: {
         Args: never
         Returns: {
@@ -1261,6 +1308,8 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
@@ -1299,6 +1348,48 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_demo: boolean
+          is_featured: boolean
+          is_open: boolean
+          last_payment_at: string | null
+          logo_url: string | null
+          owner_name: string | null
+          payment_status: string
+          plan: string
+          promotions: string | null
+          status: string
+          store_status: string
+          subscription_active_until: string | null
+          user_id: string | null
+          uses_app_courier: boolean
+          visibility: string
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_set_partner_delivery_fee: {
+        Args: { _courier_payout: number; _fee: number; _partner_id: string }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          commission_percent: number | null
+          created_at: string
+          created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
@@ -1337,6 +1428,8 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
@@ -1399,6 +1492,8 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
@@ -1423,6 +1518,34 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_upsert_zone: {
+        Args: {
+          _courier_payout: number
+          _display_order: number
+          _fee: number
+          _id: string
+          _is_active: boolean
+          _keywords: string[]
+          _name: string
+        }
+        Returns: {
+          courier_payout: number
+          created_at: string
+          display_order: number
+          fee: number
+          id: string
+          is_active: boolean
+          keywords: string[]
+          name: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "delivery_zones"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1899,6 +2022,8 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
@@ -2018,6 +2143,46 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      partner_set_delivery_fee: {
+        Args: { _courier_payout: number; _fee: number; _pin: string }
+        Returns: {
+          access_pin: string | null
+          address: string
+          business_name: string
+          business_type: string
+          commission_percent: number | null
+          created_at: string
+          created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
+          description: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          is_demo: boolean
+          is_featured: boolean
+          is_open: boolean
+          last_payment_at: string | null
+          logo_url: string | null
+          owner_name: string | null
+          payment_status: string
+          plan: string
+          promotions: string | null
+          status: string
+          store_status: string
+          subscription_active_until: string | null
+          user_id: string | null
+          uses_app_courier: boolean
+          visibility: string
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       partner_set_pause: {
         Args: { _paused: boolean; _pin: string }
         Returns: {
@@ -2028,6 +2193,8 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
@@ -2066,6 +2233,8 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
@@ -2168,6 +2337,8 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
@@ -2226,6 +2397,15 @@ export type Database = {
         }
       }
       reset_demo_store: { Args: never; Returns: Json }
+      resolve_delivery_fee: {
+        Args: { _address: string; _partner_id: string }
+        Returns: {
+          courier_payout: number
+          fee: number
+          source: string
+          zone_name: string
+        }[]
+      }
       submit_partner_application: {
         Args: {
           _address: string
@@ -2245,6 +2425,8 @@ export type Database = {
           commission_percent: number | null
           created_at: string
           created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
           description: string
           id: string
           images: string[] | null
