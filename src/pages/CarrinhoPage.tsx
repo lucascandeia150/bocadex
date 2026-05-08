@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, CreditCard, LogIn, MapPin, Loader2 } from "lucide-react";
+import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, CreditCard, LogIn, MapPin, Loader2, Ticket, X } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +32,27 @@ export default function CarrinhoPage() {
   const [submitting, setSubmitting] = useState(false);
   const [payingMp, setPayingMp] = useState(false);
   const [savedAddresses, setSavedAddresses] = useState<{ id: string; label: string; address: string; is_default: boolean }[]>([]);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponApplied, setCouponApplied] = useState<{ id: string; code: string; discount: number } | null>(null);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+
+  const finalValue = Math.max(totalValue - (couponApplied?.discount ?? 0), 0);
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setValidatingCoupon(true);
+    const { data, error } = await supabase.rpc("validate_coupon", {
+      _code: couponCode.trim(),
+      _order_value: totalValue,
+      _partner_id: partnerId,
+    });
+    setValidatingCoupon(false);
+    const row = (data as Array<{ id: string; code: string; ok: boolean; message: string; discount: number }> | null)?.[0];
+    if (error || !row) { toast.error("Erro ao validar cupom"); return; }
+    if (!row.ok) { toast.error(row.message); return; }
+    setCouponApplied({ id: row.id, code: row.code, discount: Number(row.discount) });
+    toast.success(`Cupom ${row.code} aplicado! -R$ ${Number(row.discount).toFixed(2)}`);
+  };
 
   // Pré-preenche dados do perfil logado
   useEffect(() => {
