@@ -7,7 +7,7 @@ const tabs = [
   { to: "/buscar", label: "Buscar", icon: Search },
   { to: "/pedidos", label: "Pedidos", icon: Package, badge: true },
   { to: "/perfil?tab=favoritos", label: "Favoritos", icon: Heart },
-  { to: "/perfil", label: "Perfil", icon: User },
+  { to: "/perfil", label: "Conta", icon: User },
 ];
 
 export function BottomNav() {
