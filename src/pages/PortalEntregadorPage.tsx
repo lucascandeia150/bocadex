@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock, History, Star, Mail, Lock } from "lucide-react";
+import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock, History, Star, Mail, Lock, Wifi, WifiOff } from "lucide-react";
 import { CourierDashboard } from "@/components/portal/CourierDashboard";
 
 interface Courier {
@@ -45,6 +45,8 @@ export default function PortalEntregadorPage() {
   const [finishingId, setFinishingId] = useState<string | null>(null);
   const [codeInput, setCodeInput] = useState("");
   const [finishLoading, setFinishLoading] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);
+  const [togglingOnline, setTogglingOnline] = useState(false);
 
   useEffect(() => {
     // Tenta login por sessão Auth primeiro
@@ -149,6 +151,10 @@ export default function PortalEntregadorPage() {
   // Realtime: novos pedidos disponíveis e mudanças
   useEffect(() => {
     if (!courier || !pin) return;
+    // Heartbeat a cada 60s enquanto o portal estiver aberto e online
+    const beat = setInterval(() => {
+      if (isOnline) supabase.rpc("courier_heartbeat", { _pin: pin });
+    }, 60_000);
     const channel = supabase
       .channel("courier-deliveries")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "deliveries" }, (payload) => {
@@ -170,16 +176,29 @@ export default function PortalEntregadorPage() {
       })
       .subscribe();
     loadHistory(courier.id);
-    return () => { supabase.removeChannel(channel); };
-  }, [courier, pin]);
+    return () => { supabase.removeChannel(channel); clearInterval(beat); };
+  }, [courier, pin, isOnline]);
+
+  const toggleOnline = async () => {
+    if (!pin) return;
+    setTogglingOnline(true);
+    const next = !isOnline;
+    const { error } = await supabase.rpc("courier_set_online", { _pin: pin, _online: next });
+    setTogglingOnline(false);
+    if (error) { toast.error(error.message || "Erro ao mudar status"); return; }
+    setIsOnline(next);
+    toast.success(next ? "Você está online 🟢" : "Você ficou offline ⚪");
+  };
 
   const logout = async () => {
+    if (pin) { try { await supabase.rpc("courier_set_online", { _pin: pin, _online: false }); } catch {} }
     await supabase.auth.signOut();
     localStorage.removeItem(PIN_KEY);
     setCourier(null);
     setPin("");
     setDeliveries([]);
     setPendingStatus(null);
+    setIsOnline(false);
   };
 
   const action = async (id: string, act: "accept" | "release") => {
