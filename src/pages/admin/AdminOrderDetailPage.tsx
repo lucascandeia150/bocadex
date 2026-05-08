@@ -289,6 +289,35 @@ export default function AdminOrderDetailPage() {
             </button>
           )}
         </div>
+
+        {/* Atribuição manual de entregador */}
+        {delivery.status !== "concluida" && delivery.status !== "cancelada" && (
+          <div className="mt-4 rounded-xl border border-border bg-muted/30 p-3">
+            <p className="text-[11px] font-black text-muted-foreground uppercase mb-2 flex items-center gap-1">
+              <Truck size={11} /> Entregador {delivery.courier_id ? "(reatribuir)" : "(atribuir manualmente)"}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <select
+                value={delivery.courier_id || ""}
+                onChange={(e) => e.target.value && assignCourier(e.target.value)}
+                disabled={assigning}
+                className="text-xs bg-background border border-border rounded-lg px-3 py-2 font-bold flex-1 min-w-[180px]"
+              >
+                <option value="">— Selecione um entregador —</option>
+                {couriers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.is_online ? "🟢 " : "⚪ "} {c.name} · {c.vehicle}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {couriers.filter((c) => c.is_online).length === 0 && (
+              <p className="text-[10px] text-muted-foreground mt-2">
+                Nenhum entregador online no momento. Você ainda pode atribuir manualmente.
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Cliente + Entrega */}
