@@ -328,6 +328,15 @@ export default function PortalEntregadorPage() {
           <h1 className="text-base font-black text-foreground">{courier.name}</h1>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={toggleOnline}
+            disabled={togglingOnline}
+            className={`min-h-[40px] px-3 rounded-xl text-xs font-black flex items-center gap-1 active:scale-95 transition ${isOnline ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"}`}
+            aria-label={isOnline ? "Ficar offline" : "Ficar online"}
+          >
+            {isOnline ? <Wifi size={14} /> : <WifiOff size={14} />}
+            {isOnline ? "Online" : "Offline"}
+          </button>
           <button onClick={refresh} className="relative p-2 rounded-xl bg-muted">
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
             {newCount > 0 && (
