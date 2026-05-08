@@ -10,13 +10,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { registerPush, isPushSupported } from "@/lib/push";
 
-type TabKey = "dados" | "pedidos" | "enderecos" | "favoritos" | "config";
+type TabKey = "dados" | "pedidos" | "enderecos" | "favoritos" | "cupons" | "pagamentos" | "config";
 
 const TABS: { key: TabKey; label: string; icon: typeof User; emoji: string }[] = [
   { key: "dados", label: "Dados", icon: User, emoji: "👤" },
   { key: "pedidos", label: "Pedidos", icon: Package, emoji: "📦" },
   { key: "enderecos", label: "Endereços", icon: MapPin, emoji: "📍" },
   { key: "favoritos", label: "Favoritos", icon: Heart, emoji: "⭐" },
+  { key: "cupons", label: "Cupons", icon: Ticket, emoji: "🎟️" },
+  { key: "pagamentos", label: "Pagamento", icon: CreditCard, emoji: "💳" },
   { key: "config", label: "Config", icon: Settings, emoji: "⚙️" },
 ];
 
@@ -110,6 +112,8 @@ export default function PerfilPage() {
         {tab === "pedidos" && <PedidosTab />}
         {tab === "enderecos" && <EnderecosTab />}
         {tab === "favoritos" && <FavoritosTab />}
+        {tab === "cupons" && <CuponsTab />}
+        {tab === "pagamentos" && <PagamentoTab />}
         {tab === "config" && <ConfigTab onSignOut={signOut} />}
       </div>
     </div>
