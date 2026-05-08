@@ -107,7 +107,7 @@ export default function PedidosPage() {
         if (missing.length > 0) {
           const { data: legacy } = await supabase
             .from("deliveries")
-            .select("id, partner_name, order_description, order_value, status, created_at, delivery_address, delivery_code, partner_id, prep_status")
+            .select("id, partner_name, order_description, order_value, status, created_at, delivery_address, delivery_code, partner_id, prep_status, courier_id")
             .in("id", missing)
             .order("created_at", { ascending: false });
           if (legacy) userOrders.push(...(legacy as OrderRow[]));
@@ -266,6 +266,10 @@ export default function PedidosPage() {
             <>
               {orders.map((o) => {
               const isFinal = ["concluida","completed","delivered","cancelled","cancelada"].includes(o.status);
+              const isWaiting = o.status === "disponivel" && !o.courier_id;
+              const elapsedMin = Math.floor((now - new Date(o.created_at).getTime()) / 60000);
+              const remaining = Math.max(0, TIMEOUT_MIN - elapsedMin);
+              const timedOut = isWaiting && elapsedMin >= TIMEOUT_MIN;
               return (
                 <div
                   key={o.id}
@@ -279,6 +283,28 @@ export default function PedidosPage() {
                       <p className="text-[11px] text-muted-foreground">{formatDate(o.created_at)}</p>
                     </div>
                   </div>
+                  {isWaiting && (
+                    <div className={`mt-3 rounded-xl border-2 p-3 ${timedOut ? "bg-secondary/10 border-secondary/40" : "bg-primary/5 border-primary/30"}`}>
+                      <div className="flex items-center gap-2">
+                        <Loader2 size={14} className={`text-primary ${timedOut ? "" : "animate-spin"}`} />
+                        <p className="text-xs font-black text-foreground">
+                          {timedOut ? "Ainda procurando entregador..." : "Procurando um entregador para você"}
+                        </p>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-1">
+                        {timedOut
+                          ? "Está demorando mais que o normal. Você pode aguardar mais um pouco ou cancelar o pedido."
+                          : `Aguardando um entregador aceitar — tempo estimado ${remaining} min.`}
+                      </p>
+                      <button
+                        onClick={() => cancelOrder(o.id)}
+                        disabled={cancellingId === o.id}
+                        className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold text-destructive bg-destructive/10 hover:bg-destructive/20 px-3 py-1.5 rounded-lg active:scale-95 transition-transform disabled:opacity-50"
+                      >
+                        <X size={12} /> {cancellingId === o.id ? "Cancelando..." : "Cancelar pedido"}
+                      </button>
+                    </div>
+                  )}
                   <div className="mt-3">
                     <OrderStatusTimeline status={o.status} prepStatus={o.prep_status ?? undefined} />
                   </div>
