@@ -129,7 +129,7 @@ export function HomeConversion() {
     (async () => {
       const { data: pData } = await supabase
         .from("partner_applications")
-        .select("id,business_name,business_type,description,logo_url,whatsapp,promotions,uses_app_courier,is_featured")
+        .select("id,slug,business_name,business_type,description,logo_url,whatsapp,promotions,uses_app_courier,is_featured")
         .eq("status", "approved")
         .eq("is_active", true)
         .order("is_featured", { ascending: false })

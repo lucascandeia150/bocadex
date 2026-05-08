@@ -8,6 +8,7 @@ import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 interface DbPartner {
   id: string;
+  slug?: string | null;
   business_name: string;
   business_type: string;
   address: string;
@@ -30,7 +31,7 @@ export default function LojasPage() {
   const { isAdmin } = useIsAdmin();
 
   useEffect(() => {
-    const baseSelect = "id, business_name, business_type, address, description, whatsapp, promotions, logo_url, is_active, is_featured, is_demo, visibility";
+    const baseSelect = "id, slug, business_name, business_type, address, description, whatsapp, promotions, logo_url, is_active, is_featured, is_demo, visibility";
     const q = isAdmin
       ? supabase.from("partner_applications").select(baseSelect).eq("status", "approved").eq("is_active", true)
       : supabase

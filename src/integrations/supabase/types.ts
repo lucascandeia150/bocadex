@@ -636,6 +636,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -667,6 +668,7 @@ export type Database = {
           payment_status?: string
           plan?: string
           promotions?: string | null
+          slug?: string | null
           status?: string
           store_status?: string
           subscription_active_until?: string | null
@@ -698,6 +700,7 @@ export type Database = {
           payment_status?: string
           plan?: string
           promotions?: string | null
+          slug?: string | null
           status?: string
           store_status?: string
           subscription_active_until?: string | null
@@ -1115,6 +1118,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -1221,6 +1225,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -1323,6 +1328,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -1363,6 +1369,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -1403,6 +1410,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -1443,6 +1451,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -1507,6 +1516,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -1822,6 +1832,10 @@ export type Database = {
       }
       generate_access_pin: { Args: never; Returns: string }
       generate_delivery_code: { Args: never; Returns: string }
+      generate_unique_partner_slug: {
+        Args: { _base: string; _exclude_id?: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2037,6 +2051,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -2168,6 +2183,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -2208,6 +2224,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -2248,6 +2265,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -2352,6 +2370,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null
@@ -2406,6 +2425,15 @@ export type Database = {
           zone_name: string
         }[]
       }
+      resolve_partner: {
+        Args: { _key: string }
+        Returns: {
+          business_name: string
+          id: string
+          slug: string
+        }[]
+      }
+      slugify: { Args: { _input: string }; Returns: string }
       submit_partner_application: {
         Args: {
           _address: string
@@ -2440,6 +2468,7 @@ export type Database = {
           payment_status: string
           plan: string
           promotions: string | null
+          slug: string | null
           status: string
           store_status: string
           subscription_active_until: string | null

@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, MapPin, MessageCircle, Package, ShoppingBag, Store as StoreIcon, Plus, Star, Clock } from "lucide-react";
+import { ArrowLeft, MapPin, MessageCircle, Package, ShoppingBag, Store as StoreIcon, Plus, Star, Clock, Link2, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
 import { ProductOrderModal } from "@/components/ProductOrderModal";
 import { useCart } from "@/contexts/CartContext";
+import { toast } from "sonner";
 
 interface Partner {
   id: string;
+  slug: string | null;
   business_name: string;
   business_type: string;
   address: string;
@@ -29,7 +31,8 @@ interface Product {
 }
 
 export default function ParceiroDetalhePage() {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams<{ id?: string; slug?: string }>();
+  const key = (params.slug || params.id || "").trim();
   const navigate = useNavigate();
   const [partner, setPartner] = useState<Partner | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -40,44 +43,71 @@ export default function ParceiroDetalhePage() {
   const isProductModalOpen = !!orderProduct;
 
   useEffect(() => {
-    if (!id) {
-      console.warn("[ParceiroDetalhe] id ausente na rota");
-      setLoading(false);
-      return;
-    }
-    console.log("[ParceiroDetalhe] buscando loja id =", id);
+    if (!key) { setLoading(false); return; }
     setLoading(true);
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(key);
     (async () => {
-      // Primeiro, tenta sem filtros restritivos para distinguir "não existe" de "inativo/pendente"
-      const [pRes, prRes] = await Promise.all([
-        supabase
-          .from("partner_applications")
-          .select("id, business_name, business_type, address, description, whatsapp, promotions, logo_url, uses_app_courier, is_demo, status, is_active, visibility")
-          .eq("id", id)
-          .maybeSingle(),
-        supabase
-          .from("products")
-          .select("id, name, description, image_url, price_min, price_max")
-          .eq("partner_id", id)
-          .eq("is_active", true)
-          .order("created_at", { ascending: true }),
-      ]);
-      if (pRes.error) {
-        console.error("[ParceiroDetalhe] erro buscando loja:", pRes.error);
+      // Resolve slug OR uuid
+      let partnerRow: any = null;
+      const q = supabase
+        .from("partner_applications")
+        .select("id, slug, business_name, business_type, address, description, whatsapp, promotions, logo_url, uses_app_courier, is_demo, status, is_active, visibility");
+      const { data } = isUuid
+        ? await q.eq("id", key).maybeSingle()
+        : await q.eq("slug", key).maybeSingle();
+      partnerRow = data;
+
+      if (!partnerRow) {
+        setLoading(false);
+        return;
       }
-      const row = pRes.data as (Partner & { status?: string; is_active?: boolean; visibility?: string }) | null;
-      if (!row) {
-        console.warn("[ParceiroDetalhe] loja não encontrada (id ausente ou bloqueado por RLS):", id);
-      } else if (row.status !== "approved" || row.is_active === false) {
-        console.warn("[ParceiroDetalhe] loja existe mas não disponível:", { status: row.status, is_active: row.is_active });
-      } else {
-        console.log("[ParceiroDetalhe] loja encontrada:", row.business_name);
-        setPartner(row as Partner);
+      // Redirect old /loja/:id or /parceiro/:id → /:slug
+      if (isUuid && partnerRow.slug) {
+        navigate(`/${partnerRow.slug}`, { replace: true });
+        return;
       }
-      if (prRes.data) setProducts(prRes.data as Product[]);
+      if (partnerRow.status !== "approved" || partnerRow.is_active === false) {
+        setLoading(false);
+        return;
+      }
+      setPartner(partnerRow as Partner);
+      const { data: prods } = await supabase
+        .from("products")
+        .select("id, name, description, image_url, price_min, price_max")
+        .eq("partner_id", partnerRow.id)
+        .eq("is_active", true)
+        .order("created_at", { ascending: true });
+      if (prods) setProducts(prods as Product[]);
       setLoading(false);
     })();
-  }, [id]);
+  }, [key, navigate]);
+
+  const shareUrl = partner
+    ? `${window.location.origin}/${partner.slug || partner.id}`
+    : "";
+
+  const copyLink = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copiado!");
+      trackAnalyticsEvent("partner_share_copy", { partner_id: partner?.id });
+    } catch {
+      toast.error("Não foi possível copiar");
+    }
+  };
+
+  const shareLink = async () => {
+    if (!shareUrl || !partner) return;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: partner.business_name, url: shareUrl });
+        trackAnalyticsEvent("partner_share_native", { partner_id: partner.id });
+      } catch {/* user cancelled */}
+    } else {
+      copyLink();
+    }
+  };
 
   const openWhatsApp = (msg: string, source: string) => {
     if (!partner) return;
@@ -169,6 +199,20 @@ export default function ParceiroDetalhePage() {
             <MapPin size={12} className="text-primary shrink-0" /> {partner.address}
           </p>
         )}
+        <div className="flex gap-2 mt-3">
+          <button
+            onClick={copyLink}
+            className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold bg-muted hover:bg-accent text-foreground px-3 py-2 rounded-xl active:scale-95 transition-all"
+          >
+            <Link2 size={13} /> Copiar link
+          </button>
+          <button
+            onClick={shareLink}
+            className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary px-3 py-2 rounded-xl active:scale-95 transition-all"
+          >
+            <Share2 size={13} /> Compartilhar
+          </button>
+        </div>
       </div>
 
       <div className="max-w-sm mx-auto px-4 space-y-5 mt-5">
