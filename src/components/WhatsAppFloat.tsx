@@ -125,18 +125,25 @@ export function WhatsAppFloat() {
           })}
 
         {/* Main FAB */}
-        <button
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? "Fechar menu" : "Abrir menu rápido"}
-          aria-expanded={open}
-          className={`w-14 h-14 rounded-full shadow-lg active:scale-90 transition-all flex items-center justify-center text-white ${
-            open
-              ? "bg-foreground rotate-45"
-              : "bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] animate-bounce-in"
-          }`}
-        >
-          {open ? <X size={26} className="-rotate-45" /> : <Plus size={28} strokeWidth={2.5} />}
-        </button>
+        <div className="flex items-center gap-2">
+          {!open && (
+            <span className="bg-card text-foreground text-xs font-bold px-3 py-1.5 rounded-full shadow-md border border-border whitespace-nowrap animate-fade-in">
+              Ações
+            </span>
+          )}
+          <button
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Fechar menu" : "Abrir menu rápido"}
+            aria-expanded={open}
+            className={`w-14 h-14 rounded-full shadow-lg active:scale-90 transition-all flex items-center justify-center text-white ${
+              open
+                ? "bg-foreground rotate-45"
+                : "bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] animate-bounce-in"
+            }`}
+          >
+            {open ? <X size={26} className="-rotate-45" /> : <Plus size={28} strokeWidth={2.5} />}
+          </button>
+        </div>
       </div>
     </>
   );
