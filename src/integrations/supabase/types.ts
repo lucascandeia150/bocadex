@@ -176,6 +176,45 @@ export type Database = {
         }
         Relationships: []
       }
+      chats: {
+        Row: {
+          created_at: string
+          customer_id: string
+          customer_unread: number
+          id: string
+          last_message_at: string | null
+          last_message_preview: string | null
+          order_id: string
+          partner_id: string
+          partner_unread: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          customer_unread?: number
+          id?: string
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          order_id: string
+          partner_id: string
+          partner_unread?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          customer_unread?: number
+          id?: string
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          order_id?: string
+          partner_id?: string
+          partner_unread?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       coupon_usage: {
         Row: {
           coupon_id: string
@@ -626,6 +665,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          chat_id: string
+          content: string
+          created_at: string
+          id: string
+          read: boolean
+          sender_id: string | null
+          sender_type: string
+        }
+        Insert: {
+          chat_id: string
+          content: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          sender_id?: string | null
+          sender_type: string
+        }
+        Update: {
+          chat_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          sender_id?: string | null
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       partner_applications: {
         Row: {
@@ -1837,6 +1914,45 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      customer_get_or_create_chat: {
+        Args: { _order_id: string }
+        Returns: {
+          created_at: string
+          customer_id: string
+          customer_unread: number
+          id: string
+          last_message_at: string | null
+          last_message_preview: string | null
+          order_id: string
+          partner_id: string
+          partner_unread: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "chats"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      customer_list_messages: {
+        Args: { _chat_id: string }
+        Returns: {
+          chat_id: string
+          content: string
+          created_at: string
+          id: string
+          read: boolean
+          sender_id: string | null
+          sender_type: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "messages"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       customer_list_orders: {
         Args: never
         Returns: {
@@ -1870,6 +1986,28 @@ export type Database = {
           to: "deliveries"
           isOneToOne: false
           isSetofReturn: true
+        }
+      }
+      customer_mark_chat_read: {
+        Args: { _chat_id: string }
+        Returns: undefined
+      }
+      customer_send_message: {
+        Args: { _chat_id: string; _content: string }
+        Returns: {
+          chat_id: string
+          content: string
+          created_at: string
+          id: string
+          read: boolean
+          sender_id: string | null
+          sender_type: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "messages"
+          isOneToOne: true
+          isSetofReturn: false
         }
       }
       generate_access_pin: { Args: never; Returns: string }
@@ -2129,6 +2267,20 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      partner_list_chats: {
+        Args: { _pin: string }
+        Returns: {
+          customer_id: string
+          customer_name: string
+          id: string
+          last_message_at: string
+          last_message_preview: string
+          order_description: string
+          order_id: string
+          order_status: string
+          partner_unread: number
+        }[]
+      }
       partner_list_deliveries: {
         Args: { _pin: string }
         Returns: {
@@ -2160,6 +2312,24 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "deliveries"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      partner_list_messages: {
+        Args: { _chat_id: string; _pin: string }
+        Returns: {
+          chat_id: string
+          content: string
+          created_at: string
+          id: string
+          read: boolean
+          sender_id: string | null
+          sender_type: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "messages"
           isOneToOne: false
           isSetofReturn: true
         }
@@ -2202,6 +2372,10 @@ export type Database = {
           whatsapp: string
         }[]
       }
+      partner_mark_chat_read: {
+        Args: { _chat_id: string; _pin: string }
+        Returns: undefined
+      }
       partner_rate_courier: {
         Args: {
           _comment?: string
@@ -2221,6 +2395,24 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "ratings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      partner_send_message: {
+        Args: { _chat_id: string; _content: string; _pin: string }
+        Returns: {
+          chat_id: string
+          content: string
+          created_at: string
+          id: string
+          read: boolean
+          sender_id: string | null
+          sender_type: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "messages"
           isOneToOne: true
           isSetofReturn: false
         }

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound, BarChart3, ChefHat, Bike, CheckCircle2, Power, Clock, DollarSign, Bell, Pause, Play, Ban } from "lucide-react";
+import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound, BarChart3, ChefHat, Bike, CheckCircle2, Power, Clock, DollarSign, Bell, Pause, Play, Ban, MessageCircle } from "lucide-react";
 import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
 import PartnerStoreTab from "@/components/portal/PartnerStoreTab";
 import PartnerDashboardTab from "@/components/portal/PartnerDashboardTab";
+import PartnerChatsTab from "@/components/portal/PartnerChatsTab";
 
 interface Partner {
   id: string;
@@ -46,7 +47,8 @@ export default function PortalLojaPage() {
   const [partner, setPartner] = useState<Partner | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState<"dash" | "list" | "new" | "products" | "store">("dash");
+  const [tab, setTab] = useState<"dash" | "list" | "new" | "products" | "store" | "chats">("dash");
+  const [chatUnread, setChatUnread] = useState(0);
   const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
   const [rateModal, setRateModal] = useState<Delivery | null>(null);
   const [stars, setStars] = useState(5);
@@ -208,6 +210,24 @@ export default function PortalLojaPage() {
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
+  }, [partner, pin]);
+
+  // Track unread chats badge
+  useEffect(() => {
+    if (!partner) return;
+    const refresh = async () => {
+      const { data } = await supabase.rpc("partner_list_chats", { _pin: pin });
+      const total = ((data as any[]) || []).reduce((s, c) => s + (c.partner_unread || 0), 0);
+      setChatUnread(total);
+    };
+    refresh();
+    const ch = supabase
+      .channel(`partner-chat-badge-${partner.id}`)
+      .on("postgres_changes",
+        { event: "*", schema: "public", table: "chats", filter: `partner_id=eq.${partner.id}` },
+        () => refresh())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
   }, [partner, pin]);
 
   const submitRating = async () => {
@@ -460,6 +480,7 @@ export default function PortalLojaPage() {
     { id: "dash", label: "Início", icon: <BarChart3 size={16} /> },
     { id: "list", label: "Pedidos", icon: <Package size={16} />, badge: newOrdersCount },
     { id: "new", label: "Novo", icon: <Plus size={16} /> },
+    { id: "chats", label: "Conversas", icon: <MessageCircle size={16} />, badge: chatUnread },
     { id: "products", label: "Cardápio", icon: <ChefHat size={16} /> },
     { id: "store", label: "Loja", icon: <Settings size={16} /> },
   ];
@@ -607,6 +628,8 @@ export default function PortalLojaPage() {
       {tab === "dash" && <PartnerDashboardTab deliveries={deliveries} />}
 
       {tab === "products" && <PartnerProductsTab pin={pin} />}
+
+      {tab === "chats" && <PartnerChatsTab pin={pin} partnerId={partner.id} />}
 
       {tab === "store" && (
         <PartnerStoreTab
