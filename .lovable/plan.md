@@ -1,97 +1,93 @@
-## Visão geral
+## Plano de correções — Bocadex Delivery's
 
-Sua solicitação é gigantesca (essencialmente reconstruir grande parte do app). Para garantir a regra #1 — **não quebrar nada** — vou executar em **fases pequenas e validáveis**, não tudo de uma vez. Cada fase é independente e pode ser testada antes de seguir.
-
-Abaixo está a proposta. Me confirme por onde começar (ou diga "fase 1" para eu começar pelo rebrand).
+Aplicar em fases pequenas, validando cada uma. Sem alterar Mercado Pago, autenticação, layout principal nem dados existentes.
 
 ---
 
-## Fase 1 — Rebrand global "Bocadex" → "Bocadex Delivery's" ⚡ rápida e segura
+### Fase 1 — Banner de notificações (UX rápido)
+- Mover `PushPermissionBanner` para o topo (abaixo do header), em `AppLayout.tsx`.
+- Adicionar botão "Fechar" e cooldown de 24h no `localStorage` (chave `push_banner_dismissed_until`).
+- Garantir que FAB (`CartFab`, `WhatsAppFloat`) fique abaixo via `z-index` e não cubra o banner.
+- Animação suave (slide-in-from-top), área clicável aumentada.
 
-- `index.html`: title, meta description, og/twitter, apple-mobile-web-app-title
-- `public/manifest.json`: name, short_name, description
-- Strings visíveis: sidebar admin, splash, loadings, headers, e-mails das edge functions, mensagens de notificação push
-- Mantém rotas, IDs, tabelas, integrações intactas (só texto exibido)
+### Fase 2 — Controle de versão pelo admin
+A tabela `app_versions` já existe (`version`, `changelog`, `is_current`). Estender com:
+- `title` text, `force_update` boolean default false, `active` boolean default true.
 
-**Risco**: nenhum. Só strings.
+Ajustes:
+- Hook `useAppVersion`: filtrar `is_current = true AND active = true`; salvar `escolheai_seen_version` ao fechar; só dispara toast/modal uma vez por versão.
+- `AdminVersionsTab`: campos para `title`, toggle `active`, toggle `force_update`.
+- Modal de update obrigatório quando `force_update = true` (bloqueia uso até recarregar).
 
----
+### Fase 3 — Pedidos pagos não aparecem para entregadores
+Diagnóstico provável: `customer_create_delivery` cria com `prep_status = 'ready'` e `status='disponivel'`, mas o fluxo via Mercado Pago/webhook pode estar criando com `prep_status='pending'` ou sem `is_open` validado. Verificar `mp-webhook` e garantir que após `approved`:
+1. `payment.status = 'approved'`
+2. Cria `delivery` com `status='disponivel'`, `prep_status='ready'` (cliente já pagou)
+3. Realtime: habilitar publicação `supabase_realtime` na tabela `deliveries` (se ainda não estiver) e o `CourierDashboard` se inscrever em `postgres_changes`.
+4. Logs em `admin_audit_logs` com action `delivery.created_from_payment`.
 
-## Fase 2 — Entregador Demo
+### Fase 4 — Push real (FCM) por evento
+Já existe `send-push`. Adicionar gatilhos:
+- No `mp-webhook` após criar entrega: push para loja ("Novo pedido pago"), push para todos os entregadores online ("Nova entrega disponível").
+- Em `partner_advance_prep` / `partner_advance_delivery_status` / `courier_update_delivery`: chamar `send-push` para o cliente (`user_id` da delivery) com título conforme estado (`em preparo`, `saiu para entrega`, `entregue`).
+- Garantir `data.click_url` para deep link (`/pedidos`, `/portal/loja`, `/portal/entregador`).
+- SW `firebase-messaging-sw.js` já trata click — manter.
 
-- Migration: insere 1 `couriers` demo (vehicle=moto, is_active=true, access_pin gerado, flag `is_demo`)
-- Aparece no painel admin de entregadores
-- Pode receber push (token registrado quando logar)
+Implementação: criar trigger SQL em `deliveries` (AFTER UPDATE/INSERT) que chama edge function `notify-delivery-event` via `pg_net`, ou chamar `send-push` direto das RPCs (mais simples e síncrono — preferido).
 
----
+### Fase 5 — Presença online do entregador
+Adicionar em `couriers`:
+- `is_online` boolean default false
+- `last_seen_at` timestamptz
 
-## Fase 3 — Admin: cadastro manual de parceiro
+RPCs novas:
+- `courier_set_online(_pin, _online)` → atualiza `is_online`/`last_seen_at`
+- `courier_heartbeat(_pin)` → atualiza só `last_seen_at`
 
-- Nova página `/admin/dashboard/stores/novo`
-- Form com todos os campos (nome, responsável, contato, CPF/CNPJ, endereço, categoria, taxa, comissão, plano, logo, banner, senha, observações, promoções)
-- RPC `admin_create_partner` (SECURITY DEFINER, só admin) que cria `partner_applications` já aprovado + opcionalmente cria conta auth via edge function
-- Credenciais exibidas no fim para o admin copiar
+Cron job a cada 2 min: marca offline quem `last_seen_at < now() - 5 min`.
 
----
+UI `CourierDashboard`: toggle Online/Offline, heartbeat a cada 60s enquanto aberto.
 
-## Fase 4 — Dashboard admin avançado
+Push para entregadores (Fase 4) filtra `is_online = true`.
 
-- Cards: pedidos hoje / em andamento / cancelados, faturamento dia/mês, lucro plataforma, entregadores online, lojas online, clientes ativos
-- Gráfico (recharts) últimos 7 dias
-- Mapa entregadores online (Mapbox — token já existe)
-- **Sem remover** a `AdminOverviewPage` atual; expando dentro dela
+### Fase 6 — Entregador demo
+- Inserir/garantir courier demo com `access_pin = '00000000'`, `name='Entregador Demo'`, `is_active=true`, `is_online=false`.
+- Adicionar página admin `AdminCouriersManagePage` (lista + editar + reset PIN + ativar/desativar + ver status online). Usar RPCs novas: `admin_reset_courier_pin`, `admin_toggle_courier_active`.
 
----
+### Fase 7 — Polimento visual
+- Z-index review: header(50) > banner topo(45) > FAB(40) > bottom nav(30) > ad(20).
+- Áreas clicáveis mín. 44px nos botões críticos (banner, toggle online, reenviar push).
 
-## Fase 5 — Gestão avançada de lojas
-
-- Adiciona ações na lista existente: pausar / bloquear / destacar / editar comissão / resetar senha / ativar entrega própria
-- Coluna `store_status` (ativa/pausada/bloqueada/em_análise) — derivada de campos existentes (`is_active`, `status`, `is_open`) para não migrar dado
-
----
-
-## Fase 6 — Painel loja: melhorias
-
-- Som alto em novo pedido (Web Audio loop até interagir)
-- Aba financeiro / relatórios / cupons / banner promocional
-- Modo pausa rápido
-
----
-
-## Fase 7 — Painel entregador profissional
-
-- Toggle online/offline (campo novo `is_online` em `couriers`)
-- Tela ganhos / histórico / ranking
-- Foto perfil, tipo veículo, chave PIX (campos novos opcionais)
-- Mapa com entrega ativa
-
----
-
-## Fase 8 — Notificações automáticas + WhatsApp para entregadores
-
-- Triggers/edge functions disparam push em transições de status (`disponivel` → cliente, novo pedido → loja, `ready` → entregadores online da região)
-- WhatsApp: link `wa.me` automático via edge function (sem custo) OU integração WhatsApp Business API se quiser oficial (precisa secret)
-- Anti-spam: dedupe por delivery_id + cooldown 5min
+### Fase 8 — Validação
+- Testar fluxo cliente→pago→entregador via curl no `mp-webhook` simulado.
+- Verificar realtime no `CourierDashboard`.
+- Ler logs de `send-push` e `mp-webhook`.
 
 ---
 
-## Fase 9 — Central admin (cupons, campanhas, suporte, configs globais)
+### Migrações SQL necessárias
+```sql
+ALTER TABLE app_versions
+  ADD COLUMN IF NOT EXISTS title text DEFAULT '',
+  ADD COLUMN IF NOT EXISTS force_update boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS active boolean DEFAULT true;
 
-- Tabelas novas: `coupons`, `campaigns`, `support_tickets`
-- Páginas admin correspondentes
+ALTER TABLE couriers
+  ADD COLUMN IF NOT EXISTS is_online boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS last_seen_at timestamptz;
 
----
+ALTER PUBLICATION supabase_realtime ADD TABLE deliveries;
+-- + RPCs courier_set_online/heartbeat, admin_reset_courier_pin, admin_toggle_courier_active
+-- + cron job 2min para marcar offline
+```
 
-## Fase 10 — Polish design + Home + PWA Play Store ready
+### Edge functions tocadas
+- `mp-webhook`: após criar delivery, chamar `send-push` (loja + entregadores online).
+- Nova: nenhuma obrigatória; reuso de `send-push`.
 
-- Refino visual cards/sombras
-- Home: banner, categorias, destaques, promoções, últimas compras
-- Splash screens iOS, ícones maskable, lighthouse
+### Confirmações antes de começar
+1. Posso adicionar a coluna `title`/`force_update`/`active` em `app_versions` (não afeta dados atuais — defaults seguros)?
+2. Posso adicionar `is_online`/`last_seen_at` em `couriers` e habilitar realtime em `deliveries`?
+3. Sobre o "WhatsApp opcional" para entregador — deixo desligado por padrão (apenas push), ok?
 
----
-
-## Recomendação
-
-Faço **Fase 1 + Fase 2 + Fase 3 agora** num único passo (são as mais pedidas e seguras). Depois você valida e seguimos.
-
-Confirma?
+Confirma para eu seguir, ou quer recortar alguma fase?
