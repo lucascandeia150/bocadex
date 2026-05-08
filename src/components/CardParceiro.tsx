@@ -12,6 +12,7 @@ import { ChevronRight, MapPin, Store as StoreIcon, Flame } from "lucide-react";
  */
 export interface CardParceiroData {
   id?: string | null;
+  slug?: string | null;
   name?: string | null;
   business_name?: string | null;
   description?: string | null;
@@ -43,16 +44,18 @@ export function CardParceiro({ partner, index = 0, variant = "default" }: Props)
   }
 
   const id = partner.id.trim();
+  const slug = (partner.slug || "").trim();
   const name = partner.name || partner.business_name || "Parceiro";
   const description = (partner.description || "").split("\n")[0];
   const logo = partner.logo || partner.logo_url || null;
   const category = partner.category || partner.business_type || null;
 
   const handleClick = () => {
+    const target = slug ? `/${slug}` : `/loja/${id}`;
     if (typeof console !== "undefined") {
-      console.log("[CardParceiro] navegando para loja id =", id, "nome =", name);
+      console.log("[CardParceiro] navegando para loja", target, "nome =", name);
     }
-    navigate(`/loja/${id}`);
+    navigate(target);
   };
 
   const isHighlight = variant === "highlight" || !!partner.highlighted;
