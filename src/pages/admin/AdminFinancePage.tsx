@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { DollarSign, TrendingUp, Receipt, Wallet, Download } from "lucide-react";
+import { DollarSign, TrendingUp, Receipt, Wallet, Download, RefreshCw } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
 import { format, subDays, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -12,6 +12,8 @@ export default function AdminFinancePage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<{ recovered: number; failed: number; total: number } | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -74,6 +76,26 @@ export default function AdminFinancePage() {
     URL.revokeObjectURL(url);
   };
 
+  const syncPending = async () => {
+    setSyncing(true);
+    setSyncResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("mp-sync-pending", { body: {} });
+      if (error) throw error;
+      setSyncResult({
+        recovered: data?.recovered ?? 0,
+        failed: data?.failed ?? 0,
+        total: data?.total ?? 0,
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Erro";
+      setSyncResult({ recovered: 0, failed: 1, total: 0 });
+      console.error("sync error", msg);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const TONES: Record<string, string> = {
     green: "bg-green-500/10 text-green-600", blue: "bg-blue-500/10 text-blue-600",
     orange: "bg-orange-500/10 text-orange-600", purple: "bg-purple-500/10 text-purple-600",
@@ -93,7 +115,25 @@ export default function AdminFinancePage() {
           <h1 className="text-2xl font-black text-foreground">Financeiro</h1>
           <p className="text-sm text-muted-foreground">Receita, taxas e relatórios dos últimos 30 dias.</p>
         </div>
-        <button onClick={exportCSV} className="flex items-center gap-1 text-xs font-bold bg-foreground text-background px-3 py-2 rounded-lg hover:opacity-90"><Download size={12} /> Exportar CSV</button>
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex gap-2">
+            <button
+              onClick={syncPending}
+              disabled={syncing}
+              className="flex items-center gap-1 text-xs font-bold bg-primary text-primary-foreground px-3 py-2 rounded-lg hover:opacity-90 disabled:opacity-50"
+              title="Reconsulta pagamentos pendentes no Mercado Pago e atualiza pedidos presos em análise"
+            >
+              <RefreshCw size={12} className={syncing ? "animate-spin" : ""} />
+              {syncing ? "Sincronizando..." : "Sincronizar pendentes"}
+            </button>
+            <button onClick={exportCSV} className="flex items-center gap-1 text-xs font-bold bg-foreground text-background px-3 py-2 rounded-lg hover:opacity-90"><Download size={12} /> Exportar CSV</button>
+          </div>
+          {syncResult && (
+            <p className="text-[10px] font-bold text-muted-foreground">
+              {syncResult.total} verificados · {syncResult.recovered} recuperados · {syncResult.failed} falhas
+            </p>
+          )}
+        </div>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <FinCard icon={<DollarSign size={16} />} label="Receita bruta" value={fmt(totals.grossRevenue)} tone="green" />
