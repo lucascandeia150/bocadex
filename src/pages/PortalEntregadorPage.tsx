@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock, History, Star, Mail, Lock, Wifi, WifiOff } from "lucide-react";
+import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock, History, Star, Mail, Lock, Wifi, WifiOff, Phone } from "lucide-react";
 import { CourierDashboard } from "@/components/portal/CourierDashboard";
 
 interface Courier {
@@ -24,6 +24,8 @@ interface Delivery {
   partner_whatsapp: string | null;
   created_at: string;
   delivery_code: string | null;
+  customer_name: string | null;
+  customer_phone: string | null;
 }
 
 const PIN_KEY = "escolheai_courier_pin";
@@ -516,6 +518,11 @@ function DeliveryCard({
   accepted?: boolean;
 }) {
   const wa = d.partner_whatsapp?.replace(/\D/g, "");
+  const customerPhone = d.customer_phone?.replace(/\D/g, "") || "";
+  const customerWa = customerPhone.length >= 10
+    ? (customerPhone.startsWith("55") ? customerPhone : `55${customerPhone}`)
+    : "";
+  const customerMsg = `Olá 👋 Sou o entregador do seu pedido no Bocadex Delivery's. Estou a caminho da entrega.`;
   const borderClass = accepted
     ? "border-blue-500/40 bg-blue-500/5"
     : "border-orange-500/40 bg-orange-500/5";
@@ -551,6 +558,35 @@ function DeliveryCard({
           >
             <MapPin size={14} /> Waze
           </a>
+        </div>
+      )}
+      {accepted && customerPhone && (
+        <div className="bg-card border border-border rounded-xl p-2 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Cliente</p>
+              <p className="text-xs font-black text-foreground truncate">{d.customer_name || "Cliente"}</p>
+            </div>
+            <p className="text-xs font-bold text-muted-foreground">{d.customer_phone}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <a
+              href={`tel:${customerPhone}`}
+              className="bg-emerald-600 text-white font-black text-sm py-3 rounded-xl active:scale-95 text-center shadow-lg shadow-emerald-600/20 inline-flex items-center justify-center gap-1"
+            >
+              <Phone size={14} /> Ligar
+            </a>
+            {customerWa && (
+              <a
+                href={`https://wa.me/${customerWa}?text=${encodeURIComponent(customerMsg)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-green-500 text-white font-black text-sm py-3 rounded-xl active:scale-95 text-center shadow-lg shadow-green-500/20 inline-flex items-center justify-center gap-1"
+              >
+                <MessageCircle size={14} /> WhatsApp
+              </a>
+            )}
+          </div>
         </div>
       )}
       <div className="flex flex-wrap gap-2 pt-1">

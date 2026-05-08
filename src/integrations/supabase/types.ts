@@ -1609,6 +1609,8 @@ export type Database = {
         Returns: {
           courier_id: string
           created_at: string
+          customer_name: string
+          customer_phone: string
           delivery_address: string
           delivery_code: string
           fee: number

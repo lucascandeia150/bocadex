@@ -308,6 +308,11 @@ export default function PedidosPage() {
                   <div className="mt-3">
                     <OrderStatusTimeline status={o.status} prepStatus={o.prep_status ?? undefined} />
                   </div>
+                  {!isFinal && o.courier_id && (o.status === "aceita" || o.status === "em_andamento") && (
+                    <p className="text-[11px] text-muted-foreground mt-2 italic">
+                      Seu entregador pode entrar em contato caso necessário.
+                    </p>
+                  )}
                   <p className="text-[11px] text-muted-foreground mt-2 whitespace-pre-line line-clamp-3">
                     {o.order_description}
                   </p>
