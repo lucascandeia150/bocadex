@@ -124,24 +124,33 @@ export type Database = {
       }
       app_versions: {
         Row: {
+          active: boolean
           changelog: string
           created_at: string
+          force_update: boolean
           id: string
           is_current: boolean
+          title: string
           version: string
         }
         Insert: {
+          active?: boolean
           changelog?: string
           created_at?: string
+          force_update?: boolean
           id?: string
           is_current?: boolean
+          title?: string
           version: string
         }
         Update: {
+          active?: boolean
           changelog?: string
           created_at?: string
+          force_update?: boolean
           id?: string
           is_current?: boolean
+          title?: string
           version?: string
         }
         Relationships: []
@@ -229,6 +238,8 @@ export type Database = {
           email: string | null
           id: string
           is_active: boolean
+          is_online: boolean
+          last_seen_at: string | null
           name: string
           phone: string
           updated_at: string
@@ -242,6 +253,8 @@ export type Database = {
           email?: string | null
           id?: string
           is_active?: boolean
+          is_online?: boolean
+          last_seen_at?: string | null
           name: string
           phone: string
           updated_at?: string
@@ -255,6 +268,8 @@ export type Database = {
           email?: string | null
           id?: string
           is_active?: boolean
+          is_online?: boolean
+          last_seen_at?: string | null
           name?: string
           phone?: string
           updated_at?: string
@@ -993,6 +1008,8 @@ export type Database = {
           email: string | null
           id: string
           is_active: boolean
+          is_online: boolean
+          last_seen_at: string | null
           name: string
           phone: string
           updated_at: string
@@ -1078,6 +1095,30 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "courier_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_reset_courier_pin: {
+        Args: { _courier_id: string }
+        Returns: {
+          access_pin: string | null
+          application_id: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          is_online: boolean
+          last_seen_at: string | null
+          name: string
+          phone: string
+          updated_at: string
+          user_id: string | null
+          vehicle: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "couriers"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1196,6 +1237,30 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_toggle_courier_active: {
+        Args: { _active: boolean; _courier_id: string }
+        Returns: {
+          access_pin: string | null
+          application_id: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          is_online: boolean
+          last_seen_at: string | null
+          name: string
+          phone: string
+          updated_at: string
+          user_id: string | null
+          vehicle: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "couriers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_toggle_uses_app_courier: {
         Args: { _partner_id: string; _value: boolean }
         Returns: {
@@ -1234,6 +1299,30 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      courier_heartbeat: {
+        Args: { _pin: string }
+        Returns: {
+          access_pin: string | null
+          application_id: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          is_online: boolean
+          last_seen_at: string | null
+          name: string
+          phone: string
+          updated_at: string
+          user_id: string | null
+          vehicle: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "couriers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       courier_list_deliveries: {
         Args: { _pin: string }
         Returns: {
@@ -1249,6 +1338,13 @@ export type Database = {
           partner_name: string
           partner_whatsapp: string
           status: string
+        }[]
+      }
+      courier_list_online: {
+        Args: never
+        Returns: {
+          id: string
+          user_id: string
         }[]
       }
       courier_login: {
@@ -1279,6 +1375,30 @@ export type Database = {
           avg_stars: number
           total_ratings: number
         }[]
+      }
+      courier_set_online: {
+        Args: { _online: boolean; _pin: string }
+        Returns: {
+          access_pin: string | null
+          application_id: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          is_online: boolean
+          last_seen_at: string | null
+          name: string
+          phone: string
+          updated_at: string
+          user_id: string | null
+          vehicle: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "couriers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       courier_submit_application: {
         Args: {
@@ -1441,6 +1561,7 @@ export type Database = {
         }
         Returns: string
       }
+      mark_offline_inactive_couriers: { Args: never; Returns: number }
       partner_advance_delivery_status: {
         Args: { _delivery_id: string; _next_status: string; _pin: string }
         Returns: {
