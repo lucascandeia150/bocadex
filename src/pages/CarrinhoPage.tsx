@@ -514,10 +514,23 @@ export default function CarrinhoPage() {
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Taxa de entrega</span>
-            <span className="font-bold text-muted-foreground text-xs">
-              {mode === "entrega" && partnerHasDelivery ? "Combinada na entrega" : "—"}
-            </span>
+            {includeDelivery ? (
+              loadingFee ? (
+                <span className="text-xs text-muted-foreground">Calculando...</span>
+              ) : (
+                <span className="font-bold text-foreground">R${deliveryFee.toFixed(2)}</span>
+              )
+            ) : (
+              <span className="font-bold text-muted-foreground text-xs">—</span>
+            )}
           </div>
+          {includeDelivery && feeZoneName && (
+            <p className="text-[10px] text-muted-foreground -mt-1">
+              {feeSource === "partner" && "🏪 Taxa da loja"}
+              {feeSource === "zone" && `📍 Zona: ${feeZoneName}`}
+              {feeSource === "default" && "📦 Taxa padrão"}
+            </p>
+          )}
           {couponApplied && (
             <div className="flex items-center justify-between text-sm">
               <span className="text-primary font-bold flex items-center gap-1"><Ticket size={12} /> {couponApplied.code}</span>
