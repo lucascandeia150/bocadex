@@ -238,8 +238,8 @@ export default function CarrinhoPage() {
       navigate(`/auth?redirect=${encodeURIComponent("/carrinho")}`);
       return;
     }
-    if (mode !== "entrega" || !partnerHasDelivery) {
-      toast.error("Pagamento online disponível apenas para entrega");
+    if (mode === "entrega" && !partnerHasDelivery) {
+      toast.error("Esta loja não trabalha com entrega via app");
       return;
     }
     if (validation) {
@@ -255,10 +255,11 @@ export default function CarrinhoPage() {
           partner_id: partnerId,
           customer_name: name.trim(),
           customer_phone: phone.trim(),
-          delivery_address: address.trim(),
+          delivery_address: mode === "entrega" ? address.trim() : "Retirada na loja",
           order_description: buildOrderDescription(),
           amount: Number(finalValue.toFixed(2)),
           coupon_code: couponApplied?.code ?? null,
+          fulfillment_type: mode === "retirar" ? "pickup" : "delivery",
           back_url: backUrl,
         },
       });
@@ -609,6 +610,28 @@ export default function CarrinhoPage() {
               >
                 {submitting ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />}
                 {submitting ? "Enviando..." : "Pedir sem pagar agora (combinar na entrega)"}
+              </button>
+            </>
+          ) : mode === "retirar" ? (
+            <>
+              <button
+                onClick={payWithMercadoPago}
+                disabled={payingMp || submitting || !!validation}
+                className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
+              >
+                <span className="flex items-center gap-2">
+                  {payingMp ? <Loader2 size={20} className="animate-spin" /> : <CreditCard size={20} />}
+                  {payingMp ? "Abrindo pagamento..." : "Pagar e retirar na loja 🛍"}
+                </span>
+                <span className="font-black">R${finalValue.toFixed(2)}</span>
+              </button>
+              <button
+                onClick={confirmOrder}
+                disabled={submitting || !!validation}
+                className="w-full bg-card border-2 border-border hover:bg-accent disabled:opacity-60 text-foreground font-bold py-2.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-xs"
+              >
+                {submitting ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />}
+                {submitting ? "Enviando..." : "Combinar com a loja via WhatsApp"}
               </button>
             </>
           ) : (

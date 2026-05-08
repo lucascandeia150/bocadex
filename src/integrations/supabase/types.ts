@@ -418,6 +418,7 @@ export type Database = {
           delivery_lat: number | null
           delivery_lng: number | null
           fee: number
+          fulfillment_type: string
           id: string
           is_demo: boolean
           notes: string | null
@@ -444,6 +445,7 @@ export type Database = {
           delivery_lat?: number | null
           delivery_lng?: number | null
           fee?: number
+          fulfillment_type?: string
           id?: string
           is_demo?: boolean
           notes?: string | null
@@ -470,6 +472,7 @@ export type Database = {
           delivery_lat?: number | null
           delivery_lng?: number | null
           fee?: number
+          fulfillment_type?: string
           id?: string
           is_demo?: boolean
           notes?: string | null
@@ -811,6 +814,7 @@ export type Database = {
           customer_phone: string
           delivery_address: string
           external_reference: string
+          fulfillment_type: string
           id: string
           metadata: Json
           mp_payment_id: string | null
@@ -828,6 +832,7 @@ export type Database = {
           customer_phone: string
           delivery_address: string
           external_reference: string
+          fulfillment_type?: string
           id?: string
           metadata?: Json
           mp_payment_id?: string | null
@@ -845,6 +850,7 @@ export type Database = {
           customer_phone?: string
           delivery_address?: string
           external_reference?: string
+          fulfillment_type?: string
           id?: string
           metadata?: Json
           mp_payment_id?: string | null
@@ -1265,6 +1271,7 @@ export type Database = {
           delivery_lat: number | null
           delivery_lng: number | null
           fee: number
+          fulfillment_type: string
           id: string
           is_demo: boolean
           notes: string | null
@@ -1816,6 +1823,7 @@ export type Database = {
           delivery_lat: number | null
           delivery_lng: number | null
           fee: number
+          fulfillment_type: string
           id: string
           is_demo: boolean
           notes: string | null
@@ -1852,6 +1860,7 @@ export type Database = {
           delivery_lat: number | null
           delivery_lng: number | null
           fee: number
+          fulfillment_type: string
           id: string
           is_demo: boolean
           notes: string | null
@@ -1894,6 +1903,7 @@ export type Database = {
           delivery_lat: number | null
           delivery_lng: number | null
           fee: number
+          fulfillment_type: string
           id: string
           is_demo: boolean
           notes: string | null
@@ -1968,6 +1978,7 @@ export type Database = {
           delivery_lat: number | null
           delivery_lng: number | null
           fee: number
+          fulfillment_type: string
           id: string
           is_demo: boolean
           notes: string | null
@@ -2052,6 +2063,7 @@ export type Database = {
           delivery_lat: number | null
           delivery_lng: number | null
           fee: number
+          fulfillment_type: string
           id: string
           is_demo: boolean
           notes: string | null
@@ -2087,6 +2099,7 @@ export type Database = {
           delivery_lat: number | null
           delivery_lng: number | null
           fee: number
+          fulfillment_type: string
           id: string
           is_demo: boolean
           notes: string | null
@@ -2129,6 +2142,7 @@ export type Database = {
               delivery_lat: number | null
               delivery_lng: number | null
               fee: number
+              fulfillment_type: string
               id: string
               is_demo: boolean
               notes: string | null
@@ -2171,6 +2185,7 @@ export type Database = {
               delivery_lat: number | null
               delivery_lng: number | null
               fee: number
+              fulfillment_type: string
               id: string
               is_demo: boolean
               notes: string | null
@@ -2296,6 +2311,7 @@ export type Database = {
           delivery_lat: number | null
           delivery_lng: number | null
           fee: number
+          fulfillment_type: string
           id: string
           is_demo: boolean
           notes: string | null

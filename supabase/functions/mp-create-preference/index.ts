@@ -15,6 +15,7 @@ interface Body {
   amount: number;
   back_url?: string;
   coupon_code?: string | null;
+  fulfillment_type?: "delivery" | "pickup";
 }
 
 Deno.serve(async (req) => {
@@ -59,9 +60,13 @@ Deno.serve(async (req) => {
       partner_id: body.partner_id,
       amount: body.amount,
       has_back_url: !!body.back_url,
+      fulfillment_type: body.fulfillment_type,
     });
+    const fulfillmentType: "delivery" | "pickup" =
+      body.fulfillment_type === "pickup" ? "pickup" : "delivery";
+    const requireAddress = fulfillmentType === "delivery";
     if (!body.partner_id || !body.customer_name || !body.customer_phone ||
-        !body.delivery_address || !body.order_description || !body.amount) {
+        (requireAddress && !body.delivery_address) || !body.order_description || !body.amount) {
       return new Response(JSON.stringify({ error: "Preencha nome, telefone, endereço e itens do pedido" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -107,7 +112,7 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    if (!partner.uses_app_courier) {
+    if (fulfillmentType === "delivery" && !partner.uses_app_courier) {
       return new Response(
         JSON.stringify({ error: "Esta loja não trabalha com entrega via app. Faça retirada ou contate a loja." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -124,8 +129,9 @@ Deno.serve(async (req) => {
       partner_id: body.partner_id,
       customer_name: body.customer_name,
       customer_phone: body.customer_phone,
-      delivery_address: body.delivery_address,
+      delivery_address: body.delivery_address || (fulfillmentType === "pickup" ? "Retirada na loja" : ""),
       order_description: body.order_description,
+      fulfillment_type: fulfillmentType,
       metadata: { partner_name: partner.business_name, user_id: userId, coupon_code: body.coupon_code ?? null },
     });
     if (insErr) throw new Error(`Erro ao registrar pagamento: ${insErr.message}`);

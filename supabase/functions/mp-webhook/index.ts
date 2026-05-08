@@ -230,14 +230,15 @@ Deno.serve(async (req) => {
       .limit(1)
       .maybeSingle();
 
-    const fee = partner?.uses_app_courier ? Number(settings?.default_fee ?? 0) : 0;
-    const payout = partner?.uses_app_courier ? Number(settings?.default_courier_payout ?? 0) : 0;
+    const isPickup = (payment as { fulfillment_type?: string }).fulfillment_type === "pickup";
+    const fee = (!isPickup && partner?.uses_app_courier) ? Number(settings?.default_fee ?? 0) : 0;
+    const payout = (!isPickup && partner?.uses_app_courier) ? Number(settings?.default_courier_payout ?? 0) : 0;
     const pct = Number(settings?.app_fee_percent ?? 8);
-    const appFee = partner?.uses_app_courier
+    const appFee = (!isPickup && partner?.uses_app_courier)
       ? Number(((payment.amount * pct) / 100).toFixed(2))
       : 0;
 
-    const notes = `Pedido pago via Mercado Pago — Cliente: ${payment.customer_name} | Tel: ${payment.customer_phone}`;
+    const notes = `${isPickup ? "🛍 RETIRADA NA LOJA — " : ""}Pedido pago via Mercado Pago — Cliente: ${payment.customer_name} | Tel: ${payment.customer_phone}`;
 
     const { data: delivery, error: dErr } = await supabase
       .from("deliveries")
@@ -253,6 +254,7 @@ Deno.serve(async (req) => {
         app_fee: appFee,
         status: "disponivel",
         payment_id: payment.id,
+        fulfillment_type: isPickup ? "pickup" : "delivery",
       })
       .select("id")
       .single();
@@ -319,7 +321,7 @@ Deno.serve(async (req) => {
 
     // push: notifica entregadores ONLINE quando o pedido já é entregue pelo app
     try {
-      if (partner?.uses_app_courier) {
+      if (!isPickup && partner?.uses_app_courier) {
         const { data: onlineCouriers } = await supabase.rpc("courier_list_online");
         const ids = (onlineCouriers ?? [])
           .map((c: { user_id: string | null }) => c.user_id)

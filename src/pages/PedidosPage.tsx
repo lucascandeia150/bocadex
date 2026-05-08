@@ -23,6 +23,7 @@ interface OrderRow {
   partner_address?: string | null;
   prep_status?: string | null;
   courier_id?: string | null;
+  fulfillment_type?: string | null;
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; color: string }> = {
@@ -295,6 +296,11 @@ export default function PedidosPage() {
                       </p>
                       <p className="text-[11px] text-muted-foreground">{formatDate(o.created_at)}</p>
                     </div>
+                    {o.fulfillment_type === "pickup" && (
+                      <span className="text-[10px] font-black bg-orange-500/15 text-orange-700 border border-orange-500/30 px-2 py-1 rounded-lg whitespace-nowrap">
+                        🛍 Retirar na loja
+                      </span>
+                    )}
                   </div>
                   {isWaiting && (
                     <div className={`mt-3 rounded-xl border-2 p-3 ${timedOut ? "bg-secondary/10 border-secondary/40" : "bg-primary/5 border-primary/30"}`}>
@@ -342,7 +348,7 @@ export default function PedidosPage() {
                       Total: R${Number(o.order_value).toFixed(2)}
                     </p>
                   )}
-                    {!isFinal && o.delivery_address && (
+                    {!isFinal && o.delivery_address && o.fulfillment_type !== "pickup" && (
                       <div className="mt-3">
                         <OrderTrackingMap
                           storeAddress={o.partner_address ?? o.partner_name}
