@@ -78,18 +78,27 @@ export default function UserNotificationBell() {
 
   return (
     <div className="relative">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="relative h-10 w-10 rounded-full bg-muted hover:bg-accent flex items-center justify-center active:scale-95 transition-all"
-        aria-label="Notificações"
-      >
-        <Bell size={18} className="text-foreground" />
-        {unread > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-black flex items-center justify-center">
-            {unread > 9 ? "9+" : unread}
-          </span>
-        )}
-      </button>
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={() => setOpen((v) => !v)}
+              className="relative h-10 w-10 rounded-full bg-muted hover:bg-accent flex items-center justify-center active:scale-95 transition-all"
+              aria-label="Notificações"
+            >
+              <Bell size={18} className="text-foreground" />
+              {unread > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-black flex items-center justify-center">
+                  {unread > 9 ? "9+" : unread}
+                </span>
+              )}
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="font-bold text-xs">
+            Avisos
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       {open && (
         <>
