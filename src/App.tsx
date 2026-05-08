@@ -21,6 +21,7 @@ import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 import AdminLogsPage from "./pages/admin/AdminLogsPage";
 import AdminCouriersPage from "./pages/admin/AdminCouriersPage";
 import AdminPushPage from "./pages/admin/AdminPushPage";
+import AdminCouponsPage from "./pages/admin/AdminCouponsPage";
 
 const queryClient = new QueryClient({});
 
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="settings" element={<AdminSettingsPage />} />
               <Route path="logs" element={<AdminLogsPage />} />
               <Route path="push" element={<AdminPushPage />} />
+              <Route path="coupons" element={<AdminCouponsPage />} />
             </Route>
             <Route path="/*" element={<AppLayout />} />
           </Routes>

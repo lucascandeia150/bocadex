@@ -10,13 +10,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { registerPush, isPushSupported } from "@/lib/push";
 
-type TabKey = "dados" | "pedidos" | "enderecos" | "favoritos" | "config";
+type TabKey = "dados" | "pedidos" | "enderecos" | "favoritos" | "cupons" | "pagamentos" | "config";
 
 const TABS: { key: TabKey; label: string; icon: typeof User; emoji: string }[] = [
   { key: "dados", label: "Dados", icon: User, emoji: "👤" },
   { key: "pedidos", label: "Pedidos", icon: Package, emoji: "📦" },
   { key: "enderecos", label: "Endereços", icon: MapPin, emoji: "📍" },
   { key: "favoritos", label: "Favoritos", icon: Heart, emoji: "⭐" },
+  { key: "cupons", label: "Cupons", icon: Ticket, emoji: "🎟️" },
+  { key: "pagamentos", label: "Pagamento", icon: CreditCard, emoji: "💳" },
   { key: "config", label: "Config", icon: Settings, emoji: "⚙️" },
 ];
 
@@ -110,6 +112,8 @@ export default function PerfilPage() {
         {tab === "pedidos" && <PedidosTab />}
         {tab === "enderecos" && <EnderecosTab />}
         {tab === "favoritos" && <FavoritosTab />}
+        {tab === "cupons" && <CuponsTab />}
+        {tab === "pagamentos" && <PagamentoTab />}
         {tab === "config" && <ConfigTab onSignOut={signOut} />}
       </div>
     </div>
@@ -187,6 +191,163 @@ function DadosTab({ onChanged }: { onChanged: () => Promise<void> }) {
         {saved ? <CheckCircle2 size={16} /> : <Save size={16} />}
         {saving ? "Salvando..." : saved ? "Salvo!" : "Salvar perfil"}
       </button>
+    </div>
+  );
+}
+
+/* ============================================================ */
+/* Tab: Cupons                                                  */
+/* ============================================================ */
+function CuponsTab() {
+  const { user } = useAuth();
+  const [coupons, setCoupons] = useState<Array<{ id: string; code: string; description: string; type: string; value: number; min_order: number; expires_at: string | null }>>([]);
+  const [usage, setUsage] = useState<Array<{ id: string; coupon_id: string; discount_amount: number; created_at: string }>>([]);
+  const [code, setCode] = useState("");
+  const [validating, setValidating] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const load = async () => {
+    setLoading(true);
+    const [{ data: c }, usageData] = await Promise.all([
+      supabase.from("coupons").select("id, code, description, type, value, min_order, expires_at").eq("active", true).order("created_at", { ascending: false }).limit(20),
+      user ? supabase.from("coupon_usage").select("id, coupon_id, discount_amount, created_at").eq("user_id", user.id).order("created_at", { ascending: false }) : Promise.resolve({ data: [] }),
+    ]);
+    setCoupons(c || []);
+    setUsage((usageData.data as typeof usage) || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, [user?.id]);
+
+  const validate = async () => {
+    if (!code.trim()) return;
+    setValidating(true);
+    const { data, error } = await supabase.rpc("validate_coupon", {
+      _code: code.trim(),
+      _order_value: 100,
+      _partner_id: null,
+    });
+    setValidating(false);
+    const row = (data as Array<{ ok: boolean; message: string; code: string }> | null)?.[0];
+    if (error || !row) { toast.error("Erro ao validar cupom"); return; }
+    if (!row.ok) { toast.error(row.message); return; }
+    toast.success(`Cupom ${row.code} válido! Use no carrinho para aplicar o desconto.`);
+    setCode("");
+  };
+
+  return (
+    <div className="space-y-3 animate-slide-up">
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <p className="text-xs font-black text-foreground uppercase tracking-wide mb-2">Validar cupom</p>
+        <div className="flex gap-2">
+          <input
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            placeholder="DIGITE O CÓDIGO"
+            className="flex-1 px-3 py-2.5 rounded-xl border border-border bg-background text-sm font-bold tracking-wider text-foreground"
+          />
+          <button
+            onClick={validate}
+            disabled={validating || !code.trim()}
+            className="bg-primary text-primary-foreground font-black px-4 rounded-xl text-sm active:scale-95 disabled:opacity-60"
+          >
+            {validating ? "..." : "Validar"}
+          </button>
+        </div>
+        <p className="text-[11px] text-muted-foreground mt-2">
+          O desconto é aplicado automaticamente no carrinho ao usar um cupom válido.
+        </p>
+      </div>
+
+      <div>
+        <p className="text-xs font-black text-foreground uppercase tracking-wide mb-2 px-1">Cupons disponíveis</p>
+        {loading ? (
+          <div className="space-y-2">{[...Array(2)].map((_, i) => <div key={i} className="h-16 rounded-xl bg-muted animate-pulse" />)}</div>
+        ) : coupons.length === 0 ? (
+          <div className="rounded-2xl border-2 border-dashed border-border bg-card p-6 text-center">
+            <Ticket size={26} className="mx-auto text-muted-foreground mb-2" />
+            <p className="text-sm font-bold text-foreground">Você ainda não possui cupons ativos</p>
+            <p className="text-[11px] text-muted-foreground mt-1">Acompanhe nossas redes para receber promoções!</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {coupons.map((c) => (
+              <div key={c.id} className="rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/5 to-transparent p-3 flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center font-black shrink-0">
+                  {c.type === "percent" ? `${c.value}%` : `R$${Number(c.value).toFixed(0)}`}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-black text-foreground tracking-wider text-sm">{c.code}</p>
+                  <p className="text-[11px] text-muted-foreground truncate">{c.description}</p>
+                  {c.min_order > 0 && (
+                    <p className="text-[10px] text-muted-foreground">Mínimo R$ {Number(c.min_order).toFixed(2)}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {usage.length > 0 && (
+        <div>
+          <p className="text-xs font-black text-foreground uppercase tracking-wide mb-2 px-1 mt-4">Histórico</p>
+          <div className="space-y-2">
+            {usage.map((u) => (
+              <div key={u.id} className="rounded-xl border border-border bg-card p-3 flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">{new Date(u.created_at).toLocaleDateString("pt-BR")}</p>
+                <p className="text-sm font-black text-primary">- R$ {Number(u.discount_amount).toFixed(2)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================================================ */
+/* Tab: Pagamento                                               */
+/* ============================================================ */
+function PagamentoTab() {
+  return (
+    <div className="space-y-3 animate-slide-up">
+      <div className="rounded-2xl border border-border bg-gradient-to-br from-primary/10 to-secondary/5 p-5">
+        <div className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center mb-3">
+          <CreditCard size={22} />
+        </div>
+        <h3 className="text-base font-black text-foreground">Pagamento seguro</h3>
+        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+          Seus pedidos são processados pelo <strong className="text-foreground">Mercado Pago</strong>,
+          plataforma certificada e usada por milhões de brasileiros.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-2xl border border-border bg-card p-4 text-center">
+          <div className="text-2xl mb-1">⚡</div>
+          <p className="text-sm font-black text-foreground">PIX</p>
+          <p className="text-[10px] text-muted-foreground">Aprovação instantânea</p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-4 text-center">
+          <div className="text-2xl mb-1">💳</div>
+          <p className="text-sm font-black text-foreground">Cartão</p>
+          <p className="text-[10px] text-muted-foreground">Crédito ou débito</p>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <p className="text-xs font-black text-foreground mb-2">Como funciona</p>
+        <ul className="space-y-1.5 text-[11px] text-muted-foreground">
+          <li className="flex gap-2"><span className="text-primary font-black">1.</span> Adicione produtos ao carrinho</li>
+          <li className="flex gap-2"><span className="text-primary font-black">2.</span> Escolha PIX ou cartão no checkout</li>
+          <li className="flex gap-2"><span className="text-primary font-black">3.</span> Acompanhe o pedido em tempo real</li>
+        </ul>
+      </div>
+
+      <p className="text-[10px] text-center text-muted-foreground px-4">
+        🔒 Não armazenamos dados de cartão. Tudo é processado de forma criptografada pelo Mercado Pago.
+      </p>
     </div>
   );
 }

@@ -14,6 +14,7 @@ interface Body {
   order_description: string;
   amount: number;
   back_url?: string;
+  coupon_code?: string | null;
 }
 
 Deno.serve(async (req) => {
@@ -125,7 +126,7 @@ Deno.serve(async (req) => {
       customer_phone: body.customer_phone,
       delivery_address: body.delivery_address,
       order_description: body.order_description,
-      metadata: { partner_name: partner.business_name, user_id: userId },
+      metadata: { partner_name: partner.business_name, user_id: userId, coupon_code: body.coupon_code ?? null },
     });
     if (insErr) throw new Error(`Erro ao registrar pagamento: ${insErr.message}`);
 

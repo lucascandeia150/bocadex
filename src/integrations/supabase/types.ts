@@ -176,6 +176,93 @@ export type Database = {
         }
         Relationships: []
       }
+      coupon_usage: {
+        Row: {
+          coupon_id: string
+          created_at: string
+          discount_amount: number
+          id: string
+          order_id: string | null
+          payment_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          coupon_id: string
+          created_at?: string
+          discount_amount?: number
+          id?: string
+          order_id?: string | null
+          payment_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          coupon_id?: string
+          created_at?: string
+          discount_amount?: number
+          id?: string
+          order_id?: string | null
+          payment_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      coupons: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          created_by: string | null
+          description: string
+          expires_at: string | null
+          id: string
+          max_discount: number | null
+          min_order: number
+          partner_id: string | null
+          per_user_limit: number
+          type: string
+          updated_at: string
+          usage_limit: number | null
+          used_count: number
+          value: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          expires_at?: string | null
+          id?: string
+          max_discount?: number | null
+          min_order?: number
+          partner_id?: string | null
+          per_user_limit?: number
+          type?: string
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+          value?: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          expires_at?: string | null
+          id?: string
+          max_discount?: number | null
+          min_order?: number
+          partner_id?: string | null
+          per_user_limit?: number
+          type?: string
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+          value?: number
+        }
+        Relationships: []
+      }
       courier_applications: {
         Row: {
           availability: string
@@ -2038,6 +2125,16 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      redeem_coupon: {
+        Args: {
+          _code: string
+          _order_id: string
+          _order_value: number
+          _partner_id: string
+          _payment_id: string
+        }
+        Returns: string
+      }
       register_device_token: {
         Args: { _platform?: string; _token: string; _user_agent?: string }
         Returns: {
@@ -2104,6 +2201,20 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      validate_coupon: {
+        Args: { _code: string; _order_value: number; _partner_id?: string }
+        Returns: {
+          code: string
+          description: string
+          discount: number
+          final_value: number
+          id: string
+          message: string
+          ok: boolean
+          type: string
+          value: number
+        }[]
       }
     }
     Enums: {

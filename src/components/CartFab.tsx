@@ -16,7 +16,8 @@ export function CartFab() {
   return (
     <button
       onClick={() => navigate("/carrinho")}
-      className="fixed bottom-24 right-4 z-50 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white rounded-2xl shadow-2xl px-4 py-3 flex items-center gap-3 active:scale-95 transition-all animate-slide-up"
+      style={{ bottom: "calc(96px + env(safe-area-inset-bottom))" }}
+      className="fixed right-4 z-40 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white rounded-2xl shadow-2xl px-4 py-3 flex items-center gap-3 active:scale-95 transition-all animate-slide-up"
       aria-label="Abrir carrinho"
     >
       <div className="relative">

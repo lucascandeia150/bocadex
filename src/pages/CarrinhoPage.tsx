@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, CreditCard, LogIn, MapPin, Loader2 } from "lucide-react";
+import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Package, Bike, AlertTriangle, Zap, CreditCard, LogIn, MapPin, Loader2, Ticket, X } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +32,27 @@ export default function CarrinhoPage() {
   const [submitting, setSubmitting] = useState(false);
   const [payingMp, setPayingMp] = useState(false);
   const [savedAddresses, setSavedAddresses] = useState<{ id: string; label: string; address: string; is_default: boolean }[]>([]);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponApplied, setCouponApplied] = useState<{ id: string; code: string; discount: number } | null>(null);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+
+  const finalValue = Math.max(totalValue - (couponApplied?.discount ?? 0), 0);
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setValidatingCoupon(true);
+    const { data, error } = await supabase.rpc("validate_coupon", {
+      _code: couponCode.trim(),
+      _order_value: totalValue,
+      _partner_id: partnerId,
+    });
+    setValidatingCoupon(false);
+    const row = (data as Array<{ id: string; code: string; ok: boolean; message: string; discount: number }> | null)?.[0];
+    if (error || !row) { toast.error("Erro ao validar cupom"); return; }
+    if (!row.ok) { toast.error(row.message); return; }
+    setCouponApplied({ id: row.id, code: row.code, discount: Number(row.discount) });
+    toast.success(`Cupom ${row.code} aplicado! -R$ ${Number(row.discount).toFixed(2)}`);
+  };
 
   // Pré-preenche dados do perfil logado
   useEffect(() => {
@@ -195,7 +216,8 @@ export default function CarrinhoPage() {
           customer_phone: phone.trim(),
           delivery_address: address.trim(),
           order_description: buildOrderDescription(),
-          amount: Number(totalValue.toFixed(2)),
+          amount: Number(finalValue.toFixed(2)),
+          coupon_code: couponApplied?.code ?? null,
           back_url: backUrl,
         },
       });
@@ -455,12 +477,52 @@ export default function CarrinhoPage() {
               {mode === "entrega" && partnerHasDelivery ? "Combinada na entrega" : "—"}
             </span>
           </div>
+          {couponApplied && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-primary font-bold flex items-center gap-1"><Ticket size={12} /> {couponApplied.code}</span>
+              <span className="font-black text-primary">- R${couponApplied.discount.toFixed(2)}</span>
+            </div>
+          )}
           <div className="border-t border-border pt-2 mt-1 flex items-end justify-between">
             <div>
               <p className="text-[11px] font-bold text-muted-foreground uppercase">Total</p>
             </div>
-            <p className="text-2xl font-black text-primary leading-none">R${totalValue.toFixed(2)}</p>
+            <p className="text-2xl font-black text-primary leading-none">R${finalValue.toFixed(2)}</p>
           </div>
+        </div>
+
+        {/* Cupom */}
+        <div className="rounded-2xl border border-border bg-card p-4 animate-slide-up">
+          <p className="text-xs font-black text-foreground uppercase tracking-wide mb-2 flex items-center gap-1.5">
+            <Ticket size={12} className="text-primary" /> Cupom de desconto
+          </p>
+          {couponApplied ? (
+            <div className="flex items-center justify-between gap-2 rounded-xl bg-primary/10 border border-primary/30 p-2.5">
+              <div className="min-w-0">
+                <p className="text-sm font-black text-primary tracking-wider">{couponApplied.code}</p>
+                <p className="text-[10px] text-muted-foreground">- R$ {couponApplied.discount.toFixed(2)} aplicado</p>
+              </div>
+              <button onClick={() => setCouponApplied(null)} className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive">
+                <X size={14} />
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                placeholder="DIGITE O CÓDIGO"
+                className="flex-1 px-3 py-2 rounded-xl border border-border bg-background text-sm font-bold tracking-wider"
+              />
+              <button
+                onClick={applyCoupon}
+                disabled={validatingCoupon || !couponCode.trim()}
+                className="bg-primary text-primary-foreground font-black px-3 rounded-xl text-xs active:scale-95 disabled:opacity-60"
+              >
+                {validatingCoupon ? "..." : "Aplicar"}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -484,7 +546,7 @@ export default function CarrinhoPage() {
                   {payingMp ? <Loader2 size={20} className="animate-spin" /> : <CreditCard size={20} />}
                   {payingMp ? "Abrindo pagamento..." : "Ir para pagamento"}
                 </span>
-                <span className="font-black">R${totalValue.toFixed(2)}</span>
+                <span className="font-black">R${finalValue.toFixed(2)}</span>
               </button>
               <button
                 onClick={confirmOrder}
@@ -506,7 +568,7 @@ export default function CarrinhoPage() {
                   {submitting ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} />}
                   {submitting ? "Enviando..." : "Finalizar pedido"}
                 </span>
-                <span className="font-black">R${totalValue.toFixed(2)}</span>
+                <span className="font-black">R${finalValue.toFixed(2)}</span>
               </button>
             </>
           )}
