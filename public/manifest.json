@@ -1,7 +1,7 @@
 {
-  "name": "Bocadex Delivery's - Escolheu, pediu, chegou!",
-  "short_name": "Bocadex Delivery's",
-  "description": "Bocadex Delivery's: escolheu, pediu, chegou! 🍔🔥",
+  "name": "Bocadex Delivery's",
+  "short_name": "Bocadex",
+  "description": "Delivery rápido, seguro e moderno.",
   "id": "/",
   "scope": "/",
   "start_url": "/",
