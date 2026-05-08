@@ -115,12 +115,20 @@ function AppHeader() {
   const navigate = useNavigate();
   const isHome = location.pathname === "/";
   const isAdmin = location.pathname.startsWith("/admin/dashboard");
+  const { toggleSidebar } = useSidebar();
 
   if (isAdmin) return null;
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border h-14 flex items-center px-4 gap-2">
-      <SidebarTrigger className="h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-all" />
+    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border h-14 flex items-center px-3 gap-2">
+      <button
+        onClick={toggleSidebar}
+        aria-label="Abrir menu lateral"
+        className="flex items-center gap-1.5 h-10 pl-2.5 pr-3.5 rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 active:scale-95 transition-all"
+      >
+        <Menu size={18} strokeWidth={2.5} />
+        <span className="text-xs font-black">Menu</span>
+      </button>
       {!isHome && (
         <button
           onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/"))}
@@ -131,7 +139,7 @@ function AppHeader() {
           <span className="text-xs font-bold">Voltar</span>
         </button>
       )}
-      <span className="text-base font-black text-foreground ml-auto">Bocadex Delivery's</span>
+      <span className="text-base font-black text-foreground ml-auto truncate">Bocadex Delivery's</span>
       <UserNotificationBell />
     </header>
   );
