@@ -35,8 +35,38 @@ export default function CarrinhoPage() {
   const [couponCode, setCouponCode] = useState("");
   const [couponApplied, setCouponApplied] = useState<{ id: string; code: string; discount: number } | null>(null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [deliveryFee, setDeliveryFee] = useState<number>(0);
+  const [feeSource, setFeeSource] = useState<string>("");
+  const [feeZoneName, setFeeZoneName] = useState<string>("");
+  const [loadingFee, setLoadingFee] = useState(false);
 
-  const finalValue = Math.max(totalValue - (couponApplied?.discount ?? 0), 0);
+  const includeDelivery = mode === "entrega" && partnerHasDelivery;
+  const subtotalAfterCoupon = Math.max(totalValue - (couponApplied?.discount ?? 0), 0);
+  const finalValue = subtotalAfterCoupon + (includeDelivery ? deliveryFee : 0);
+
+  // Resolve taxa de entrega em tempo real
+  useEffect(() => {
+    if (!includeDelivery || !partnerId) {
+      setDeliveryFee(0); setFeeSource(""); setFeeZoneName("");
+      return;
+    }
+    let cancel = false;
+    setLoadingFee(true);
+    const t = setTimeout(async () => {
+      const { data, error } = await supabase.rpc("resolve_delivery_fee", {
+        _partner_id: partnerId,
+        _address: address || "",
+      });
+      if (cancel) return;
+      setLoadingFee(false);
+      const row = (data as Array<{ fee: number; source: string; zone_name: string }> | null)?.[0];
+      if (error || !row) return;
+      setDeliveryFee(Number(row.fee || 0));
+      setFeeSource(row.source);
+      setFeeZoneName(row.zone_name || "");
+    }, 300);
+    return () => { cancel = true; clearTimeout(t); };
+  }, [partnerId, address, includeDelivery]);
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
