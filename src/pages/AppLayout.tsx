@@ -72,6 +72,8 @@ export default function AppLayout() {
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/privacidade" element={<PrivacidadePage />} />
               <Route path="/parceiro/:id" element={<ParceiroDetalhePage />} />
+              {/* Slug curto: /salgados-da-maria */}
+              <Route path="/:slug" element={<ParceiroDetalhePage />} />
               <Route path="/descobrir-hub" element={<DescobrirHubPage />} />
               <Route path="/trabalhe" element={<TrabalhePage />} />
               <Route path="/descobrir" element={<DescobrirPage />} />
