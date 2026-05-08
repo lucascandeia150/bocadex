@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import {
   LayoutDashboard, ShoppingBag, Store, Package, Users, DollarSign, Star,
   Settings, ScrollText, LogOut, Menu, X, Activity, ChevronRight, Bike,
-  Bell, Ticket, type LucideIcon
+  Bell, Ticket, MapPin, type LucideIcon
 } from "lucide-react";
 import AdminNotificationCenter from "@/components/admin/AdminNotificationCenter";
 
@@ -28,6 +28,7 @@ const NAV: NavItem[] = [
   { to: "/admin/dashboard/reviews", label: "Avaliações", icon: Star, group: "Negócio" },
   { to: "/admin/dashboard/push", label: "Notificações Push", icon: Bell, group: "Negócio" },
   { to: "/admin/dashboard/coupons", label: "Cupons", icon: Ticket, group: "Negócio" },
+  { to: "/admin/dashboard/zones", label: "Zonas de entrega", icon: MapPin, group: "Negócio" },
   { to: "/admin/dashboard/settings", label: "Configurações", icon: Settings, group: "Sistema" },
   { to: "/admin/dashboard/logs", label: "Logs / Auditoria", icon: ScrollText, group: "Sistema" },
 ];
