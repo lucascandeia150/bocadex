@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Package, ShoppingCart, ArrowRight, Trash2, Minus, Plus, Clock, CheckCircle2, Bike, ChefHat, Dumbbell, LogIn, Loader2, X } from "lucide-react";
+import { Package, ShoppingCart, ArrowRight, Trash2, Minus, Plus, Clock, CheckCircle2, Bike, ChefHat, Dumbbell, LogIn, Loader2, X, MessageCircle } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { OrderTrackingMap } from "@/components/OrderTrackingMap";
 import { OrderStatusTimeline } from "@/components/OrderStatusTimeline";
+import OrderChat from "@/components/OrderChat";
 import { toast } from "sonner";
 
 interface OrderRow {
@@ -53,6 +54,18 @@ export default function PedidosPage() {
   const [loading, setLoading] = useState(false);
   const [now, setNow] = useState(Date.now());
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [chatOrder, setChatOrder] = useState<OrderRow | null>(null);
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [openingChat, setOpeningChat] = useState(false);
+
+  const openChat = async (o: OrderRow) => {
+    setOpeningChat(true);
+    setChatOrder(o);
+    const { data, error } = await supabase.rpc("customer_get_or_create_chat", { _order_id: o.id });
+    setOpeningChat(false);
+    if (error || !data) { toast.error(error?.message || "Erro ao abrir conversa"); setChatOrder(null); return; }
+    setChatId((data as any).id);
+  };
 
   // tick a cada 15s para atualizar contadores
   useEffect(() => {
@@ -313,6 +326,14 @@ export default function PedidosPage() {
                       Seu entregador pode entrar em contato caso necessário.
                     </p>
                   )}
+                  {!isFinal && o.partner_id && (
+                    <button
+                      onClick={() => openChat(o)}
+                      className="mt-2 w-full inline-flex items-center justify-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs py-2 rounded-xl active:scale-95"
+                    >
+                      <MessageCircle size={14} /> Conversar com a loja
+                    </button>
+                  )}
                   <p className="text-[11px] text-muted-foreground mt-2 whitespace-pre-line line-clamp-3">
                     {o.order_description}
                   </p>
@@ -365,6 +386,26 @@ export default function PedidosPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      {chatOrder && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center" onClick={() => { setChatOrder(null); setChatId(null); }}>
+          <div className="bg-background w-full sm:max-w-md sm:rounded-2xl overflow-hidden h-[85vh] sm:h-[70vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            {openingChat || !chatId ? (
+              <div className="flex-1 flex items-center justify-center">
+                <Loader2 className="animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <OrderChat
+                chatId={chatId}
+                role="customer"
+                title={`🏪 ${chatOrder.partner_name}`}
+                subtitle={chatOrder.order_description.slice(0, 60)}
+                onClose={() => { setChatOrder(null); setChatId(null); }}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
