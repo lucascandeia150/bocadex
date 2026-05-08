@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Package, ShoppingCart, ArrowRight, Trash2, Minus, Plus, Clock, CheckCircle2, Bike, ChefHat, Dumbbell, LogIn } from "lucide-react";
+import { Package, ShoppingCart, ArrowRight, Trash2, Minus, Plus, Clock, CheckCircle2, Bike, ChefHat, Dumbbell, LogIn, Loader2, X } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { OrderTrackingMap } from "@/components/OrderTrackingMap";
 import { OrderStatusTimeline } from "@/components/OrderStatusTimeline";
+import { toast } from "sonner";
 
 interface OrderRow {
   id: string;
@@ -20,6 +21,7 @@ interface OrderRow {
   partner_id?: string | null;
   partner_address?: string | null;
   prep_status?: string | null;
+  courier_id?: string | null;
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; color: string }> = {
@@ -49,6 +51,26 @@ export default function PedidosPage() {
 
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(false);
+  const [now, setNow] = useState(Date.now());
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  // tick a cada 15s para atualizar contadores
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 15000);
+    return () => clearInterval(t);
+  }, []);
+
+  const TIMEOUT_MIN = 5;
+
+  const cancelOrder = async (id: string) => {
+    if (!confirm("Cancelar este pedido? Esta ação não pode ser desfeita.")) return;
+    setCancellingId(id);
+    const { error } = await supabase.rpc("customer_cancel_delivery", { _delivery_id: id });
+    setCancellingId(null);
+    if (error) { toast.error(error.message || "Não foi possível cancelar"); return; }
+    toast.success("Pedido cancelado");
+    setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status: "cancelada" } : o));
+  };
 
   const enrichWithPartnerAddress = async (rows: OrderRow[]): Promise<OrderRow[]> => {
     const ids = Array.from(new Set(rows.map((o) => o.partner_id).filter(Boolean))) as string[];
