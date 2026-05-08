@@ -7,14 +7,11 @@ export default function ForceUpdateModal() {
 
   const reload = () => {
     try { localStorage.setItem("escolheai_seen_version", version.version); } catch {}
-    const w: Window = window;
-    if ("caches" in w) {
-      caches
-        .keys()
-        .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
-        .finally(() => w.location.reload());
+    const doReload = () => window.location.reload();
+    if (typeof caches !== "undefined") {
+      caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k)))).finally(doReload);
     } else {
-      w.location.reload();
+      doReload();
     }
   };
 
