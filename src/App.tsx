@@ -50,6 +50,7 @@ const App = () => (
               <Route path="logs" element={<AdminLogsPage />} />
               <Route path="push" element={<AdminPushPage />} />
               <Route path="coupons" element={<AdminCouponsPage />} />
+              <Route path="zones" element={<AdminZonesPage />} />
             </Route>
             <Route path="/*" element={<AppLayout />} />
           </Routes>
