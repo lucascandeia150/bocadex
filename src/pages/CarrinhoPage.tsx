@@ -216,7 +216,8 @@ export default function CarrinhoPage() {
           customer_phone: phone.trim(),
           delivery_address: address.trim(),
           order_description: buildOrderDescription(),
-          amount: Number(totalValue.toFixed(2)),
+          amount: Number(finalValue.toFixed(2)),
+          coupon_code: couponApplied?.code ?? null,
           back_url: backUrl,
         },
       });
@@ -545,7 +546,7 @@ export default function CarrinhoPage() {
                   {payingMp ? <Loader2 size={20} className="animate-spin" /> : <CreditCard size={20} />}
                   {payingMp ? "Abrindo pagamento..." : "Ir para pagamento"}
                 </span>
-                <span className="font-black">R${totalValue.toFixed(2)}</span>
+                <span className="font-black">R${finalValue.toFixed(2)}</span>
               </button>
               <button
                 onClick={confirmOrder}
@@ -567,7 +568,7 @@ export default function CarrinhoPage() {
                   {submitting ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} />}
                   {submitting ? "Enviando..." : "Finalizar pedido"}
                 </span>
-                <span className="font-black">R${totalValue.toFixed(2)}</span>
+                <span className="font-black">R${finalValue.toFixed(2)}</span>
               </button>
             </>
           )}
