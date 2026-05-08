@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock, History, Star, Mail, Lock, Wifi, WifiOff } from "lucide-react";
+import { Truck, RefreshCw, MapPin, ArrowLeft, LogOut, MessageCircle, Check, X, Package, Clock, History, Star, Mail, Lock, Wifi, WifiOff, Phone } from "lucide-react";
 import { CourierDashboard } from "@/components/portal/CourierDashboard";
 
 interface Courier {
@@ -24,6 +24,8 @@ interface Delivery {
   partner_whatsapp: string | null;
   created_at: string;
   delivery_code: string | null;
+  customer_name: string | null;
+  customer_phone: string | null;
 }
 
 const PIN_KEY = "escolheai_courier_pin";
