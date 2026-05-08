@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
 
     const { data: payment } = await supabase
       .from("payments")
-      .select("status, amount, partner_id, metadata")
+      .select("id, status, amount, partner_id, metadata, mp_payment_id")
       .eq("external_reference", ref)
       .maybeSingle();
 
@@ -64,9 +64,52 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Fallback ativo: se ainda está pending, consulta MP direto e
+    // dispara o webhook interno para criar pedido + push.
+    let currentStatus = payment.status;
+    if (currentStatus === "pending" || currentStatus === "in_process") {
+      try {
+        const mpToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
+        if (mpToken) {
+          // procura por external_reference
+          const search = await fetch(
+            `https://api.mercadopago.com/v1/payments/search?external_reference=${encodeURIComponent(ref)}&sort=date_created&criteria=desc`,
+            { headers: { Authorization: `Bearer ${mpToken}` } },
+          );
+          const searchJson = await search.json();
+          const mpPayment = searchJson?.results?.[0];
+          if (mpPayment?.id) {
+            const newStatus: string = mpPayment.status ?? currentStatus;
+            if (newStatus !== currentStatus || !payment.mp_payment_id) {
+              // chama o webhook interno (passando service-role) para
+              // reaproveitar toda a lógica de criação de delivery / push
+              try {
+                await fetch(
+                  `${Deno.env.get("SUPABASE_URL")}/functions/v1/mp-webhook?type=payment&data.id=${mpPayment.id}`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      // não temos assinatura — webhook agora segue mesmo assim
+                    },
+                    body: JSON.stringify({ type: "payment", data: { id: mpPayment.id } }),
+                  },
+                );
+              } catch (e) {
+                console.warn("fallback webhook call falhou", e);
+              }
+              currentStatus = newStatus;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("fallback MP fetch falhou", e);
+      }
+    }
+
     return new Response(JSON.stringify({
       found: true,
-      status: payment.status,
+      status: currentStatus,
       amount: payment.amount,
       partner_id: payment.partner_id,
     }), {
