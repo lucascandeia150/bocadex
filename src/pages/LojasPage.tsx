@@ -8,6 +8,7 @@ import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 interface DbPartner {
   id: string;
+  slug?: string | null;
   business_name: string;
   business_type: string;
   address: string;
