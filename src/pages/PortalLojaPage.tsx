@@ -30,6 +30,8 @@ interface Delivery {
   created_at: string;
   order_value?: number;
   prep_status?: string;
+  fulfillment_type?: string | null;
+  user_id?: string | null;
 }
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
@@ -48,6 +50,7 @@ export default function PortalLojaPage() {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<"dash" | "list" | "new" | "products" | "store" | "chats">("dash");
+  const [orderFilter, setOrderFilter] = useState<"all" | "pickup" | "delivery">("all");
   const [chatUnread, setChatUnread] = useState(0);
   const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
   const [rateModal, setRateModal] = useState<Delivery | null>(null);
