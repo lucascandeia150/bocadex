@@ -369,10 +369,15 @@ export type Database = {
         Row: {
           app_fee: number
           courier_id: string | null
+          courier_lat: number | null
+          courier_lng: number | null
+          courier_location_updated_at: string | null
           courier_payout: number
           created_at: string
           delivery_address: string
           delivery_code: string | null
+          delivery_lat: number | null
+          delivery_lng: number | null
           fee: number
           id: string
           is_demo: boolean
@@ -390,10 +395,15 @@ export type Database = {
         Insert: {
           app_fee?: number
           courier_id?: string | null
+          courier_lat?: number | null
+          courier_lng?: number | null
+          courier_location_updated_at?: string | null
           courier_payout?: number
           created_at?: string
           delivery_address: string
           delivery_code?: string | null
+          delivery_lat?: number | null
+          delivery_lng?: number | null
           fee?: number
           id?: string
           is_demo?: boolean
@@ -411,10 +421,15 @@ export type Database = {
         Update: {
           app_fee?: number
           courier_id?: string | null
+          courier_lat?: number | null
+          courier_lng?: number | null
+          courier_location_updated_at?: string | null
           courier_payout?: number
           created_at?: string
           delivery_address?: string
           delivery_code?: string | null
+          delivery_lat?: number | null
+          delivery_lng?: number | null
           fee?: number
           id?: string
           is_demo?: boolean
@@ -1163,10 +1178,15 @@ export type Database = {
         Returns: {
           app_fee: number
           courier_id: string | null
+          courier_lat: number | null
+          courier_lng: number | null
+          courier_location_updated_at: string | null
           courier_payout: number
           created_at: string
           delivery_address: string
           delivery_code: string | null
+          delivery_lat: number | null
+          delivery_lng: number | null
           fee: number
           id: string
           is_demo: boolean
@@ -1707,10 +1727,15 @@ export type Database = {
         Returns: {
           app_fee: number
           courier_id: string | null
+          courier_lat: number | null
+          courier_lng: number | null
+          courier_location_updated_at: string | null
           courier_payout: number
           created_at: string
           delivery_address: string
           delivery_code: string | null
+          delivery_lat: number | null
+          delivery_lng: number | null
           fee: number
           id: string
           is_demo: boolean
@@ -1738,10 +1763,15 @@ export type Database = {
         Returns: {
           app_fee: number
           courier_id: string | null
+          courier_lat: number | null
+          courier_lng: number | null
+          courier_location_updated_at: string | null
           courier_payout: number
           created_at: string
           delivery_address: string
           delivery_code: string | null
+          delivery_lat: number | null
+          delivery_lng: number | null
           fee: number
           id: string
           is_demo: boolean
@@ -1775,10 +1805,15 @@ export type Database = {
         Returns: {
           app_fee: number
           courier_id: string | null
+          courier_lat: number | null
+          courier_lng: number | null
+          courier_location_updated_at: string | null
           courier_payout: number
           created_at: string
           delivery_address: string
           delivery_code: string | null
+          delivery_lat: number | null
+          delivery_lng: number | null
           fee: number
           id: string
           is_demo: boolean
@@ -1805,10 +1840,15 @@ export type Database = {
         Returns: {
           app_fee: number
           courier_id: string | null
+          courier_lat: number | null
+          courier_lng: number | null
+          courier_location_updated_at: string | null
           courier_payout: number
           created_at: string
           delivery_address: string
           delivery_code: string | null
+          delivery_lat: number | null
+          delivery_lng: number | null
           fee: number
           id: string
           is_demo: boolean
@@ -1862,10 +1902,15 @@ export type Database = {
         Returns: {
           app_fee: number
           courier_id: string | null
+          courier_lat: number | null
+          courier_lng: number | null
+          courier_location_updated_at: string | null
           courier_payout: number
           created_at: string
           delivery_address: string
           delivery_code: string | null
+          delivery_lat: number | null
+          delivery_lng: number | null
           fee: number
           id: string
           is_demo: boolean
@@ -1892,10 +1937,15 @@ export type Database = {
         Returns: {
           app_fee: number
           courier_id: string | null
+          courier_lat: number | null
+          courier_lng: number | null
+          courier_location_updated_at: string | null
           courier_payout: number
           created_at: string
           delivery_address: string
           delivery_code: string | null
+          delivery_lat: number | null
+          delivery_lng: number | null
           fee: number
           id: string
           is_demo: boolean
@@ -1929,10 +1979,15 @@ export type Database = {
             Returns: {
               app_fee: number
               courier_id: string | null
+              courier_lat: number | null
+              courier_lng: number | null
+              courier_location_updated_at: string | null
               courier_payout: number
               created_at: string
               delivery_address: string
               delivery_code: string | null
+              delivery_lat: number | null
+              delivery_lng: number | null
               fee: number
               id: string
               is_demo: boolean
@@ -1966,10 +2021,15 @@ export type Database = {
             Returns: {
               app_fee: number
               courier_id: string | null
+              courier_lat: number | null
+              courier_lng: number | null
+              courier_location_updated_at: string | null
               courier_payout: number
               created_at: string
               delivery_address: string
               delivery_code: string | null
+              delivery_lat: number | null
+              delivery_lng: number | null
               fee: number
               id: string
               is_demo: boolean
@@ -2072,10 +2132,15 @@ export type Database = {
         Returns: {
           app_fee: number
           courier_id: string | null
+          courier_lat: number | null
+          courier_lng: number | null
+          courier_location_updated_at: string | null
           courier_payout: number
           created_at: string
           delivery_address: string
           delivery_code: string | null
+          delivery_lat: number | null
+          delivery_lng: number | null
           fee: number
           id: string
           is_demo: boolean
