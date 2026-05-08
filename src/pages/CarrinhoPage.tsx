@@ -612,6 +612,28 @@ export default function CarrinhoPage() {
                 {submitting ? "Enviando..." : "Pedir sem pagar agora (combinar na entrega)"}
               </button>
             </>
+          ) : mode === "retirar" ? (
+            <>
+              <button
+                onClick={payWithMercadoPago}
+                disabled={payingMp || submitting || !!validation}
+                className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
+              >
+                <span className="flex items-center gap-2">
+                  {payingMp ? <Loader2 size={20} className="animate-spin" /> : <CreditCard size={20} />}
+                  {payingMp ? "Abrindo pagamento..." : "Pagar e retirar na loja 🛍"}
+                </span>
+                <span className="font-black">R${finalValue.toFixed(2)}</span>
+              </button>
+              <button
+                onClick={confirmOrder}
+                disabled={submitting || !!validation}
+                className="w-full bg-card border-2 border-border hover:bg-accent disabled:opacity-60 text-foreground font-bold py-2.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-xs"
+              >
+                {submitting ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />}
+                {submitting ? "Enviando..." : "Combinar com a loja via WhatsApp"}
+              </button>
+            </>
           ) : (
             <>
               <button
