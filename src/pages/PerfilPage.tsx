@@ -8,6 +8,7 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { registerPush, isPushSupported } from "@/lib/push";
 
 type TabKey = "dados" | "pedidos" | "enderecos" | "favoritos" | "config";
 
@@ -612,9 +613,20 @@ function ConfigTab({ onSignOut }: { onSignOut: () => Promise<void> }) {
     navigate("/");
   };
 
+  const handleEnableNotifications = async () => {
+    if (!(await isPushSupported())) {
+      toast.error("Notificações não suportadas neste dispositivo");
+      return;
+    }
+    const r = await registerPush();
+    if (r.ok) toast.success("Notificações ativadas!");
+    else if (r.reason === "denied") toast.error("Permissão negada nas configurações do navegador");
+    else toast.error("Não foi possível ativar agora");
+  };
+
   const items = [
-    { icon: Bell, label: "Notificações", desc: "Status dos pedidos em tempo real", soon: true },
-    { icon: Shield, label: "Privacidade", desc: "Termos e política", soon: true },
+    { icon: Bell, label: "Notificações", desc: "Receber status dos pedidos em tempo real", onClick: handleEnableNotifications, badge: "Ativar" },
+    { icon: Shield, label: "Privacidade", desc: "Termos, política e LGPD", onClick: () => navigate("/privacidade"), badge: "Protegido" },
     { icon: MessageCircle, label: "Suporte", desc: "Fale com a gente", onClick: () => navigate("/contato") },
     { icon: Info, label: "Sobre o app", desc: "Bocadex Delivery's", onClick: () => navigate("/sobre") },
   ];
@@ -636,9 +648,9 @@ function ConfigTab({ onSignOut }: { onSignOut: () => Promise<void> }) {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-foreground flex items-center gap-1.5">
                 {it.label}
-                {it.soon && (
-                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-secondary/20 text-secondary uppercase">
-                    Em breve
+                {it.badge && (
+                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-primary/15 text-primary uppercase">
+                    {it.badge}
                   </span>
                 )}
               </p>
