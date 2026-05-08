@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Save, Upload, Power } from "lucide-react";
+import { Save, Upload, Power, Bike } from "lucide-react";
 
 interface Store {
   id: string;
@@ -18,6 +18,9 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [customFee, setCustomFee] = useState<string>("");
+  const [customPayout, setCustomPayout] = useState<string>("");
+  const [savingFee, setSavingFee] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -37,6 +40,14 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
       logo_url: s.logo_url,
       is_open: !!s.is_open,
     });
+    // busca taxa custom (campo não exposto pelo partner_login)
+    const { data: extra } = await supabase
+      .from("partner_applications")
+      .select("custom_delivery_fee, custom_courier_payout")
+      .eq("id", s.id)
+      .maybeSingle();
+    setCustomFee(extra?.custom_delivery_fee != null ? String(extra.custom_delivery_fee) : "");
+    setCustomPayout(extra?.custom_courier_payout != null ? String(extra.custom_courier_payout) : "");
   };
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [pin]);
@@ -80,6 +91,20 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
     setStore({ ...store, logo_url: pub.publicUrl });
     setUploading(false);
     toast.success("Logo carregada — clique em Salvar");
+  };
+
+  const saveFee = async () => {
+    setSavingFee(true);
+    const fee = customFee.trim() === "" ? null : Number(customFee);
+    const payout = customPayout.trim() === "" ? null : Number(customPayout);
+    const { error } = await supabase.rpc("partner_set_delivery_fee", {
+      _pin: pin,
+      _fee: fee,
+      _courier_payout: payout,
+    });
+    setSavingFee(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success(fee === null ? "Voltou para taxa por zona/padrão" : "Taxa atualizada ✅");
   };
 
   if (loading || !store) {
@@ -135,6 +160,29 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
           className="w-full bg-primary text-primary-foreground font-black py-3 rounded-xl active:scale-95 disabled:opacity-50 flex items-center justify-center gap-1"
         >
           <Save size={14} /> {saving ? "Salvando..." : "Salvar alterações"}
+        </button>
+      </div>
+
+      {/* Taxa de entrega custom */}
+      <div className="bg-card rounded-2xl border border-border p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Bike size={16} className="text-primary" />
+          <p className="text-sm font-black text-foreground">Sua taxa de entrega</p>
+        </div>
+        <p className="text-[11px] text-muted-foreground leading-snug">
+          Defina sua taxa fixa para todos os pedidos. Deixe em branco para usar a
+          <strong> taxa por zona</strong> (ou a taxa padrão do app, se nenhuma zona corresponder).
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <Field label="Taxa cobrada (R$)" value={customFee} onChange={setCustomFee} />
+          <Field label="Repasse entregador (R$)" value={customPayout} onChange={setCustomPayout} />
+        </div>
+        <button
+          disabled={savingFee}
+          onClick={saveFee}
+          className="w-full bg-primary/10 text-primary font-bold py-2.5 rounded-xl active:scale-95 disabled:opacity-50 flex items-center justify-center gap-1 text-sm"
+        >
+          <Save size={14} /> {savingFee ? "Salvando..." : "Salvar taxa"}
         </button>
       </div>
     </div>
