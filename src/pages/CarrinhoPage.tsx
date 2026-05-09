@@ -589,6 +589,7 @@ export default function CarrinhoPage() {
                 <input
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyCoupon(); } }}
                   placeholder="DIGITE O CÓDIGO"
                   className="flex-1 px-3 py-2.5 rounded-xl border border-border bg-background text-sm font-bold tracking-wider"
                 />
