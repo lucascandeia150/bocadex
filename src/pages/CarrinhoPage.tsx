@@ -35,6 +35,7 @@ export default function CarrinhoPage() {
   const [couponCode, setCouponCode] = useState("");
   const [couponApplied, setCouponApplied] = useState<{ id: string; code: string; discount: number } | null>(null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [availableCoupons, setAvailableCoupons] = useState<{ id: string; code: string; description: string; type: string; value: number; min_order: number }[]>([]);
   const [deliveryFee, setDeliveryFee] = useState<number>(0);
   const [feeSource, setFeeSource] = useState<string>("");
   const [feeZoneName, setFeeZoneName] = useState<string>("");
@@ -68,21 +69,42 @@ export default function CarrinhoPage() {
     return () => { cancel = true; clearTimeout(t); };
   }, [partnerId, address, includeDelivery]);
 
-  const applyCoupon = async () => {
-    if (!couponCode.trim()) return;
+  const applyCouponCode = async (code: string) => {
+    if (!code.trim()) return;
     setValidatingCoupon(true);
     const { data, error } = await supabase.rpc("validate_coupon", {
-      _code: couponCode.trim(),
+      _code: code.trim(),
       _order_value: totalValue,
       _partner_id: partnerId,
     });
     setValidatingCoupon(false);
     const row = (data as Array<{ id: string; code: string; ok: boolean; message: string; discount: number }> | null)?.[0];
     if (error || !row) { toast.error("Erro ao validar cupom"); return; }
-    if (!row.ok) { toast.error(row.message); return; }
+    if (!row.ok) { toast.error(`❌ ${row.message || "Cupom inválido"}`); return; }
     setCouponApplied({ id: row.id, code: row.code, discount: Number(row.discount) });
-    toast.success(`Cupom ${row.code} aplicado! -R$ ${Number(row.discount).toFixed(2)}`);
+    toast.success(`✅ Cupom ${row.code} aplicado! -R$ ${Number(row.discount).toFixed(2)}`);
   };
+  const applyCoupon = () => applyCouponCode(couponCode);
+
+  // Carrega cupons disponíveis (públicos ou da loja)
+  useEffect(() => {
+    let cancel = false;
+    (async () => {
+      const { data } = await supabase
+        .from("coupons")
+        .select("id, code, description, type, value, min_order, partner_id, expires_at")
+        .eq("active", true)
+        .or(`partner_id.is.null,partner_id.eq.${partnerId ?? "00000000-0000-0000-0000-000000000000"}`)
+        .limit(20);
+      if (cancel || !data) return;
+      const now = Date.now();
+      const valid = data
+        .filter((c) => !c.expires_at || new Date(c.expires_at).getTime() > now)
+        .map((c) => ({ id: c.id, code: c.code, description: c.description || "", type: c.type, value: Number(c.value), min_order: Number(c.min_order || 0) }));
+      setAvailableCoupons(valid);
+    })();
+    return () => { cancel = true; };
+  }, [partnerId]);
 
   // Pré-preenche dados do perfil logado
   useEffect(() => {
@@ -513,6 +535,12 @@ export default function CarrinhoPage() {
             <span className="text-muted-foreground">Subtotal ({totalItems} {totalItems === 1 ? "item" : "itens"})</span>
             <span className="font-bold text-foreground">R${totalValue.toFixed(2)}</span>
           </div>
+          {couponApplied && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-primary font-bold flex items-center gap-1"><Ticket size={12} /> Desconto ({couponApplied.code})</span>
+              <span className="font-black text-primary">- R${couponApplied.discount.toFixed(2)}</span>
+            </div>
+          )}
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Taxa de entrega</span>
             {includeDelivery ? (
@@ -532,12 +560,6 @@ export default function CarrinhoPage() {
               {feeSource === "default" && "📦 Taxa padrão"}
             </p>
           )}
-          {couponApplied && (
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-primary font-bold flex items-center gap-1"><Ticket size={12} /> {couponApplied.code}</span>
-              <span className="font-black text-primary">- R${couponApplied.discount.toFixed(2)}</span>
-            </div>
-          )}
           <div className="border-t border-border pt-2 mt-1 flex items-end justify-between">
             <div>
               <p className="text-[11px] font-bold text-muted-foreground uppercase">Total</p>
@@ -549,34 +571,65 @@ export default function CarrinhoPage() {
         {/* Cupom */}
         <div className="rounded-2xl border border-border bg-card p-4 animate-slide-up">
           <p className="text-xs font-black text-foreground uppercase tracking-wide mb-2 flex items-center gap-1.5">
-            <Ticket size={12} className="text-primary" /> Cupom de desconto
+            <Ticket size={12} className="text-primary" /> 🎟 Cupom de desconto
           </p>
           {couponApplied ? (
             <div className="flex items-center justify-between gap-2 rounded-xl bg-primary/10 border border-primary/30 p-2.5">
               <div className="min-w-0">
-                <p className="text-sm font-black text-primary tracking-wider">{couponApplied.code}</p>
-                <p className="text-[10px] text-muted-foreground">- R$ {couponApplied.discount.toFixed(2)} aplicado</p>
+                <p className="text-sm font-black text-primary tracking-wider">✅ {couponApplied.code}</p>
+                <p className="text-[10px] text-muted-foreground">Desconto de R$ {couponApplied.discount.toFixed(2)} aplicado</p>
               </div>
               <button onClick={() => setCouponApplied(null)} className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive">
                 <X size={14} />
               </button>
             </div>
           ) : (
-            <div className="flex gap-2">
-              <input
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                placeholder="DIGITE O CÓDIGO"
-                className="flex-1 px-3 py-2 rounded-xl border border-border bg-background text-sm font-bold tracking-wider"
-              />
-              <button
-                onClick={applyCoupon}
-                disabled={validatingCoupon || !couponCode.trim()}
-                className="bg-primary text-primary-foreground font-black px-3 rounded-xl text-xs active:scale-95 disabled:opacity-60"
-              >
-                {validatingCoupon ? "..." : "Aplicar"}
-              </button>
-            </div>
+            <>
+              <div className="flex gap-2">
+                <input
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  placeholder="DIGITE O CÓDIGO"
+                  className="flex-1 px-3 py-2.5 rounded-xl border border-border bg-background text-sm font-bold tracking-wider"
+                />
+                <button
+                  onClick={applyCoupon}
+                  disabled={validatingCoupon || !couponCode.trim()}
+                  className="bg-primary text-primary-foreground font-black px-4 rounded-xl text-xs active:scale-95 disabled:opacity-60"
+                >
+                  {validatingCoupon ? "..." : "Aplicar"}
+                </button>
+              </div>
+              {availableCoupons.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1.5">Cupons disponíveis</p>
+                  <div className="space-y-1.5">
+                    {availableCoupons.slice(0, 4).map((c) => {
+                      const eligible = totalValue >= c.min_order;
+                      const label = c.type === "percent" ? `${c.value}% OFF` : `R$ ${c.value.toFixed(2)} OFF`;
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          disabled={!eligible || validatingCoupon}
+                          onClick={() => { setCouponCode(c.code); applyCouponCode(c.code); }}
+                          className={`w-full flex items-center justify-between gap-2 rounded-xl border p-2.5 text-left active:scale-[0.98] transition-all ${
+                            eligible ? "border-primary/30 bg-primary/5" : "border-border bg-muted/40 opacity-60"
+                          }`}
+                        >
+                          <div className="min-w-0">
+                            <p className="text-xs font-black text-foreground tracking-wider">🎟 {c.code} <span className="text-primary">— {label}</span></p>
+                            {c.description && <p className="text-[10px] text-muted-foreground truncate">{c.description}</p>}
+                            {!eligible && <p className="text-[10px] text-destructive">Mínimo R$ {c.min_order.toFixed(2)}</p>}
+                          </div>
+                          <span className="text-[10px] font-black text-primary shrink-0">{eligible ? "Aplicar →" : "—"}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

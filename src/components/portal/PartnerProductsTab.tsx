@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Eye, EyeOff, Save, X, Upload, Image as ImageIcon, Package } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, Save, X, Package, Camera, ImagePlus, Loader2 } from "lucide-react";
+import { compressImage } from "@/lib/imageCompress";
 
 interface Product {
   id: string;
@@ -71,16 +72,21 @@ export default function PartnerProductsTab({ pin }: Props) {
   };
 
   const uploadImage = async (file: File) => {
-    if (file.size > 5 * 1024 * 1024) { toast.error("Imagem máx 5MB"); return; }
+    if (file.size > 10 * 1024 * 1024) { toast.error("Imagem muito grande (máx 10MB)"); return; }
     setUploading(true);
-    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const path = `products/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("partner-images").upload(path, file);
-    if (error) { toast.error("Erro no upload"); setUploading(false); return; }
-    const { data } = supabase.storage.from("partner-images").getPublicUrl(path);
-    setForm((f) => ({ ...f, image_url: data.publicUrl }));
-    setUploading(false);
-    toast.success("Imagem enviada ✅");
+    try {
+      const compressed = await compressImage(file, { maxSize: 1280, quality: 0.82 });
+      const path = `products/${Date.now()}.jpg`;
+      const { error } = await supabase.storage
+        .from("partner-images")
+        .upload(path, compressed, { contentType: compressed.type || "image/jpeg", upsert: false });
+      if (error) { toast.error("Não foi possível enviar. Tente outra imagem."); return; }
+      const { data } = supabase.storage.from("partner-images").getPublicUrl(path);
+      setForm((f) => ({ ...f, image_url: data.publicUrl }));
+      toast.success("Foto enviada ✅");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const save = async () => {
@@ -159,20 +165,61 @@ export default function PartnerProductsTab({ pin }: Props) {
             <button onClick={reset} className="p-1 rounded-lg bg-muted"><X size={14} /></button>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Foto do produto — área grande */}
+          <div className="space-y-2">
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide">Foto do produto</p>
             {form.image_url ? (
-              <img src={form.image_url} alt="" className="w-16 h-16 rounded-xl object-cover border border-border" />
-            ) : (
-              <div className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center border border-border">
-                <ImageIcon size={20} className="text-muted-foreground" />
+              <div className="relative">
+                <img src={form.image_url} alt="Pré-visualização"
+                  className="w-full h-44 rounded-2xl object-cover border border-border" />
+                <button type="button" onClick={() => setForm((f) => ({ ...f, image_url: "" }))}
+                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-background/90 border border-border flex items-center justify-center active:scale-90"
+                  aria-label="Remover foto">
+                  <X size={14} />
+                </button>
+                {uploading && (
+                  <div className="absolute inset-0 bg-background/70 rounded-2xl flex items-center justify-center">
+                    <Loader2 size={24} className="animate-spin text-primary" />
+                  </div>
+                )}
               </div>
+            ) : (
+              <label className="block w-full h-44 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 active:scale-[0.99] transition-transform cursor-pointer">
+                <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-center px-4">
+                  {uploading ? (
+                    <>
+                      <Loader2 size={28} className="animate-spin text-primary" />
+                      <p className="text-xs font-bold text-primary">Enviando foto...</p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center">
+                        <Camera size={22} />
+                      </div>
+                      <p className="text-sm font-black text-foreground">📷 Adicionar foto</p>
+                      <p className="text-[11px] text-muted-foreground">Toque para enviar imagem do produto</p>
+                    </>
+                  )}
+                </div>
+                <input type="file" accept="image/*" className="hidden"
+                  onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0])}
+                  disabled={uploading} />
+              </label>
             )}
-            <label className="flex items-center gap-1 px-3 py-2 rounded-xl bg-muted text-xs font-bold cursor-pointer">
-              <Upload size={14} /> {uploading ? "Enviando..." : "Upload imagem"}
-              <input type="file" accept="image/*" className="hidden"
-                onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0])}
-                disabled={uploading} />
-            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <label className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-muted text-xs font-bold cursor-pointer active:scale-95">
+                <Camera size={14} /> Câmera
+                <input type="file" accept="image/*" capture="environment" className="hidden"
+                  onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0])}
+                  disabled={uploading} />
+              </label>
+              <label className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-muted text-xs font-bold cursor-pointer active:scale-95">
+                <ImagePlus size={14} /> Galeria
+                <input type="file" accept="image/*" className="hidden"
+                  onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0])}
+                  disabled={uploading} />
+              </label>
+            </div>
           </div>
 
           <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -227,8 +274,8 @@ export default function PartnerProductsTab({ pin }: Props) {
           {p.image_url ? (
             <img src={p.image_url} alt={p.name} className="w-14 h-14 rounded-xl object-cover shrink-0" />
           ) : (
-            <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center shrink-0">
-              <ImageIcon size={18} className="text-muted-foreground" />
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center shrink-0">
+              <span className="text-2xl">🍽️</span>
             </div>
           )}
           <div className="flex-1 min-w-0">
