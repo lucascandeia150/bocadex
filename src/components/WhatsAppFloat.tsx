@@ -96,7 +96,11 @@ export function WhatsAppFloat() {
         />
       )}
 
-      <div ref={ref} className="fixed bottom-20 right-4 z-50 flex flex-col items-end gap-2.5">
+      <div
+        ref={ref}
+        style={{ bottom: "calc(80px + env(safe-area-inset-bottom))" }}
+        className="fixed right-3 z-50 flex flex-col items-end gap-2"
+      >
         {/* Action items */}
         {open &&
           actions.map((a, i) => {
@@ -116,34 +120,27 @@ export function WhatsAppFloat() {
                     setOpen(false);
                   }}
                   aria-label={a.label}
-                  className={`${a.bg} text-white w-12 h-12 rounded-full shadow-lg active:scale-90 transition-transform flex items-center justify-center`}
+                  className={`${a.bg} text-white w-10 h-10 rounded-full shadow-lg active:scale-90 transition-transform flex items-center justify-center`}
                 >
-                  <Icon size={20} />
+                  <Icon size={18} />
                 </button>
               </div>
             );
           })}
 
-        {/* Main FAB */}
-        <div className="flex items-center gap-2">
-          {!open && (
-            <span className="bg-card text-foreground text-xs font-bold px-3 py-1.5 rounded-full shadow-md border border-border whitespace-nowrap animate-fade-in">
-              Ações
-            </span>
-          )}
-          <button
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Fechar menu" : "Abrir menu rápido"}
-            aria-expanded={open}
-            className={`w-14 h-14 rounded-full shadow-lg active:scale-90 transition-all flex items-center justify-center text-white ${
-              open
-                ? "bg-foreground rotate-45"
-                : "bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] animate-bounce-in"
-            }`}
-          >
-            {open ? <X size={26} className="-rotate-45" /> : <Plus size={28} strokeWidth={2.5} />}
-          </button>
-        </div>
+        {/* Main FAB — compacto, sem label "Ações" */}
+        <button
+          onClick={() => setOpen((v) => !v)}
+          aria-label={open ? "Fechar menu" : "Abrir menu rápido"}
+          aria-expanded={open}
+          className={`w-11 h-11 rounded-full shadow-md active:scale-90 transition-all flex items-center justify-center text-white ${
+            open
+              ? "bg-foreground rotate-45"
+              : "bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)]"
+          }`}
+        >
+          {open ? <X size={20} className="-rotate-45" /> : <Plus size={22} strokeWidth={2.5} />}
+        </button>
       </div>
     </>
   );
