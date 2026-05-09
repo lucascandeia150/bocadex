@@ -72,17 +72,22 @@ export default function CarrinhoPage() {
   const applyCouponCode = async (code: string) => {
     if (!code.trim()) return;
     setValidatingCoupon(true);
-    const { data, error } = await supabase.rpc("validate_coupon", {
-      _code: code.trim(),
-      _order_value: totalValue,
-      _partner_id: partnerId,
-    });
-    setValidatingCoupon(false);
-    const row = (data as Array<{ id: string; code: string; ok: boolean; message: string; discount: number }> | null)?.[0];
-    if (error || !row) { toast.error("Erro ao validar cupom"); return; }
-    if (!row.ok) { toast.error(`❌ ${row.message || "Cupom inválido"}`); return; }
-    setCouponApplied({ id: row.id, code: row.code, discount: Number(row.discount) });
-    toast.success(`✅ Cupom ${row.code} aplicado! -R$ ${Number(row.discount).toFixed(2)}`);
+    try {
+      const { data, error } = await supabase.rpc("validate_coupon", {
+        _code: code.trim(),
+        _order_value: totalValue,
+        _partner_id: partnerId,
+      });
+      const row = (data as Array<{ id: string; code: string; ok: boolean; message: string; discount: number }> | null)?.[0];
+      if (error) { console.error(error); toast.error("Erro ao validar cupom. Tente novamente."); return; }
+      if (!row) { toast.error("❌ Cupom inválido"); return; }
+      if (!row.ok) { toast.error(`❌ ${row.message || "Cupom inválido"}`); return; }
+      setCouponApplied({ id: row.id, code: row.code, discount: Number(row.discount) });
+      setCouponCode("");
+      toast.success(`✅ Cupom ${row.code} aplicado! -R$ ${Number(row.discount).toFixed(2)}`);
+    } finally {
+      setValidatingCoupon(false);
+    }
   };
   const applyCoupon = () => applyCouponCode(couponCode);
 
@@ -589,6 +594,7 @@ export default function CarrinhoPage() {
                 <input
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyCoupon(); } }}
                   placeholder="DIGITE O CÓDIGO"
                   className="flex-1 px-3 py-2.5 rounded-xl border border-border bg-background text-sm font-bold tracking-wider"
                 />

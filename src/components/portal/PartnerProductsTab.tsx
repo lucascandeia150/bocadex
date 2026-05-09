@@ -22,6 +22,7 @@ interface Category {
 
 interface Props {
   pin: string;
+  partnerId: string;
 }
 
 const empty = {
@@ -33,7 +34,7 @@ const empty = {
   category_id: "" as string,
 };
 
-export default function PartnerProductsTab({ pin }: Props) {
+export default function PartnerProductsTab({ pin, partnerId }: Props) {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
@@ -76,14 +77,23 @@ export default function PartnerProductsTab({ pin }: Props) {
     setUploading(true);
     try {
       const compressed = await compressImage(file, { maxSize: 1280, quality: 0.82 });
-      const path = `products/${Date.now()}.jpg`;
+      const path = `${partnerId}/products/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.jpg`;
       const { error } = await supabase.storage
         .from("partner-images")
         .upload(path, compressed, { contentType: compressed.type || "image/jpeg", upsert: false });
-      if (error) { toast.error("Não foi possível enviar. Tente outra imagem."); return; }
+      if (error) {
+        console.error("upload error", error);
+        toast.error(error.message?.includes("policy")
+          ? "Sem permissão para enviar. Refaça login no portal."
+          : "Não foi possível enviar a foto. Tente novamente.");
+        return;
+      }
       const { data } = supabase.storage.from("partner-images").getPublicUrl(path);
       setForm((f) => ({ ...f, image_url: data.publicUrl }));
       toast.success("Foto enviada ✅");
+    } catch (e) {
+      console.error(e);
+      toast.error("Erro ao processar a imagem. Tente outra foto.");
     } finally {
       setUploading(false);
     }

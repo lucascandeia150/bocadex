@@ -640,7 +640,7 @@ export default function PortalLojaPage() {
 
       {tab === "dash" && <PartnerDashboardTab deliveries={deliveries} />}
 
-      {tab === "products" && <PartnerProductsTab pin={pin} />}
+      {tab === "products" && <PartnerProductsTab pin={pin} partnerId={partner.id} />}
 
       {tab === "chats" && <PartnerChatsTab pin={pin} partnerId={partner.id} />}
 
