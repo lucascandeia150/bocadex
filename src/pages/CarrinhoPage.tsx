@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { trackAnalyticsEvent } from "@/lib/trackEvent";
+import { useMapboxToken } from "@/hooks/useMapboxToken";
 
 type Mode = "retirar" | "entrega";
 
@@ -40,34 +41,57 @@ export default function CarrinhoPage() {
   const [feeSource, setFeeSource] = useState<string>("");
   const [feeZoneName, setFeeZoneName] = useState<string>("");
   const [loadingFee, setLoadingFee] = useState(false);
+  const [feeDistance, setFeeDistance] = useState<number | null>(null);
+  const [feeAvailable, setFeeAvailable] = useState<boolean>(true);
+  const { token: mapboxToken } = useMapboxToken();
 
   const includeDelivery = mode === "entrega" && partnerHasDelivery;
   const subtotalAfterCoupon = Math.max(totalValue - (couponApplied?.discount ?? 0), 0);
   const finalValue = subtotalAfterCoupon + (includeDelivery ? deliveryFee : 0);
 
-  // Resolve taxa de entrega em tempo real
+  // Resolve taxa de entrega em tempo real (com geocodificação para distância real)
   useEffect(() => {
     if (!includeDelivery || !partnerId) {
       setDeliveryFee(0); setFeeSource(""); setFeeZoneName("");
+      setFeeDistance(null); setFeeAvailable(true);
       return;
     }
     let cancel = false;
     setLoadingFee(true);
     const t = setTimeout(async () => {
+      // Geocodifica endereço quando há texto suficiente e token disponível
+      let lat: number | null = null;
+      let lng: number | null = null;
+      if (mapboxToken && address && address.trim().length > 6) {
+        try {
+          const r = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxToken}&country=br&limit=1`
+          );
+          const j = await r.json();
+          const c = j?.features?.[0]?.center;
+          if (Array.isArray(c) && c.length === 2) { lng = c[0]; lat = c[1]; }
+        } catch { /* ignore — cai no fallback por keyword */ }
+      }
+      if (cancel) return;
       const { data, error } = await supabase.rpc("resolve_delivery_fee", {
         _partner_id: partnerId,
         _address: address || "",
+        _dest_lat: lat,
+        _dest_lng: lng,
+        _subtotal: subtotalAfterCoupon,
       });
       if (cancel) return;
       setLoadingFee(false);
-      const row = (data as Array<{ fee: number; source: string; zone_name: string }> | null)?.[0];
+      const row = (data as Array<{ fee: number; source: string; zone_name: string; distance_km: number | null; available: boolean }> | null)?.[0];
       if (error || !row) return;
       setDeliveryFee(Number(row.fee || 0));
       setFeeSource(row.source);
       setFeeZoneName(row.zone_name || "");
-    }, 300);
+      setFeeDistance(row.distance_km != null ? Number(row.distance_km) : null);
+      setFeeAvailable(row.available !== false);
+    }, 350);
     return () => { cancel = true; clearTimeout(t); };
-  }, [partnerId, address, includeDelivery]);
+  }, [partnerId, address, includeDelivery, mapboxToken, subtotalAfterCoupon]);
 
   const applyCouponCode = async (code: string) => {
     if (!code.trim()) return;
@@ -140,6 +164,7 @@ export default function CarrinhoPage() {
     if (!name.trim()) return "Informe seu nome";
     if (!phone.trim() || phone.replace(/\D/g, "").length < 10) return "Informe um telefone válido";
     if (mode === "entrega" && partnerHasDelivery && !address.trim()) return "Informe o endereço de entrega";
+    if (mode === "entrega" && partnerHasDelivery && !feeAvailable) return "Endereço fora da área de entrega desta loja";
     if (totalValue <= 0) return "Carrinho sem valor";
     return null;
   })();
@@ -562,7 +587,10 @@ export default function CarrinhoPage() {
             <p className="text-[10px] text-muted-foreground -mt-1">
               {feeSource === "partner" && "🏪 Taxa da loja"}
               {feeSource === "zone" && `📍 Zona: ${feeZoneName}`}
-              {feeSource === "default" && "📦 Taxa padrão"}
+              {feeSource === "default" && "📦 Taxa padrão (informe seu endereço para cálculo exato)"}
+              {feeSource === "distance" && `🛵 Calculada pela distância (${feeDistance?.toFixed(1)} km)`}
+              {feeSource === "free" && "🎉 Frete grátis aplicado!"}
+              {feeSource === "out_of_range" && `⚠️ Fora da área de entrega (${feeDistance?.toFixed(1)} km)`}
             </p>
           )}
           <div className="border-t border-border pt-2 mt-1 flex items-end justify-between">

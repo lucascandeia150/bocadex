@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Percent, RefreshCw, Store, Save } from "lucide-react";
+import { Percent, RefreshCw, Store, Save, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 interface Delivery {
@@ -28,6 +28,10 @@ export default function AdminFeesTab() {
   const [feePercent, setFeePercent] = useState<number>(8);
   const [settingsId, setSettingsId] = useState<string | null>(null);
   const [savingPct, setSavingPct] = useState(false);
+  const [distSettings, setDistSettings] = useState({
+    min_fee: 3, base_fee: 3, per_km_fee: 1.5, max_km: 10, max_fee: 15, free_above_subtotal: 0, default_fee: 5,
+  });
+  const [savingDist, setSavingDist] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -39,19 +43,38 @@ export default function AdminFeesTab() {
         .order("created_at", { ascending: false }),
       supabase
         .from("delivery_settings")
-        .select("id, app_fee_percent")
+        .select("id, app_fee_percent, min_fee, base_fee, per_km_fee, max_km, max_fee, free_above_subtotal, default_fee")
         .limit(1)
         .maybeSingle(),
     ]);
     setDeliveries((delRes.data as Delivery[]) || []);
     if (setRes.data) {
-      setSettingsId((setRes.data as { id: string }).id);
-      setFeePercent(Number((setRes.data as { app_fee_percent: number }).app_fee_percent ?? 8));
+      const s = setRes.data as Record<string, number | string>;
+      setSettingsId(s.id as string);
+      setFeePercent(Number(s.app_fee_percent ?? 8));
+      setDistSettings({
+        min_fee: Number(s.min_fee ?? 3),
+        base_fee: Number(s.base_fee ?? 3),
+        per_km_fee: Number(s.per_km_fee ?? 1.5),
+        max_km: Number(s.max_km ?? 10),
+        max_fee: Number(s.max_fee ?? 15),
+        free_above_subtotal: Number(s.free_above_subtotal ?? 0),
+        default_fee: Number(s.default_fee ?? 5),
+      });
     }
     setLoading(false);
   };
 
   useEffect(() => { load(); }, []);
+
+  const saveDistance = async () => {
+    if (!settingsId) { toast.error("Configurações não encontradas"); return; }
+    setSavingDist(true);
+    const { error } = await supabase.from("delivery_settings").update(distSettings).eq("id", settingsId);
+    setSavingDist(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Cálculo por distância salvo");
+  };
 
   const savePercent = async () => {
     if (!settingsId) {
@@ -134,6 +157,47 @@ export default function AdminFeesTab() {
 
       <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-xs text-foreground">
         💡 Cobrança manual. Estes valores são apenas referência para cobrar dos parceiros depois.
+      </div>
+
+      {/* Cálculo por distância */}
+      <div className="bg-card border border-border rounded-2xl p-3 space-y-2">
+        <p className="text-xs font-bold text-foreground flex items-center gap-1.5">
+          <MapPin size={12} className="text-primary" /> Cálculo automático por distância
+        </p>
+        <p className="text-[10px] text-muted-foreground">
+          Usado quando a loja tem coordenadas e o cliente informa o endereço. Fórmula: <b>base + (km × valor por km)</b>, limitado por mín/máx.
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {([
+            ["base_fee", "Taxa base (R$)"],
+            ["per_km_fee", "Valor por km (R$)"],
+            ["min_fee", "Taxa mínima (R$)"],
+            ["max_fee", "Taxa máxima (R$)"],
+            ["max_km", "Raio máximo (km)"],
+            ["free_above_subtotal", "Frete grátis acima de (R$)"],
+            ["default_fee", "Fallback sem distância (R$)"],
+          ] as const).map(([k, label]) => (
+            <label key={k} className="text-[10px] text-muted-foreground">
+              {label}
+              <input
+                type="number" step="0.5" min={0}
+                value={distSettings[k]}
+                onChange={(e) => setDistSettings((p) => ({ ...p, [k]: Number(e.target.value) }))}
+                className="w-full mt-0.5 bg-muted rounded-lg px-2 py-1.5 text-sm font-bold text-foreground"
+              />
+            </label>
+          ))}
+        </div>
+        <button
+          onClick={saveDistance}
+          disabled={savingDist}
+          className="flex items-center gap-1 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold disabled:opacity-60"
+        >
+          <Save size={12} /> {savingDist ? "..." : "Salvar cálculo por distância"}
+        </button>
+        <p className="text-[10px] text-muted-foreground">
+          ℹ️ Para usar o cálculo por distância, cadastre <b>latitude e longitude</b> da loja em Parceiros &gt; editar loja.
+        </p>
       </div>
 
       <div className="grid grid-cols-3 gap-2">
