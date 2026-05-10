@@ -164,6 +164,7 @@ export default function CarrinhoPage() {
     if (!name.trim()) return "Informe seu nome";
     if (!phone.trim() || phone.replace(/\D/g, "").length < 10) return "Informe um telefone válido";
     if (mode === "entrega" && partnerHasDelivery && !address.trim()) return "Informe o endereço de entrega";
+    if (mode === "entrega" && partnerHasDelivery && !feeAvailable) return "Endereço fora da área de entrega desta loja";
     if (totalValue <= 0) return "Carrinho sem valor";
     return null;
   })();
