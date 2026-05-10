@@ -513,23 +513,41 @@ export type Database = {
       delivery_settings: {
         Row: {
           app_fee_percent: number
+          base_fee: number
           default_courier_payout: number
           default_fee: number
+          free_above_subtotal: number
           id: string
+          max_fee: number
+          max_km: number
+          min_fee: number
+          per_km_fee: number
           updated_at: string
         }
         Insert: {
           app_fee_percent?: number
+          base_fee?: number
           default_courier_payout?: number
           default_fee?: number
+          free_above_subtotal?: number
           id?: string
+          max_fee?: number
+          max_km?: number
+          min_fee?: number
+          per_km_fee?: number
           updated_at?: string
         }
         Update: {
           app_fee_percent?: number
+          base_fee?: number
           default_courier_payout?: number
           default_fee?: number
+          free_above_subtotal?: number
           id?: string
+          max_fee?: number
+          max_km?: number
+          min_fee?: number
+          per_km_fee?: number
           updated_at?: string
         }
         Relationships: []
@@ -726,6 +744,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -758,6 +778,8 @@ export type Database = {
           is_featured?: boolean
           is_open?: boolean
           last_payment_at?: string | null
+          lat?: number | null
+          lng?: number | null
           logo_url?: string | null
           owner_name?: string | null
           payment_status?: string
@@ -790,6 +812,8 @@ export type Database = {
           is_featured?: boolean
           is_open?: boolean
           last_payment_at?: string | null
+          lat?: number | null
+          lng?: number | null
           logo_url?: string | null
           owner_name?: string | null
           payment_status?: string
@@ -1211,6 +1235,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -1324,6 +1350,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -1427,6 +1455,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -1468,6 +1498,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -1509,6 +1541,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -1550,6 +1584,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -1615,6 +1651,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -2261,6 +2299,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -2453,6 +2493,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -2494,6 +2536,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -2535,6 +2579,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -2640,6 +2686,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
@@ -2691,15 +2739,33 @@ export type Database = {
         }
       }
       reset_demo_store: { Args: never; Returns: Json }
-      resolve_delivery_fee: {
-        Args: { _address: string; _partner_id: string }
-        Returns: {
-          courier_payout: number
-          fee: number
-          source: string
-          zone_name: string
-        }[]
-      }
+      resolve_delivery_fee:
+        | {
+            Args: { _address: string; _partner_id: string }
+            Returns: {
+              courier_payout: number
+              fee: number
+              source: string
+              zone_name: string
+            }[]
+          }
+        | {
+            Args: {
+              _address: string
+              _dest_lat?: number
+              _dest_lng?: number
+              _partner_id: string
+              _subtotal?: number
+            }
+            Returns: {
+              available: boolean
+              courier_payout: number
+              distance_km: number
+              fee: number
+              source: string
+              zone_name: string
+            }[]
+          }
       resolve_partner: {
         Args: { _key: string }
         Returns: {
@@ -2738,6 +2804,8 @@ export type Database = {
           is_featured: boolean
           is_open: boolean
           last_payment_at: string | null
+          lat: number | null
+          lng: number | null
           logo_url: string | null
           owner_name: string | null
           payment_status: string
