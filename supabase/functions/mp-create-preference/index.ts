@@ -167,24 +167,35 @@ Deno.serve(async (req) => {
       statement_descriptor: "Bocadex Delivery's",
     };
 
-    const mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(preferencePayload),
-    });
-    const mpData = await mpRes.json();
+    let mpRes: Response;
+    let mpData: any;
+    try {
+      mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(preferencePayload),
+      });
+      const txt = await mpRes.text();
+      try { mpData = JSON.parse(txt); } catch { mpData = { raw: txt }; }
+    } catch (fetchErr) {
+      console.error("[mp-create-preference] fetch error", fetchErr);
+      return new Response(
+        JSON.stringify({ error: "Não foi possível conectar ao Mercado Pago. Tente novamente em instantes." }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
     if (!mpRes.ok) {
-      console.error("Mercado Pago error", mpData);
+      console.error("[mp-create-preference] MP error", { status: mpRes.status, body: mpData, payload: preferencePayload });
       const mpMsg =
         (mpData && (mpData.message || mpData.error)) ||
-        "Não foi possível iniciar o pagamento. Tente novamente.";
-      return new Response(JSON.stringify({ error: `Mercado Pago: ${mpMsg}`, details: mpData }), {
-        status: 502,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+        "Tente novamente em instantes.";
+      return new Response(
+        JSON.stringify({ error: `Pagamento indisponível: ${mpMsg}` }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
 
     await supabase

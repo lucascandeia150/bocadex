@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { CheckCircle2, Clock, XCircle, Loader2, Home, ChefHat, Bike, Package, CreditCard, Sparkles, Dumbbell } from "lucide-react";
+import { CheckCircle2, Clock, XCircle, Loader2, Home, ChefHat, Bike, Package, CreditCard, Sparkles, Dumbbell, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Status = "loading" | "approved" | "pending" | "failed" | "not_found";
@@ -237,6 +237,21 @@ export default function PagamentoRetornoPage() {
               </div>
             </div>
           </a>
+        )}
+
+        {status === "approved" && !isPartner && (
+          <button
+            onClick={() => navigate("/avaliar")}
+            className="w-full rounded-2xl bg-card border border-border shadow-sm p-4 flex items-center gap-3 active:scale-[0.98] transition-transform animate-slide-up"
+          >
+            <div className="w-10 h-10 rounded-full bg-yellow-500/15 flex items-center justify-center shrink-0">
+              <Star className="text-yellow-500 fill-yellow-500" size={18} />
+            </div>
+            <div className="text-left flex-1">
+              <p className="text-sm font-black text-foreground">Avalie sua experiência ⭐</p>
+              <p className="text-[11px] text-muted-foreground">Conte como foi seu pedido (leva 10s)</p>
+            </div>
+          </button>
         )}
 
         {(status === "pending" || status === "loading") && (
