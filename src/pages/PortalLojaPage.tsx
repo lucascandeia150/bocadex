@@ -497,7 +497,10 @@ export default function PortalLojaPage() {
     { id: "list", label: "Pedidos", icon: <Package size={16} />, badge: newOrdersCount },
     { id: "new", label: "Novo", icon: <Plus size={16} /> },
     { id: "chats", label: "Conversas", icon: <MessageCircle size={16} />, badge: chatUnread },
-    { id: "products", label: "Cardápio", icon: <ChefHat size={16} /> },
+    { id: "products", label: "Cardápio", icon: <Package size={16} /> },
+    { id: "promos", label: "Promoções", icon: <Sparkles size={16} /> },
+    { id: "finance", label: "Financeiro", icon: <DollarSign size={16} /> },
+    { id: "customers", label: "Clientes", icon: <Users size={16} /> },
     { id: "store", label: "Loja", icon: <Settings size={16} /> },
   ];
 
@@ -641,11 +644,17 @@ export default function PortalLojaPage() {
           </button>
         </div>
 
-      {tab === "dash" && <PartnerDashboardTab deliveries={deliveries} />}
+      {tab === "dash" && <PartnerDashboardTab deliveries={deliveries} partnerId={partner.id} />}
 
       {tab === "products" && <PartnerProductsTab pin={pin} partnerId={partner.id} />}
 
       {tab === "chats" && <PartnerChatsTab pin={pin} partnerId={partner.id} />}
+
+      {tab === "finance" && <PartnerFinanceTab partnerId={partner.id} />}
+
+      {tab === "customers" && <PartnerCustomersTab partnerId={partner.id} />}
+
+      {tab === "promos" && <PartnerPromotionsTab partnerId={partner.id} />}
 
       {tab === "store" && (
         <PartnerStoreTab
@@ -692,136 +701,13 @@ export default function PortalLojaPage() {
       )}
 
       {tab === "list" && (
-        <div className="space-y-2">
-          <div className="flex gap-1.5 mb-1">
-            {([
-              { id: "all", label: "Todos" },
-              { id: "delivery", label: "🛵 Entrega" },
-              { id: "pickup", label: "🛍 Retirada" },
-            ] as const).map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setOrderFilter(f.id)}
-                className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition-all active:scale-95 ${
-                  orderFilter === f.id
-                    ? "bg-foreground text-background"
-                    : "bg-muted text-muted-foreground"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-          {deliveries.length === 0 && (
-            <div className="text-center py-12 space-y-2">
-              <div className="text-5xl">📭</div>
-              <p className="text-sm font-bold text-foreground">Nenhum pedido ainda</p>
-              <p className="text-xs text-muted-foreground">Os pedidos aparecerão aqui em tempo real.</p>
-            </div>
-          )}
-          {deliveries
-            .filter((d) => {
-              if (orderFilter === "all") return true;
-              const ft = d.fulfillment_type === "pickup" ? "pickup" : "delivery";
-              return ft === orderFilter;
-            })
-            .map((d) => {
-            const s = STATUS_LABEL[d.status] || STATUS_LABEL.disponivel;
-            const isPaidNew = d.status === "disponivel";
-            const isPickup = d.fulfillment_type === "pickup";
-            return (
-              <div
-                key={d.id}
-                className={`bg-card rounded-2xl border p-3 space-y-1 transition-all ${
-                  isPaidNew
-                    ? "border-primary ring-2 ring-primary/30 shadow-lg shadow-primary/10 animate-pulse-once"
-                    : "border-border"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm font-bold text-foreground flex-1">{d.order_description}</p>
-                  <div className="flex flex-col items-end gap-1">
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap ${s.color}`}>{s.label}</span>
-                    {isPickup && (
-                      <span className="text-[10px] font-black bg-orange-500/15 text-orange-700 border border-orange-500/30 px-2 py-0.5 rounded-lg whitespace-nowrap">
-                        🛍 Retirada
-                      </span>
-                    )}
-                  </div>
-                </div>
-                {!isPickup && (
-                  <p className="text-xs text-muted-foreground flex items-start gap-1">
-                    <MapPin size={10} className="mt-0.5 shrink-0" /> {d.delivery_address}
-                  </p>
-                )}
-                {d.notes && <p className="text-xs text-muted-foreground italic">"{d.notes}"</p>}
-                <p className="text-xs text-foreground">
-                  {isPickup ? "Sem taxa de entrega" : <>Taxa: <b>R$ {Number(d.fee).toFixed(2)}</b></>}
-                </p>
-                <p className="text-[10px] text-muted-foreground">{new Date(d.created_at).toLocaleString("pt-BR")}</p>
-
-                {!isPickup && d.prep_status && d.prep_status !== "ready" && d.status === "disponivel" && (
-                  <div className="mt-2 rounded-xl bg-yellow-500/10 border border-yellow-500/40 p-2 flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-bold text-yellow-700">
-                      {d.prep_status === "pending" ? "⏳ Aguardando preparo" : "👨‍🍳 Em preparo"}
-                    </span>
-                    <button
-                      onClick={() => callCourier(d.id)}
-                      className="bg-primary text-primary-foreground text-[11px] font-black px-3 py-1.5 rounded-lg active:scale-95"
-                    >
-                      🚚 Chamar entregador
-                    </button>
-                  </div>
-                )}
-
-                {/* Avançar status (apenas pedidos sem entregador app vinculado) */}
-                {!d.courier_id && d.status !== "concluida" && d.status !== "cancelada" && (
-                  <div className="grid grid-cols-2 gap-1.5 pt-2">
-                    {d.status === "disponivel" && (
-                      <button
-                        onClick={() => advanceStatus(d.id, "aceita")}
-                        className="col-span-2 bg-yellow-500/15 border border-yellow-500/40 text-yellow-700 font-bold text-xs py-2 rounded-xl active:scale-95 flex items-center justify-center gap-1"
-                      >
-                        <ChefHat size={12} /> Marcar em preparo
-                      </button>
-                    )}
-                    {d.status === "aceita" && (
-                      <button
-                        onClick={() => advanceStatus(d.id, "em_andamento")}
-                        className="col-span-2 bg-orange-500/15 border border-orange-500/40 text-orange-700 font-bold text-xs py-2 rounded-xl active:scale-95 flex items-center justify-center gap-1"
-                      >
-                        {isPickup ? <><Package size={12} /> Pronto para retirada</> : <><Bike size={12} /> Saiu para entrega</>}
-                      </button>
-                    )}
-                    {d.status === "em_andamento" && (
-                      <button
-                        onClick={() => advanceStatus(d.id, "concluida")}
-                        className="col-span-2 bg-green-500/15 border border-green-500/40 text-green-700 font-bold text-xs py-2 rounded-xl active:scale-95 flex items-center justify-center gap-1"
-                      >
-                        <CheckCircle2 size={12} /> {isPickup ? "Marcar como retirado" : "Marcar como entregue"}
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                {d.status === "concluida" && d.courier_id && (
-                  ratedIds.has(d.id) ? (
-                    <div className="flex items-center gap-1 text-xs text-green-600 font-bold">
-                      <Star size={12} className="fill-green-600" /> Avaliado
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => { setRateModal(d); setStars(5); setComment(""); }}
-                      className="w-full mt-1 bg-yellow-500/10 border border-yellow-500/30 text-yellow-700 font-bold text-xs py-2 rounded-xl active:scale-95 flex items-center justify-center gap-1"
-                    >
-                      <Star size={12} /> Avaliar entregador
-                    </button>
-                  )
-                )}
-              </div>
-            );
-          })}
-        </div>
+        <PartnerOrdersBoard
+          deliveries={deliveries}
+          ratedIds={ratedIds}
+          onAdvance={(id, next) => advanceStatus(id, next)}
+          onCallCourier={(id) => callCourier(id)}
+          onRate={(d) => { setRateModal(d); setStars(5); setComment(""); }}
+        />
       )}
 
       {rateModal && (
