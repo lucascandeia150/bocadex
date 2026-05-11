@@ -1075,6 +1075,54 @@ export type Database = {
         }
         Relationships: []
       }
+      store_promotions: {
+        Row: {
+          created_at: string
+          description: string
+          discount_type: string
+          discount_value: number
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          is_featured: boolean
+          min_order: number
+          partner_id: string
+          starts_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          discount_type?: string
+          discount_value?: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          min_order?: number
+          partner_id: string
+          starts_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          discount_type?: string
+          discount_value?: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          min_order?: number
+          partner_id?: string
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_addresses: {
         Row: {
           address: string
