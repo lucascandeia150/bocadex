@@ -316,11 +316,26 @@ export default function CarrinhoPage() {
         },
       });
       console.log("[MP] Resposta", { data, error });
-      // Edge function retorna { error } no body em caso de validação (status 400/500)
-      const payload = (data ?? {}) as { init_point?: string; error?: string; details?: unknown };
+      // Edge function pode retornar erro no body (4xx/5xx). Lemos o body para exibir mensagem amigável.
+      let payload = (data ?? {}) as { init_point?: string; error?: string; details?: unknown };
       if (error) {
-        // Tenta extrair mensagem real do body
-        const realMsg = payload?.error || error.message || "Não foi possível iniciar o pagamento";
+        let realMsg = "";
+        try {
+          // FunctionsHttpError expõe a Response em error.context
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const ctx = (error as any).context as Response | undefined;
+          if (ctx && typeof ctx.text === "function") {
+            const txt = await ctx.text();
+            try {
+              const parsed = JSON.parse(txt);
+              payload = parsed;
+              realMsg = parsed?.error || parsed?.message || "";
+            } catch {
+              realMsg = txt?.slice(0, 200) || "";
+            }
+          }
+        } catch { /* ignore */ }
+        if (!realMsg) realMsg = payload?.error || "Não foi possível iniciar o pagamento. Tente novamente em instantes.";
         throw new Error(realMsg);
       }
       if (payload.error) throw new Error(payload.error);
