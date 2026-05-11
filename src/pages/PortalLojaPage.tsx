@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, MapPin, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, Lock, KeyRound, BarChart3, ChefHat, Bike, CheckCircle2, Power, Clock, DollarSign, Bell, Pause, Play, Ban, MessageCircle } from "lucide-react";
+import { Store, Plus, RefreshCw, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, KeyRound, BarChart3, CheckCircle2, Power, Clock, DollarSign, Bell, Pause, Play, Ban, MessageCircle, Users, Sparkles } from "lucide-react";
 import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
 import PartnerStoreTab from "@/components/portal/PartnerStoreTab";
 import PartnerDashboardTab from "@/components/portal/PartnerDashboardTab";
 import PartnerChatsTab from "@/components/portal/PartnerChatsTab";
+import PartnerOrdersBoard from "@/components/portal/PartnerOrdersBoard";
+import PartnerFinanceTab from "@/components/portal/PartnerFinanceTab";
+import PartnerCustomersTab from "@/components/portal/PartnerCustomersTab";
+import PartnerPromotionsTab from "@/components/portal/PartnerPromotionsTab";
 
 interface Partner {
   id: string;
@@ -49,8 +53,7 @@ export default function PortalLojaPage() {
   const [partner, setPartner] = useState<Partner | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState<"dash" | "list" | "new" | "products" | "store" | "chats">("dash");
-  const [orderFilter, setOrderFilter] = useState<"all" | "pickup" | "delivery">("all");
+  const [tab, setTab] = useState<"dash" | "list" | "new" | "products" | "store" | "chats" | "finance" | "customers" | "promos">("dash");
   const [chatUnread, setChatUnread] = useState(0);
   const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
   const [rateModal, setRateModal] = useState<Delivery | null>(null);
