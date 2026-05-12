@@ -58,8 +58,9 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
       .select("banner_url, opening_hours, instagram_url, facebook_url")
       .eq("id", s.id)
       .maybeSingle();
-    const hours = (extra2?.opening_hours && Object.keys(extra2.opening_hours).length > 0)
-      ? extra2.opening_hours
+    const oh = extra2?.opening_hours as any;
+    const hours = (oh && typeof oh === "object" && !Array.isArray(oh) && Object.keys(oh).length > 0)
+      ? (oh as Record<string, { open: string; close: string; closed?: boolean }>)
       : defaultHours();
     setStore({
       id: s.id,
