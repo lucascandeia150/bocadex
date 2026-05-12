@@ -2,6 +2,20 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Save, Upload, Power, Bike, Image as ImageIcon, Clock, Instagram, Facebook } from "lucide-react";
+import { compressImage } from "@/lib/imageCompress";
+
+const ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024; // 8MB pre-compress
+
+const validateImage = (file: File): string | null => {
+  if (!ACCEPTED_TYPES.includes(file.type)) {
+    return "Formato inválido. Use JPG, PNG ou WEBP.";
+  }
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return "Arquivo muito grande (máx 8MB).";
+  }
+  return null;
+};
 
 interface Store {
   id: string;
@@ -121,10 +135,12 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
 
   const uploadLogo = async (file: File) => {
     if (!store) return;
+    const err = validateImage(file);
+    if (err) { toast.error(err); return; }
     setUploading(true);
-    const ext = file.name.split(".").pop();
-    const path = `${store.id}/logo-${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("partner-images").upload(path, file, { upsert: true });
+    const compressed = await compressImage(file, { maxSize: 600, quality: 0.85 });
+    const path = `${store.id}/logo-${Date.now()}.jpg`;
+    const { error } = await supabase.storage.from("partner-images").upload(path, compressed, { upsert: true, contentType: compressed.type });
     if (error) { setUploading(false); toast.error("Erro no upload"); return; }
     const { data: pub } = supabase.storage.from("partner-images").getPublicUrl(path);
     setStore({ ...store, logo_url: pub.publicUrl });
@@ -134,15 +150,28 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
 
   const uploadBanner = async (file: File) => {
     if (!store) return;
+    const err = validateImage(file);
+    if (err) { toast.error(err); return; }
     setUploadingBanner(true);
-    const ext = file.name.split(".").pop();
-    const path = `${store.id}/banner-${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("partner-images").upload(path, file, { upsert: true });
-    if (error) { setUploadingBanner(false); toast.error("Erro no upload do banner"); return; }
+    try {
+      const compressed = await compressImage(file, { maxSize: 1600, quality: 0.82 });
+      const path = `${store.id}/banner-${Date.now()}.jpg`;
+      const { error } = await supabase.storage.from("partner-images").upload(path, compressed, { upsert: true, contentType: compressed.type });
+      if (error) {
+        setUploadingBanner(false);
+        toast.error(error.message?.includes("row-level security")
+          ? "Sem permissão para enviar banner. Faça login novamente."
+          : `Erro no upload do banner: ${error.message}`);
+        return;
+      }
     const { data: pub } = supabase.storage.from("partner-images").getPublicUrl(path);
     setStore({ ...store, banner_url: pub.publicUrl });
     setUploadingBanner(false);
     toast.success("Banner carregado — clique em Salvar");
+    } catch (e: any) {
+      setUploadingBanner(false);
+      toast.error(`Falha no upload: ${e?.message || "erro desconhecido"}`);
+    }
   };
 
   const updateHour = (day: string, field: "open" | "close" | "closed", value: any) => {
