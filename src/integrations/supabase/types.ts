@@ -729,6 +729,7 @@ export type Database = {
         Row: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -737,8 +738,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -747,6 +750,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -763,6 +767,7 @@ export type Database = {
         Insert: {
           access_pin?: string | null
           address: string
+          banner_url?: string | null
           business_name: string
           business_type: string
           commission_percent?: number | null
@@ -771,8 +776,10 @@ export type Database = {
           custom_courier_payout?: number | null
           custom_delivery_fee?: number | null
           description: string
+          facebook_url?: string | null
           id?: string
           images?: string[] | null
+          instagram_url?: string | null
           is_active?: boolean
           is_demo?: boolean
           is_featured?: boolean
@@ -781,6 +788,7 @@ export type Database = {
           lat?: number | null
           lng?: number | null
           logo_url?: string | null
+          opening_hours?: Json
           owner_name?: string | null
           payment_status?: string
           plan?: string
@@ -797,6 +805,7 @@ export type Database = {
         Update: {
           access_pin?: string | null
           address?: string
+          banner_url?: string | null
           business_name?: string
           business_type?: string
           commission_percent?: number | null
@@ -805,8 +814,10 @@ export type Database = {
           custom_courier_payout?: number | null
           custom_delivery_fee?: number | null
           description?: string
+          facebook_url?: string | null
           id?: string
           images?: string[] | null
+          instagram_url?: string | null
           is_active?: boolean
           is_demo?: boolean
           is_featured?: boolean
@@ -815,6 +826,7 @@ export type Database = {
           lat?: number | null
           lng?: number | null
           logo_url?: string | null
+          opening_hours?: Json
           owner_name?: string | null
           payment_status?: string
           plan?: string
@@ -1268,6 +1280,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -1276,8 +1289,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -1286,6 +1301,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -1383,6 +1399,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -1391,8 +1408,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -1401,6 +1420,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -1488,6 +1508,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -1496,8 +1517,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -1506,6 +1529,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -1531,6 +1555,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -1539,8 +1564,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -1549,6 +1576,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -1574,6 +1602,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -1582,8 +1611,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -1592,6 +1623,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -1617,6 +1649,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -1625,8 +1658,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -1635,6 +1670,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -1684,6 +1720,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -1692,8 +1729,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -1702,6 +1741,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -2332,6 +2372,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -2340,8 +2381,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -2350,6 +2393,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -2526,6 +2570,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -2534,8 +2579,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -2544,6 +2591,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -2569,6 +2617,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -2577,8 +2626,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -2587,6 +2638,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -2612,6 +2664,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -2620,8 +2673,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -2630,6 +2685,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -2719,6 +2775,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -2727,8 +2784,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -2737,6 +2796,66 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
+          owner_name: string | null
+          payment_status: string
+          plan: string
+          promotions: string | null
+          slug: string | null
+          status: string
+          store_status: string
+          subscription_active_until: string | null
+          user_id: string | null
+          uses_app_courier: boolean
+          visibility: string
+          whatsapp: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_applications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      partner_update_store_v2: {
+        Args: {
+          _address: string
+          _banner_url?: string
+          _business_name: string
+          _description: string
+          _facebook_url?: string
+          _instagram_url?: string
+          _is_open: boolean
+          _logo_url: string
+          _opening_hours?: Json
+          _pin: string
+          _whatsapp: string
+        }
+        Returns: {
+          access_pin: string | null
+          address: string
+          banner_url: string | null
+          business_name: string
+          business_type: string
+          commission_percent: number | null
+          created_at: string
+          created_by: string | null
+          custom_courier_payout: number | null
+          custom_delivery_fee: number | null
+          description: string
+          facebook_url: string | null
+          id: string
+          images: string[] | null
+          instagram_url: string | null
+          is_active: boolean
+          is_demo: boolean
+          is_featured: boolean
+          is_open: boolean
+          last_payment_at: string | null
+          lat: number | null
+          lng: number | null
+          logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
@@ -2837,6 +2956,7 @@ export type Database = {
         Returns: {
           access_pin: string | null
           address: string
+          banner_url: string | null
           business_name: string
           business_type: string
           commission_percent: number | null
@@ -2845,8 +2965,10 @@ export type Database = {
           custom_courier_payout: number | null
           custom_delivery_fee: number | null
           description: string
+          facebook_url: string | null
           id: string
           images: string[] | null
+          instagram_url: string | null
           is_active: boolean
           is_demo: boolean
           is_featured: boolean
@@ -2855,6 +2977,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          opening_hours: Json
           owner_name: string | null
           payment_status: string
           plan: string
