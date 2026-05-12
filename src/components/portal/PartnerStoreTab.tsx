@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Save, Upload, Power, Bike } from "lucide-react";
+import { Save, Upload, Power, Bike, Image as ImageIcon, Clock, Instagram, Facebook } from "lucide-react";
 
 interface Store {
   id: string;
@@ -11,13 +11,34 @@ interface Store {
   whatsapp: string;
   logo_url: string | null;
   is_open: boolean;
+  banner_url?: string | null;
+  opening_hours?: Record<string, { open: string; close: string; closed?: boolean }>;
+  instagram_url?: string | null;
+  facebook_url?: string | null;
 }
+
+const DAYS: { id: string; label: string }[] = [
+  { id: "mon", label: "Seg" },
+  { id: "tue", label: "Ter" },
+  { id: "wed", label: "Qua" },
+  { id: "thu", label: "Qui" },
+  { id: "fri", label: "Sex" },
+  { id: "sat", label: "Sáb" },
+  { id: "sun", label: "Dom" },
+];
+
+const defaultHours = (): Record<string, { open: string; close: string; closed?: boolean }> => {
+  const h: any = {};
+  DAYS.forEach((d) => (h[d.id] = { open: "18:00", close: "23:00", closed: false }));
+  return h;
+};
 
 export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onChanged?: (s: Store) => void }) {
   const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
   const [customFee, setCustomFee] = useState<string>("");
   const [customPayout, setCustomPayout] = useState<string>("");
   const [savingFee, setSavingFee] = useState(false);
@@ -31,6 +52,15 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
       return;
     }
     const s = data[0] as any;
+    // busca campos extras (não retornados pelo RPC)
+    const { data: extra2 } = await supabase
+      .from("partner_applications")
+      .select("banner_url, opening_hours, instagram_url, facebook_url")
+      .eq("id", s.id)
+      .maybeSingle();
+    const hours = (extra2?.opening_hours && Object.keys(extra2.opening_hours).length > 0)
+      ? extra2.opening_hours
+      : defaultHours();
     setStore({
       id: s.id,
       business_name: s.business_name || "",
@@ -39,6 +69,10 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
       whatsapp: s.whatsapp || "",
       logo_url: s.logo_url,
       is_open: !!s.is_open,
+      banner_url: extra2?.banner_url || null,
+      opening_hours: hours,
+      instagram_url: extra2?.instagram_url || "",
+      facebook_url: extra2?.facebook_url || "",
     });
     // busca taxa custom (campo não exposto pelo partner_login)
     const { data: extra } = await supabase
@@ -55,7 +89,7 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
   const save = async () => {
     if (!store) return;
     setSaving(true);
-    const { data, error } = await supabase.rpc("partner_update_store", {
+    const { data, error } = await supabase.rpc("partner_update_store_v2", {
       _pin: pin,
       _business_name: store.business_name,
       _description: store.description || "",
@@ -63,6 +97,10 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
       _whatsapp: store.whatsapp,
       _logo_url: store.logo_url,
       _is_open: store.is_open,
+      _banner_url: store.banner_url ?? null,
+      _opening_hours: (store.opening_hours ?? {}) as any,
+      _instagram_url: store.instagram_url ?? null,
+      _facebook_url: store.facebook_url ?? null,
     });
     setSaving(false);
     if (error) { toast.error(error.message || "Erro ao salvar"); return; }
@@ -91,6 +129,26 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
     setStore({ ...store, logo_url: pub.publicUrl });
     setUploading(false);
     toast.success("Logo carregada — clique em Salvar");
+  };
+
+  const uploadBanner = async (file: File) => {
+    if (!store) return;
+    setUploadingBanner(true);
+    const ext = file.name.split(".").pop();
+    const path = `${store.id}/banner-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("partner-images").upload(path, file, { upsert: true });
+    if (error) { setUploadingBanner(false); toast.error("Erro no upload do banner"); return; }
+    const { data: pub } = supabase.storage.from("partner-images").getPublicUrl(path);
+    setStore({ ...store, banner_url: pub.publicUrl });
+    setUploadingBanner(false);
+    toast.success("Banner carregado — clique em Salvar");
+  };
+
+  const updateHour = (day: string, field: "open" | "close" | "closed", value: any) => {
+    if (!store) return;
+    const hours = { ...(store.opening_hours || {}) };
+    hours[day] = { ...(hours[day] || { open: "18:00", close: "23:00" }), [field]: value };
+    setStore({ ...store, opening_hours: hours });
   };
 
   const saveFee = async () => {
@@ -161,6 +219,106 @@ export default function PartnerStoreTab({ pin, onChanged }: { pin: string; onCha
         >
           <Save size={14} /> {saving ? "Salvando..." : "Salvar alterações"}
         </button>
+      </div>
+
+      {/* Banner */}
+      <div className="bg-card rounded-2xl border border-border p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <ImageIcon size={16} className="text-primary" />
+          <p className="text-sm font-black text-foreground">Banner da loja</p>
+        </div>
+        <p className="text-[11px] text-muted-foreground leading-snug">
+          Imagem de capa exibida no topo do seu perfil. Recomendado 1200×400px.
+        </p>
+        {store.banner_url ? (
+          <img src={store.banner_url} alt="Banner" className="w-full h-28 rounded-xl object-cover bg-muted" />
+        ) : (
+          <div className="w-full h-28 rounded-xl bg-muted flex items-center justify-center text-3xl">🖼️</div>
+        )}
+        <label className="cursor-pointer bg-muted hover:bg-muted/70 rounded-xl px-3 py-2 text-xs font-bold text-foreground flex items-center justify-center gap-1">
+          <Upload size={12} />
+          {uploadingBanner ? "Enviando..." : "Trocar banner"}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => e.target.files?.[0] && uploadBanner(e.target.files[0])}
+          />
+        </label>
+        <p className="text-[10px] text-muted-foreground italic">Não esqueça de clicar em "Salvar alterações" acima.</p>
+      </div>
+
+      {/* Horário de funcionamento */}
+      <div className="bg-card rounded-2xl border border-border p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Clock size={16} className="text-primary" />
+          <p className="text-sm font-black text-foreground">Horário de funcionamento</p>
+        </div>
+        <div className="space-y-1.5">
+          {DAYS.map((d) => {
+            const h = store.opening_hours?.[d.id] || { open: "18:00", close: "23:00", closed: false };
+            return (
+              <div key={d.id} className="flex items-center gap-2">
+                <span className="w-10 text-xs font-black text-foreground">{d.label}</span>
+                {h.closed ? (
+                  <span className="flex-1 text-[11px] text-muted-foreground italic">Fechado</span>
+                ) : (
+                  <>
+                    <input
+                      type="time"
+                      value={h.open}
+                      onChange={(e) => updateHour(d.id, "open", e.target.value)}
+                      className="flex-1 bg-muted rounded-lg px-2 py-1.5 text-xs"
+                    />
+                    <span className="text-xs text-muted-foreground">às</span>
+                    <input
+                      type="time"
+                      value={h.close}
+                      onChange={(e) => updateHour(d.id, "close", e.target.value)}
+                      className="flex-1 bg-muted rounded-lg px-2 py-1.5 text-xs"
+                    />
+                  </>
+                )}
+                <button
+                  onClick={() => updateHour(d.id, "closed", !h.closed)}
+                  className={`text-[10px] font-bold px-2 py-1 rounded-lg ${h.closed ? "bg-primary/10 text-primary" : "bg-red-500/10 text-red-600"}`}
+                >
+                  {h.closed ? "Abrir" : "Fechar"}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+        <p className="text-[10px] text-muted-foreground italic">Clique em "Salvar alterações" no topo para aplicar.</p>
+      </div>
+
+      {/* Redes sociais */}
+      <div className="bg-card rounded-2xl border border-border p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Instagram size={16} className="text-primary" />
+          <p className="text-sm font-black text-foreground">Redes sociais</p>
+        </div>
+        <div>
+          <label className="text-xs font-bold text-foreground flex items-center gap-1"><Instagram size={12} /> Instagram</label>
+          <input
+            type="text"
+            value={store.instagram_url || ""}
+            onChange={(e) => setStore({ ...store, instagram_url: e.target.value })}
+            placeholder="https://instagram.com/sualoja"
+            className="w-full bg-muted rounded-xl px-3 py-2 text-sm mt-1"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-foreground flex items-center gap-1"><Facebook size={12} /> Facebook</label>
+          <input
+            type="text"
+            value={store.facebook_url || ""}
+            onChange={(e) => setStore({ ...store, facebook_url: e.target.value })}
+            placeholder="https://facebook.com/sualoja"
+            className="w-full bg-muted rounded-xl px-3 py-2 text-sm mt-1"
+          />
+        </div>
+        <p className="text-[10px] text-muted-foreground italic">Clique em "Salvar alterações" no topo para aplicar.</p>
       </div>
 
       {/* Taxa de entrega custom */}
