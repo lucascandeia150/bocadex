@@ -10,6 +10,7 @@ import PartnerOrdersBoard from "@/components/portal/PartnerOrdersBoard";
 import PartnerFinanceTab from "@/components/portal/PartnerFinanceTab";
 import PartnerCustomersTab from "@/components/portal/PartnerCustomersTab";
 import PartnerPromotionsTab from "@/components/portal/PartnerPromotionsTab";
+import StoreHoursAutoManager from "@/components/portal/StoreHoursAutoManager";
 
 interface Partner {
   id: string;
@@ -51,6 +52,7 @@ const PIN_KEY = "escolheai_partner_pin";
 export default function PortalLojaPage() {
   const [pin, setPin] = useState("");
   const [partner, setPartner] = useState<Partner | null>(null);
+  const [openingHours, setOpeningHours] = useState<Record<string, { open: string; close: string; closed?: boolean }> | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<"dash" | "list" | "new" | "products" | "store" | "chats" | "finance" | "customers" | "promos">("dash");
@@ -506,6 +508,15 @@ export default function PortalLojaPage() {
 
   return (
     <div className="max-w-md mx-auto animate-slide-up pb-4">
+      {partner && (
+        <StoreHoursAutoManager
+          pin={pin}
+          partnerId={partner.id}
+          isOpen={!!partner.is_open}
+          openingHours={openingHours}
+          onChanged={(open) => setPartner((prev) => prev ? { ...prev, is_open: open } : prev)}
+        />
+      )}
       {/* Sticky branded header */}
       <div className="sticky top-14 z-30 bg-gradient-to-br from-primary via-primary to-orange-500 text-primary-foreground px-4 pt-4 pb-5 rounded-b-3xl shadow-lg shadow-primary/20">
         <div className="flex items-start justify-between gap-2">
