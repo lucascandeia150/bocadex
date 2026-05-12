@@ -238,6 +238,24 @@ export default function PortalLojaPage() {
     return () => { supabase.removeChannel(ch); };
   }, [partner, pin]);
 
+  // Load opening hours for auto open/close manager
+  useEffect(() => {
+    if (!partner) { setOpeningHours(null); return; }
+    (async () => {
+      const { data } = await supabase
+        .from("partner_applications")
+        .select("opening_hours")
+        .eq("id", partner.id)
+        .maybeSingle();
+      const oh = data?.opening_hours as any;
+      if (oh && typeof oh === "object" && !Array.isArray(oh) && Object.keys(oh).length > 0) {
+        setOpeningHours(oh);
+      } else {
+        setOpeningHours(null);
+      }
+    })();
+  }, [partner?.id]);
+
   const submitRating = async () => {
     if (!rateModal) return;
     const { error } = await supabase.rpc("partner_rate_courier", {
