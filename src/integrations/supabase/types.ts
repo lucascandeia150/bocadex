@@ -759,6 +759,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -797,6 +798,7 @@ export type Database = {
           status?: string
           store_status?: string
           subscription_active_until?: string | null
+          updated_at?: string
           user_id?: string | null
           uses_app_courier?: boolean
           visibility?: string
@@ -835,6 +837,7 @@ export type Database = {
           status?: string
           store_status?: string
           subscription_active_until?: string | null
+          updated_at?: string
           user_id?: string | null
           uses_app_courier?: boolean
           visibility?: string
@@ -1310,6 +1313,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -1429,6 +1433,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -1538,6 +1543,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -1585,6 +1591,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -1632,6 +1639,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -1679,6 +1687,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -1750,6 +1759,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -2402,6 +2412,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -2600,6 +2611,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -2647,6 +2659,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -2694,6 +2707,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -2805,6 +2819,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -2864,6 +2879,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
@@ -2986,6 +3002,7 @@ export type Database = {
           status: string
           store_status: string
           subscription_active_until: string | null
+          updated_at: string
           user_id: string | null
           uses_app_courier: boolean
           visibility: string
