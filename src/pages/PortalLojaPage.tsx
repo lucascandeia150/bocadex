@@ -24,7 +24,7 @@ interface Partner {
 
 interface Delivery {
   id: string;
-  partner_name: string;
+  partner_name?: string;
   order_description: string;
   delivery_address: string;
   notes: string | null;
