@@ -845,6 +845,42 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_categories: {
+        Row: {
+          created_at: string
+          display_order: number
+          icon: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          partner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          icon?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          partner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          icon?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          partner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -915,11 +951,15 @@ export type Database = {
           category_id: string | null
           created_at: string
           description: string
+          display_order: number
           id: string
           image_url: string | null
           is_active: boolean
           is_demo: boolean
+          is_featured: boolean
           name: string
+          original_price: number | null
+          partner_category_id: string | null
           partner_id: string | null
           price_max: number | null
           price_min: number | null
@@ -929,11 +969,15 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           description?: string
+          display_order?: number
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_demo?: boolean
+          is_featured?: boolean
           name: string
+          original_price?: number | null
+          partner_category_id?: string | null
           partner_id?: string | null
           price_max?: number | null
           price_min?: number | null
@@ -943,11 +987,15 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           description?: string
+          display_order?: number
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_demo?: boolean
+          is_featured?: boolean
           name?: string
+          original_price?: number | null
+          partner_category_id?: string | null
           partner_id?: string | null
           price_max?: number | null
           price_min?: number | null
@@ -2256,6 +2304,26 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      partner_create_category: {
+        Args: { _icon: string; _image_url: string; _name: string; _pin: string }
+        Returns: {
+          created_at: string
+          display_order: number
+          icon: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          partner_id: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_categories"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       partner_create_delivery:
         | {
             Args: {
@@ -2347,7 +2415,10 @@ export type Database = {
           _category_id: string
           _description: string
           _image_url: string
+          _is_featured?: boolean
           _name: string
+          _original_price?: number
+          _partner_category_id?: string
           _pin: string
           _price_max: number
           _price_min: number
@@ -2356,11 +2427,15 @@ export type Database = {
           category_id: string | null
           created_at: string
           description: string
+          display_order: number
           id: string
           image_url: string | null
           is_active: boolean
           is_demo: boolean
+          is_featured: boolean
           name: string
+          original_price: number | null
+          partner_category_id: string | null
           partner_id: string | null
           price_max: number | null
           price_min: number | null
@@ -2372,6 +2447,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      partner_delete_category: {
+        Args: { _id: string; _pin: string }
+        Returns: undefined
       }
       partner_delete_product: {
         Args: { _pin: string; _product_id: string }
@@ -2423,6 +2502,26 @@ export type Database = {
           to: "partner_applications"
           isOneToOne: true
           isSetofReturn: false
+        }
+      }
+      partner_list_categories: {
+        Args: { _pin: string }
+        Returns: {
+          created_at: string
+          display_order: number
+          icon: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          partner_id: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "partner_categories"
+          isOneToOne: false
+          isSetofReturn: true
         }
       }
       partner_list_chats: {
@@ -2499,11 +2598,15 @@ export type Database = {
           category_id: string | null
           created_at: string
           description: string
+          display_order: number
           id: string
           image_url: string | null
           is_active: boolean
           is_demo: boolean
+          is_featured: boolean
           name: string
+          original_price: number | null
+          partner_category_id: string | null
           partner_id: string | null
           price_max: number | null
           price_min: number | null
@@ -2672,6 +2775,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      partner_set_product_order: {
+        Args: { _order: number; _pin: string; _product_id: string }
+        Returns: undefined
+      }
       partner_toggle_open: {
         Args: { _pin: string }
         Returns: {
@@ -2726,11 +2833,15 @@ export type Database = {
           category_id: string | null
           created_at: string
           description: string
+          display_order: number
           id: string
           image_url: string | null
           is_active: boolean
           is_demo: boolean
+          is_featured: boolean
           name: string
+          original_price: number | null
+          partner_category_id: string | null
           partner_id: string | null
           price_max: number | null
           price_min: number | null
@@ -2743,13 +2854,45 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      partner_update_product: {
+      partner_update_category: {
         Args: {
-          _category_id: string
-          _description: string
+          _display_order: number
+          _icon: string
+          _id: string
           _image_url: string
           _is_active: boolean
           _name: string
+          _pin: string
+        }
+        Returns: {
+          created_at: string
+          display_order: number
+          icon: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          partner_id: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_categories"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      partner_update_product: {
+        Args: {
+          _category_id: string
+          _clear_original_price?: boolean
+          _description: string
+          _image_url: string
+          _is_active: boolean
+          _is_featured?: boolean
+          _name: string
+          _original_price?: number
+          _partner_category_id?: string
           _pin: string
           _price_max: number
           _price_min: number
@@ -2759,11 +2902,15 @@ export type Database = {
           category_id: string | null
           created_at: string
           description: string
+          display_order: number
           id: string
           image_url: string | null
           is_active: boolean
           is_demo: boolean
+          is_featured: boolean
           name: string
+          original_price: number | null
+          partner_category_id: string | null
           partner_id: string | null
           price_max: number | null
           price_min: number | null

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Store, Plus, RefreshCw, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, KeyRound, BarChart3, CheckCircle2, Power, Clock, DollarSign, Bell, Pause, Play, Ban, MessageCircle, Users, Sparkles } from "lucide-react";
+import { Store, Plus, RefreshCw, Truck, ArrowLeft, LogOut, Star, X, Package, Settings, Mail, KeyRound, BarChart3, CheckCircle2, Power, Clock, DollarSign, Bell, Pause, Play, Ban, MessageCircle, Users, Sparkles, FolderOpen } from "lucide-react";
 import PartnerProductsTab from "@/components/portal/PartnerProductsTab";
+import PartnerCategoriesTab from "@/components/portal/PartnerCategoriesTab";
 import PartnerStoreTab from "@/components/portal/PartnerStoreTab";
 import PartnerDashboardTab from "@/components/portal/PartnerDashboardTab";
 import PartnerChatsTab from "@/components/portal/PartnerChatsTab";
@@ -55,7 +56,7 @@ export default function PortalLojaPage() {
   const [openingHours, setOpeningHours] = useState<Record<string, { open: string; close: string; closed?: boolean }> | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState<"dash" | "list" | "new" | "products" | "store" | "chats" | "finance" | "customers" | "promos">("dash");
+  const [tab, setTab] = useState<"dash" | "list" | "new" | "products" | "categories" | "store" | "chats" | "finance" | "customers" | "promos">("dash");
   const [chatUnread, setChatUnread] = useState(0);
   const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
   const [rateModal, setRateModal] = useState<Delivery | null>(null);
@@ -518,6 +519,7 @@ export default function PortalLojaPage() {
     { id: "new", label: "Novo", icon: <Plus size={16} /> },
     { id: "chats", label: "Conversas", icon: <MessageCircle size={16} />, badge: chatUnread },
     { id: "products", label: "Cardápio", icon: <Package size={16} /> },
+    { id: "categories", label: "Categorias", icon: <FolderOpen size={16} /> },
     { id: "promos", label: "Promoções", icon: <Sparkles size={16} /> },
     { id: "finance", label: "Financeiro", icon: <DollarSign size={16} /> },
     { id: "customers", label: "Clientes", icon: <Users size={16} /> },
@@ -676,6 +678,7 @@ export default function PortalLojaPage() {
       {tab === "dash" && <PartnerDashboardTab deliveries={deliveries} partnerId={partner.id} />}
 
       {tab === "products" && <PartnerProductsTab pin={pin} partnerId={partner.id} />}
+      {tab === "categories" && <PartnerCategoriesTab pin={pin} partnerId={partner.id} />}
 
       {tab === "chats" && <PartnerChatsTab pin={pin} partnerId={partner.id} />}
 
