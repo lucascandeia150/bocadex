@@ -678,6 +678,7 @@ export default function PortalLojaPage() {
       {tab === "dash" && <PartnerDashboardTab deliveries={deliveries} partnerId={partner.id} />}
 
       {tab === "products" && <PartnerProductsTab pin={pin} partnerId={partner.id} />}
+      {tab === "categories" && <PartnerCategoriesTab pin={pin} partnerId={partner.id} />}
 
       {tab === "chats" && <PartnerChatsTab pin={pin} partnerId={partner.id} />}
 
