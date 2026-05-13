@@ -519,6 +519,7 @@ export default function PortalLojaPage() {
     { id: "new", label: "Novo", icon: <Plus size={16} /> },
     { id: "chats", label: "Conversas", icon: <MessageCircle size={16} />, badge: chatUnread },
     { id: "products", label: "Cardápio", icon: <Package size={16} /> },
+    { id: "categories", label: "Categorias", icon: <FolderOpen size={16} /> },
     { id: "promos", label: "Promoções", icon: <Sparkles size={16} /> },
     { id: "finance", label: "Financeiro", icon: <DollarSign size={16} /> },
     { id: "customers", label: "Clientes", icon: <Users size={16} /> },
