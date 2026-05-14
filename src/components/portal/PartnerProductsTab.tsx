@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Eye, EyeOff, Save, X, Package, Camera, ImagePlus, Loader2, Star, Flame, ChevronUp, ChevronDown } from "lucide-react";
-import { compressImage } from "@/lib/imageCompress";
+import { uploadPartnerImage } from "@/lib/uploadPartnerImage";
 
 interface Product {
   id: string;
