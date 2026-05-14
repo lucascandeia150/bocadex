@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Save, X, ChevronUp, ChevronDown, Eye, EyeOff, FolderOpen, Camera, Loader2 } from "lucide-react";
-import { compressImage } from "@/lib/imageCompress";
+import { uploadPartnerImage } from "@/lib/uploadPartnerImage";
 
 interface Cat {
   id: string;
@@ -42,18 +42,20 @@ export default function PartnerCategoriesTab({ pin, partnerId }: Props) {
   };
 
   const uploadImage = async (file: File) => {
-    if (file.size > 8 * 1024 * 1024) { toast.error("Imagem muito grande (máx 8MB)"); return; }
     setUploading(true);
     try {
-      const compressed = await compressImage(file, { maxSize: 600, quality: 0.85 });
-      const path = `${partnerId}/categories/${Date.now()}-${Math.random().toString(36).slice(2,7)}.jpg`;
-      const { error } = await supabase.storage.from("partner-images")
-        .upload(path, compressed, { contentType: compressed.type || "image/jpeg" });
-      if (error) { toast.error("Falha no upload"); return; }
-      const { data } = supabase.storage.from("partner-images").getPublicUrl(path);
-      setForm(f => ({ ...f, image_url: data.publicUrl }));
+      const { url } = await uploadPartnerImage(file, {
+        folder: `${partnerId}/categories`,
+        maxSize: 600,
+        quality: 0.85,
+      });
+      setForm(f => ({ ...f, image_url: url }));
       toast.success("Imagem enviada ✅");
-    } finally { setUploading(false); }
+    } catch (e: any) {
+      toast.error(e?.message || "Falha no upload");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const save = async () => {
