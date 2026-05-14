@@ -17,20 +17,32 @@ declare global {
  */
 export function AdBanner({ placement, className = "" }: AdBannerProps) {
   const adRef = useRef<HTMLModElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const pushed = useRef(false);
   const [filled, setFilled] = useState(false);
 
   useEffect(() => {
-    if (pushed.current) return;
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-      pushed.current = true;
-    } catch {
-      // adsbygoogle not loaded yet
-    }
-
     const node = adRef.current;
-    if (!node) return;
+    const wrapper = wrapperRef.current;
+    if (!node || !wrapper) return;
+
+    // Só faz push quando o container tem largura real (>0). Caso contrário
+    // o adsbygoogle dispara TagError "No slot size for availableWidth=0".
+    let cancelled = false;
+    const tryPush = () => {
+      if (cancelled || pushed.current) return;
+      const w = wrapper.getBoundingClientRect().width;
+      if (w < 50) return;
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        pushed.current = true;
+      } catch {
+        /* ignore */
+      }
+    };
+    const ro = new ResizeObserver(tryPush);
+    ro.observe(wrapper);
+    tryPush();
 
     const check = () => {
       const status = node.getAttribute("data-ad-status");
@@ -46,17 +58,24 @@ export function AdBanner({ placement, className = "" }: AdBannerProps) {
     const timer = window.setTimeout(check, 4000);
 
     return () => {
+      cancelled = true;
+      ro.disconnect();
       observer.disconnect();
       window.clearTimeout(timer);
     };
   }, []);
 
-  // Hide wrapper entirely until ad is filled — no empty container, no whitespace.
-  const wrapperStyle: React.CSSProperties = filled ? {} : { display: "none" };
+  // Mantém o wrapper com largura real desde o início (visibility:hidden em vez
+  // de display:none) para o adsense conseguir medir o slot. Só fica visível
+  // quando o anúncio é preenchido.
+  const wrapperStyle: React.CSSProperties = filled
+    ? {}
+    : { visibility: "hidden", height: 0, overflow: "hidden" };
 
   if (placement === "bottom") {
     return (
       <div
+        ref={wrapperRef}
         style={wrapperStyle}
         className={`w-full bg-background border-t border-border py-1 px-2 ${className}`}
       >
@@ -74,7 +93,7 @@ export function AdBanner({ placement, className = "" }: AdBannerProps) {
 
   if (placement === "recipe") {
     return (
-      <div style={wrapperStyle} className={`w-full rounded-xl overflow-hidden ${className}`}>
+      <div ref={wrapperRef} style={wrapperStyle} className={`w-full rounded-xl overflow-hidden ${className}`}>
         <ins
           ref={adRef}
           className="adsbygoogle"
@@ -89,7 +108,7 @@ export function AdBanner({ placement, className = "" }: AdBannerProps) {
 
   // inline
   return (
-    <div style={wrapperStyle} className={`w-full rounded-2xl overflow-hidden ${className}`}>
+    <div ref={wrapperRef} style={wrapperStyle} className={`w-full rounded-2xl overflow-hidden ${className}`}>
       <ins
         ref={adRef}
         className="adsbygoogle"
