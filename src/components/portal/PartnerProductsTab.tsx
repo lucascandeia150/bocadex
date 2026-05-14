@@ -71,18 +71,20 @@ export default function PartnerProductsTab({ pin, partnerId }: Props) {
   };
 
   const uploadImage = async (file: File) => {
-    if (file.size > 10 * 1024 * 1024) { toast.error("Imagem muito grande (máx 10MB)"); return; }
     setUploading(true);
     try {
-      const compressed = await compressImage(file, { maxSize: 1280, quality: 0.82 });
-      const path = `${partnerId}/products/${Date.now()}-${Math.random().toString(36).slice(2,7)}.jpg`;
-      const { error } = await supabase.storage.from("partner-images")
-        .upload(path, compressed, { contentType: compressed.type || "image/jpeg" });
-      if (error) { toast.error("Falha no upload"); return; }
-      const { data } = supabase.storage.from("partner-images").getPublicUrl(path);
-      setForm(f => ({ ...f, image_url: data.publicUrl }));
+      const { url } = await uploadPartnerImage(file, {
+        folder: `${partnerId}/products`,
+        maxSize: 1280,
+        quality: 0.82,
+      });
+      setForm(f => ({ ...f, image_url: url }));
       toast.success("Foto enviada ✅");
-    } finally { setUploading(false); }
+    } catch (e: any) {
+      toast.error(e?.message || "Falha no upload");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const save = async () => {
