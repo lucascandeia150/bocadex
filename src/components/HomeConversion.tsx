@@ -55,9 +55,20 @@ function StoreCard({ p, onClick }: { p: Partner; onClick: () => void }) {
       onClick={onClick}
       className="text-left bg-card rounded-2xl border border-border/60 p-3 flex items-center gap-3 active:scale-[0.98] transition-transform shadow-sm hover:shadow-md w-full"
     >
-      <div className="w-14 h-14 rounded-xl bg-[hsl(142,50%,96%)] flex items-center justify-center overflow-hidden shrink-0">
+      <div
+        className="w-14 h-14 rounded-xl bg-[hsl(142,50%,96%)] flex items-center justify-center overflow-hidden shrink-0"
+        style={{ contain: "paint", transform: "translateZ(0)" }}
+      >
         {p.logo_url ? (
-          <img src={p.logo_url} alt={p.business_name} className="w-full h-full object-cover" loading="lazy" />
+          <img
+            src={p.logo_url}
+            alt={p.business_name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+            width={56}
+            height={56}
+          />
         ) : (
           <StoreIcon size={22} className="text-primary" />
         )}
@@ -83,10 +94,21 @@ function ProductCard({ p, onAdd, onOpen, badge }: {
   badge?: { label: string; tone: "promo" | "new" };
 }) {
   return (
-    <article className="bg-card rounded-2xl border border-border/60 shadow-sm overflow-hidden flex flex-col">
+    <article
+      className="bg-card rounded-2xl border border-border/60 shadow-sm overflow-hidden flex flex-col"
+      style={{ contain: "paint", transform: "translateZ(0)" }}
+    >
       <button onClick={onOpen} className="relative aspect-[4/3] overflow-hidden bg-[hsl(142,50%,96%)]">
         {p.image_url ? (
-          <img src={p.image_url} alt={p.name} loading="lazy" className="w-full h-full object-cover" />
+          <img
+            src={p.image_url}
+            alt={p.name}
+            loading="lazy"
+            decoding="async"
+            width={400}
+            height={300}
+            className="w-full h-full object-cover"
+          />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl">{emojiFor(p)}</div>
         )}
