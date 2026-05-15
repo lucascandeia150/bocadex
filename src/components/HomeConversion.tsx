@@ -83,10 +83,21 @@ function ProductCard({ p, onAdd, onOpen, badge }: {
   badge?: { label: string; tone: "promo" | "new" };
 }) {
   return (
-    <article className="bg-card rounded-2xl border border-border/60 shadow-sm overflow-hidden flex flex-col">
+    <article
+      className="bg-card rounded-2xl border border-border/60 shadow-sm overflow-hidden flex flex-col"
+      style={{ contain: "paint", transform: "translateZ(0)" }}
+    >
       <button onClick={onOpen} className="relative aspect-[4/3] overflow-hidden bg-[hsl(142,50%,96%)]">
         {p.image_url ? (
-          <img src={p.image_url} alt={p.name} loading="lazy" className="w-full h-full object-cover" />
+          <img
+            src={p.image_url}
+            alt={p.name}
+            loading="lazy"
+            decoding="async"
+            width={400}
+            height={300}
+            className="w-full h-full object-cover"
+          />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl">{emojiFor(p)}</div>
         )}
