@@ -55,9 +55,20 @@ function StoreCard({ p, onClick }: { p: Partner; onClick: () => void }) {
       onClick={onClick}
       className="text-left bg-card rounded-2xl border border-border/60 p-3 flex items-center gap-3 active:scale-[0.98] transition-transform shadow-sm hover:shadow-md w-full"
     >
-      <div className="w-14 h-14 rounded-xl bg-[hsl(142,50%,96%)] flex items-center justify-center overflow-hidden shrink-0">
+      <div
+        className="w-14 h-14 rounded-xl bg-[hsl(142,50%,96%)] flex items-center justify-center overflow-hidden shrink-0"
+        style={{ contain: "paint", transform: "translateZ(0)" }}
+      >
         {p.logo_url ? (
-          <img src={p.logo_url} alt={p.business_name} className="w-full h-full object-cover" loading="lazy" />
+          <img
+            src={p.logo_url}
+            alt={p.business_name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+            width={56}
+            height={56}
+          />
         ) : (
           <StoreIcon size={22} className="text-primary" />
         )}
