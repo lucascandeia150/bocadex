@@ -145,3 +145,11 @@
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
+
+/* Recharts SVG isolation: previne lixo de pixel em Android WebView
+   quando o chart fica próximo de elementos sticky/gradientes. */
+.recharts-responsive-container,
+.recharts-wrapper {
+  isolation: isolate;
+  transform: translateZ(0);
+}
