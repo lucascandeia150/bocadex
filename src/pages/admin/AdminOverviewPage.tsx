@@ -334,7 +334,7 @@ export default function AdminOverviewPage() {
           className="lg:col-span-2"
         >
           {loading ? <ChartSkeleton /> : (
-            <div style={{ transform: "translateZ(0)", isolation: "isolate" }}>
+            <div style={{ isolation: "isolate" }}>
               <ResponsiveContainer width="100%" height={260}>
                 <AreaChart data={salesByDay} margin={{ top: 10, right: 12, left: -10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />

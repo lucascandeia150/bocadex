@@ -539,8 +539,8 @@ export default function PortalLojaPage() {
       )}
       {/* Sticky branded header */}
       <div
-        className="sticky top-14 z-30 bg-gradient-to-br from-primary via-primary to-orange-500 text-primary-foreground px-4 pt-4 pb-5 rounded-b-3xl shadow-lg shadow-primary/20 gpu-safe"
-        style={{ isolation: "isolate", willChange: "transform" }}
+       className="sticky top-14 z-30 bg-gradient-to-br from-primary via-primary to-orange-500 text-primary-foreground px-4 pt-4 pb-5 rounded-b-3xl shadow-lg shadow-primary/20"
+       style={{ isolation: "isolate" }}
       >
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
