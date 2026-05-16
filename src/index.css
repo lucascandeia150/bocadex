@@ -138,18 +138,14 @@
   }
 }
 
-/* Evita rendering glitches em GPU mobile: força camada limpa em
-   elementos sticky/fixed muito usados (BottomNav, headers). */
+/* Evita rendering glitches em GPU mobile.
+   IMPORTANTE: NÃO usar translateZ(0)/will-change/backface-hidden em
+   elementos sticky ou em wrappers de charts — em GPUs Adreno (a maioria
+   dos Motorola/Samsung/Xiaomi rodando WebView Android) isso promove uma
+   camada de compositor permanente que renderiza lixo de pixel quando o
+   conteúdo abaixo passa por baixo do elemento sticky.
+   Mantemos apenas isolation: isolate (cria stacking context sem promover
+   camada GPU) onde realmente é necessário. */
 .gpu-safe {
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-/* Recharts SVG isolation: previne lixo de pixel em Android WebView
-   quando o chart fica próximo de elementos sticky/gradientes. */
-.recharts-responsive-container,
-.recharts-wrapper {
   isolation: isolate;
-  transform: translateZ(0);
 }
