@@ -85,7 +85,7 @@ export default function HomePage({ onChoose: _onChoose }: HomePageProps) {
             <button
               onClick={() => navigate("/pedidos")}
               aria-label="Notificações"
-              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white active:scale-90 transition-transform"
+              className="w-9 h-9 rounded-full bg-white/25 no-blur flex items-center justify-center text-white active:scale-90 transition-transform"
             >
               <Bell size={16} strokeWidth={2.5} />
             </button>
