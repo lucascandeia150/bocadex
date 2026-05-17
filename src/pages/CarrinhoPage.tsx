@@ -741,7 +741,7 @@ export default function CarrinhoPage() {
               <button
                 onClick={confirmOrder}
                 disabled={submitting || !!validation}
-                className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
+                className="w-full bg-primary disabled:opacity-60 text-primary-foreground font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
               >
                 <span className="flex items-center gap-2">
                   {submitting ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} />}
