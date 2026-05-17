@@ -91,7 +91,7 @@ export function WhatsAppFloat() {
       {open && (
         <div
           aria-hidden
-          className="fixed inset-0 z-40 bg-black/20 animate-fade-in"
+          className="fixed inset-0 z-40 bg-black/40 no-blur"
           onClick={() => setOpen(false)}
         />
       )}
@@ -99,7 +99,7 @@ export function WhatsAppFloat() {
       <div
         ref={ref}
         style={{ bottom: "calc(80px + env(safe-area-inset-bottom))" }}
-        className="fixed right-3 z-50 flex flex-col items-end gap-2"
+        className="fixed right-3 z-50 flex flex-col items-end gap-2 android-stable-layer"
       >
         {/* Action items */}
         {open &&
@@ -108,7 +108,7 @@ export function WhatsAppFloat() {
             return (
               <div
                 key={a.label}
-                className="flex items-center gap-2 animate-slide-up"
+                 className="flex items-center gap-2"
                 style={{ animationDelay: `${i * 40}ms` }}
               >
                 <span className="bg-card text-foreground text-xs font-bold px-3 py-1.5 rounded-full shadow-md border border-border whitespace-nowrap">
