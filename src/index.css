@@ -72,8 +72,6 @@
     overflow-x: hidden;
     overscroll-behavior-y: none;
     touch-action: manipulation;
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
   }
 
   button,
