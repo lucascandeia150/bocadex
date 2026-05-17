@@ -685,7 +685,7 @@ export default function CarrinhoPage() {
 
       {/* CTA fixo — acima da BottomNav (h ~14) e do AdBanner */}
       <div
-        className="fixed left-0 right-0 z-50 px-4 pt-3 pb-3 bg-background/95 backdrop-blur-sm border-t border-border shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.15)]"
+        className="fixed left-0 right-0 z-50 px-4 pt-3 pb-3 bg-background no-blur border-t border-border shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.15)] android-stable-layer"
         style={{ bottom: "calc(56px + env(safe-area-inset-bottom))" }}
       >
         <div className="max-w-sm mx-auto space-y-2">
@@ -697,7 +697,7 @@ export default function CarrinhoPage() {
               <button
                 onClick={payWithMercadoPago}
                 disabled={payingMp || submitting || !!validation}
-                className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
+                className="w-full bg-primary disabled:opacity-60 text-primary-foreground font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
               >
                 <span className="flex items-center gap-2">
                   {payingMp ? <Loader2 size={20} className="animate-spin" /> : <CreditCard size={20} />}
@@ -719,7 +719,7 @@ export default function CarrinhoPage() {
               <button
                 onClick={payWithMercadoPago}
                 disabled={payingMp || submitting || !!validation}
-                className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
+                className="w-full bg-primary disabled:opacity-60 text-primary-foreground font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
               >
                 <span className="flex items-center gap-2">
                   {payingMp ? <Loader2 size={20} className="animate-spin" /> : <CreditCard size={20} />}
@@ -741,7 +741,7 @@ export default function CarrinhoPage() {
               <button
                 onClick={confirmOrder}
                 disabled={submitting || !!validation}
-                className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] disabled:opacity-60 text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
+                className="w-full bg-primary disabled:opacity-60 text-primary-foreground font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-between gap-2 text-base shadow-lg px-5"
               >
                 <span className="flex items-center gap-2">
                   {submitting ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} />}

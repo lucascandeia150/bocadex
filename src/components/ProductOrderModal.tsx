@@ -116,7 +116,7 @@ export function ProductOrderModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[1000] isolate bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in"
+      className="fixed inset-0 z-[1000] isolate bg-black/60 no-blur flex items-end sm:items-center justify-center p-0 sm:p-4 android-stable-layer"
       onClick={onClose}
     >
       <div
@@ -245,7 +245,7 @@ export function ProductOrderModal({
             <button
               onClick={handleAdd}
               disabled={adding}
-              className="w-full bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] disabled:opacity-70 text-white font-black py-3.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
+            className="w-full bg-primary hover:bg-primary/90 disabled:opacity-70 text-primary-foreground font-black py-3.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-sm shadow-md"
             >
               {adding ? <Loader2 size={18} className="animate-spin" /> : <ShoppingCart size={18} />}
               {adding ? "Adicionando..." : total > 0 ? `Adicionar · R$${total.toFixed(2)}` : "Adicionar ao carrinho"}

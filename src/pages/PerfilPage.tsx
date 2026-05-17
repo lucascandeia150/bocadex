@@ -81,7 +81,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Tabs scrolláveis horizontal */}
-      <div className="sticky top-14 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
+      <div className="sticky top-14 z-30 bg-background no-blur border-b border-border android-stable-layer">
         <div className="max-w-sm mx-auto overflow-x-auto scrollbar-none">
           <div className="flex gap-1 px-3 py-2 min-w-max">
             {TABS.map((t) => {

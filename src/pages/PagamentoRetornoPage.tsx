@@ -161,9 +161,9 @@ export default function PagamentoRetornoPage() {
     <div className="pb-32">
       {/* Hero status */}
       <div className={`bg-gradient-to-br ${heroBg} text-white px-5 pt-10 pb-16 relative overflow-hidden animate-slide-up`}>
-        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 25% 30%, rgba(255,255,255,0.4) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.3) 0%, transparent 50%)" }} />
+        <div className="absolute inset-0 opacity-10 pointer-events-none bg-white" />
         <div className="relative max-w-sm mx-auto text-center">
-          <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md mx-auto flex items-center justify-center mb-3 shadow-2xl">
+          <div className="w-20 h-20 rounded-full bg-white/25 no-blur mx-auto flex items-center justify-center mb-3 shadow-2xl">
             {heroIcon()}
           </div>
           {status === "approved" && (
@@ -172,7 +172,7 @@ export default function PagamentoRetornoPage() {
           <h1 className="text-2xl font-black leading-tight">{heroTitle()}</h1>
           <p className="text-sm opacity-95 mt-2 max-w-xs mx-auto leading-snug">{heroMsg()}</p>
           {info?.amount != null && (
-            <div className="mt-4 inline-flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-4 py-1.5 text-sm font-black">
+            <div className="mt-4 inline-flex items-center gap-2 bg-white/25 no-blur rounded-full px-4 py-1.5 text-sm font-black">
               <CreditCard size={14} /> R${Number(info.amount).toFixed(2)}
             </div>
           )}
@@ -272,13 +272,13 @@ export default function PagamentoRetornoPage() {
       </div>
 
       {/* CTA fixo */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-40">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background no-blur border-t border-border z-50 android-stable-layer">
         <div className="max-w-sm mx-auto space-y-2">
           {status === "approved" ? (
             <>
               <button
                 onClick={() => navigate("/pedidos?tab=historico")}
-                className="w-full bg-gradient-to-r from-[hsl(142,71%,45%)] to-[hsl(142,71%,38%)] text-white font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-base shadow-lg"
+                className="w-full bg-primary text-primary-foreground font-black py-4 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 text-base shadow-lg"
               >
                 <Package size={18} /> Acompanhar meus pedidos
               </button>

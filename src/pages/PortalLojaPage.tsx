@@ -539,7 +539,7 @@ export default function PortalLojaPage() {
       )}
       {/* Sticky branded header */}
       <div
-       className="sticky top-14 z-30 bg-gradient-to-br from-primary via-primary to-orange-500 text-primary-foreground px-4 pt-4 pb-5 rounded-b-3xl shadow-lg shadow-primary/20"
+       className="sticky top-14 z-30 bg-primary text-primary-foreground px-4 pt-4 pb-5 rounded-b-3xl shadow-lg shadow-primary/20 android-stable-layer"
        style={{ isolation: "isolate" }}
       >
         <div className="flex items-start justify-between gap-2">
@@ -552,12 +552,12 @@ export default function PortalLojaPage() {
               )}
             </h1>
           </div>
-          <button onClick={logout} className="p-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 transition-all" title="Sair">
+          <button onClick={logout} className="p-2 rounded-xl bg-white/25 active:scale-95 transition-all" title="Sair">
             <LogOut size={14} />
           </button>
         </div>
         {partner.is_demo && (
-          <p className="mt-2 text-[11px] bg-white/15 rounded-lg px-2 py-1.5 font-semibold">
+          <p className="mt-2 text-[11px] bg-white/25 rounded-lg px-2 py-1.5 font-semibold">
             ⚠️ Modo demonstração — dados não são reais.
           </p>
         )}
@@ -602,7 +602,7 @@ export default function PortalLojaPage() {
             className={`mt-2 w-full flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2 text-[11px] font-bold active:scale-[.98] transition-all ${
               partner.store_status === "paused"
                 ? "bg-white text-yellow-600 shadow-md"
-                : "bg-white/15 hover:bg-white/25 text-white"
+                : "bg-white/25 text-white"
             }`}
           >
             {partner.store_status === "paused" ? (<><Play size={12} /> Retomar operação</>) : (<><Pause size={12} /> Pausar operação</>)}
@@ -831,7 +831,7 @@ function StatBox({ label, count, color }: { label: string; count: number; color:
 
 function HeroStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
   return (
-    <div className="bg-white/20 rounded-xl px-2 py-2 text-center">
+    <div className="bg-white/25 rounded-xl px-2 py-2 text-center">
       <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase tracking-wide opacity-90">
         {icon} {label}
       </div>

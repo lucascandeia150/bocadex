@@ -199,7 +199,7 @@ export default function ParceiroDetalhePage() {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
         <button onClick={() => navigate(-1)}
-          className="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/95 backdrop-blur shadow-lg flex items-center justify-center active:scale-90 z-10" aria-label="Voltar">
+          className="absolute top-4 left-4 w-10 h-10 rounded-full bg-white no-blur shadow-lg flex items-center justify-center active:scale-90 z-10" aria-label="Voltar">
           <ArrowLeft size={18} className="text-foreground" />
         </button>
       </div>
@@ -246,7 +246,7 @@ export default function ParceiroDetalhePage() {
 
       {/* Menu sticky de categorias */}
       {sections.length > 0 && (
-        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border mt-5">
+        <div className="sticky top-0 z-30 bg-background no-blur border-b border-border mt-5 android-stable-layer">
           <div ref={navRef} className="flex gap-2 overflow-x-auto px-4 py-2.5 scrollbar-none">
             {sections.map(s => {
               const active = activeSection === s.id;
@@ -333,7 +333,7 @@ export default function ParceiroDetalhePage() {
       </div>
 
       {/* CTA fixa */}
-      <div className={`fixed left-0 right-0 z-40 px-4 pt-3 bg-background/95 backdrop-blur-sm border-t border-border transition-transform duration-200 ${isProductModalOpen ? "translate-y-full pointer-events-none" : "translate-y-0"}`}
+      <div className={`fixed left-0 right-0 z-30 px-4 pt-3 bg-background no-blur border-t border-border transition-transform duration-200 ${isProductModalOpen ? "translate-y-full pointer-events-none" : "translate-y-0"}`}
         style={{ bottom: "calc(56px + env(safe-area-inset-bottom))", paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
         <div className="max-w-sm mx-auto">
           {cartHasThisStore ? (

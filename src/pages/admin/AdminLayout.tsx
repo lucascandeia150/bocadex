@@ -107,7 +107,7 @@ export default function AdminLayout() {
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 no-blur z-40 md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -199,7 +199,7 @@ export default function AdminLayout() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
-        <header className="sticky top-0 z-30 h-16 bg-card/95 backdrop-blur border-b border-border px-4 md:px-6 flex items-center gap-3">
+        <header className="sticky top-0 z-30 h-16 bg-card no-blur border-b border-border px-4 md:px-6 flex items-center gap-3 android-stable-layer">
           <button
             onClick={() => setMobileOpen(true)}
             className="md:hidden p-2 rounded-lg hover:bg-muted"

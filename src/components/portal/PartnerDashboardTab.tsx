@@ -102,7 +102,7 @@ export default function PartnerDashboardTab({ deliveries, partnerId }: { deliver
             <span className="text-[9px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase">demo</span>
           )}
         </div>
-        <div style={{ transform: "translateZ(0)", isolation: "isolate" }}>
+        <div style={{ isolation: "isolate" }}>
           <ResponsiveContainer width="100%" height={140}>
             <AreaChart data={chart.points} margin={{ top: 5, right: 8, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
