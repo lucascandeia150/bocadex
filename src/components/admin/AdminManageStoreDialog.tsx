@@ -92,7 +92,7 @@ export default function AdminManageStoreDialog({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => onOpenChange(false)}>
+    <div className="fixed inset-0 z-[1000] bg-background no-blur flex items-center justify-center p-4 android-stable-layer" onClick={() => onOpenChange(false)}>
       <div className="bg-card border border-border rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="min-w-0">

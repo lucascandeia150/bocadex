@@ -210,7 +210,7 @@ export function HomeConversion() {
         href="/seja-parceiro"
         className="block rounded-2xl overflow-hidden shadow-md active:scale-[0.99] transition-transform"
       >
-        <div className="bg-gradient-to-r from-[hsl(142,71%,42%)] to-[hsl(160,70%,38%)] p-4 text-white relative overflow-hidden">
+        <div className="bg-primary p-4 text-primary-foreground relative overflow-hidden android-stable-layer">
           <div className="absolute -right-6 -top-6 text-7xl opacity-15">🛵</div>
           <div className="relative">
             <p className="text-[11px] font-bold uppercase opacity-90 tracking-wide">Bocadex Delivery's Parceiros</p>
