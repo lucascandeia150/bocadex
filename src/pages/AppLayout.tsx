@@ -97,7 +97,7 @@ export default function AppLayout() {
           </main>
 
           {!hideAd && (
-            <div className="fixed bottom-14 left-0 right-0 z-30 max-w-lg mx-auto">
+            <div className="fixed bottom-14 left-0 right-0 z-20 max-w-lg mx-auto">
               <AdBanner placement="bottom" />
             </div>
           )}
@@ -122,7 +122,7 @@ function AppHeader() {
   if (isAdmin) return null;
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border h-14 flex items-center px-3 gap-2">
+    <header className="sticky top-0 z-50 bg-background no-blur border-b border-border h-14 flex items-center px-3 gap-2 android-stable-layer">
       <button
         onClick={toggleSidebar}
         aria-label="Abrir menu lateral"
