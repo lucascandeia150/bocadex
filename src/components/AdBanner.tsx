@@ -70,7 +70,7 @@ export function AdBanner({ placement, className = "" }: AdBannerProps) {
   // quando o anúncio é preenchido.
   const wrapperStyle: React.CSSProperties = filled
     ? {}
-    : { display: "none" };
+    : { visibility: "hidden", height: 0, overflow: "hidden", pointerEvents: "none" };
 
   if (placement === "bottom") {
     return (
