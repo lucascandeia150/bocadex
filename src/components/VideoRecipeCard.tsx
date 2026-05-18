@@ -60,7 +60,7 @@ export function VideoRecipeCard({ food }: VideoRecipeCardProps) {
               className="w-full h-full object-cover"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-active:bg-black/40 transition-colors">
+            <div className="absolute inset-0 bg-foreground/30 flex items-center justify-center group-active:bg-foreground/40 transition-colors">
               <div className="bg-destructive rounded-full p-4 shadow-lg group-active:scale-95 transition-transform">
                 <Play size={28} className="text-destructive-foreground ml-0.5" fill="currentColor" />
               </div>

@@ -143,7 +143,7 @@ export default function PartnerPromotionsTab({ partnerId }: { partnerId: string 
       )}
 
       {open && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={() => setOpen(false)}>
+        <div className="fixed inset-0 bg-foreground/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={() => setOpen(false)}>
           <div className="bg-card rounded-2xl border border-border p-5 w-full max-w-md space-y-3 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h3 className="text-base font-black text-foreground">Nova promoção</h3>

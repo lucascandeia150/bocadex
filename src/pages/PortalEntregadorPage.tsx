@@ -464,7 +464,7 @@ export default function PortalEntregadorPage() {
       </>}
 
       {finishingId && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-4" onClick={() => !finishLoading && setFinishingId(null)}>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-foreground/50 p-4" onClick={() => !finishLoading && setFinishingId(null)}>
           <div className="bg-card rounded-2xl border border-border p-5 w-full max-w-sm space-y-4 animate-slide-up" onClick={(e) => e.stopPropagation()}>
             <div className="text-center space-y-1">
               <div className="text-3xl">🔐</div>

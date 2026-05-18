@@ -99,7 +99,7 @@ export default function StoreHoursAutoManager({ pin, partnerId, isOpen, openingH
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-3">
+    <div className="fixed inset-0 z-50 bg-foreground/60 flex items-end sm:items-center justify-center p-3">
       <div className="bg-card rounded-2xl border border-border w-full max-w-sm p-5 space-y-3 shadow-2xl">
         <div className="flex items-center gap-2">
           <Clock className="text-primary" size={20} />

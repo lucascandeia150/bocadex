@@ -394,7 +394,7 @@ export default function PedidosPage() {
       </Tabs>
 
       {chatOrder && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center" onClick={() => { setChatOrder(null); setChatId(null); }}>
+        <div className="fixed inset-0 z-50 bg-foreground/60 flex items-end sm:items-center justify-center" onClick={() => { setChatOrder(null); setChatId(null); }}>
           <div className="bg-background w-full sm:max-w-md sm:rounded-2xl overflow-hidden h-[85vh] sm:h-[70vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
             {openingChat || !chatId ? (
               <div className="flex-1 flex items-center justify-center">

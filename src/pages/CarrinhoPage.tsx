@@ -685,7 +685,7 @@ export default function CarrinhoPage() {
 
       {/* CTA fixo — acima da BottomNav (h ~14) e do AdBanner */}
       <div
-        className="fixed left-0 right-0 z-50 px-4 pt-3 pb-3 bg-background no-blur border-t border-border shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.15)] android-stable-layer"
+        className="fixed left-0 right-0 z-50 px-4 pt-3 pb-3 bg-background no-blur border-t border-border shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.15)] "
         style={{ bottom: "calc(56px + env(safe-area-inset-bottom))" }}
       >
         <div className="max-w-sm mx-auto space-y-2">
