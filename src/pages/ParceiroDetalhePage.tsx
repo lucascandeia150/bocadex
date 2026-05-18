@@ -246,7 +246,7 @@ export default function ParceiroDetalhePage() {
 
       {/* Menu sticky de categorias */}
       {sections.length > 0 && (
-        <div className="sticky top-0 z-30 bg-background no-blur border-b border-border mt-5 android-stable-layer">
+        <div className="sticky top-0 z-30 bg-background no-blur border-b border-border mt-5 ">
           <div ref={navRef} className="flex gap-2 overflow-x-auto px-4 py-2.5 scrollbar-none">
             {sections.map(s => {
               const active = activeSection === s.id;

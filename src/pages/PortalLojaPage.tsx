@@ -539,7 +539,7 @@ export default function PortalLojaPage() {
       )}
       {/* Sticky branded header */}
       <div
-       className="sticky top-14 z-30 bg-primary text-primary-foreground px-4 pt-4 pb-5 rounded-b-3xl shadow-lg shadow-primary/20 android-stable-layer"
+       className="sticky top-14 z-30 bg-primary text-primary-foreground px-4 pt-4 pb-5 rounded-b-3xl shadow-lg shadow-primary/20 "
        style={{ isolation: "isolate" }}
       >
         <div className="flex items-start justify-between gap-2">
@@ -746,7 +746,7 @@ export default function PortalLojaPage() {
       )}
 
       {rateModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={() => setRateModal(null)}>
+        <div className="fixed inset-0 bg-foreground/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={() => setRateModal(null)}>
           <div className="bg-card rounded-2xl border border-border p-5 w-full max-w-md space-y-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h3 className="text-base font-black text-foreground">Avaliar entregador</h3>

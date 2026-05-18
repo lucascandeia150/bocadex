@@ -141,7 +141,7 @@ export default function AdminCouponsPage() {
       )}
 
       {editing && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={() => setEditing(null)}>
+        <div className="fixed inset-0 z-50 bg-foreground/40 flex items-center justify-center p-4" onClick={() => setEditing(null)}>
           <div className="bg-card rounded-2xl p-5 max-w-md w-full space-y-3" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-black text-foreground">{editing.id ? "Editar cupom" : "Novo cupom"}</h2>
             <Field label="Código">

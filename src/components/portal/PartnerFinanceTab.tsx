@@ -92,7 +92,7 @@ export default function PartnerFinanceTab({ partnerId, appFeePercent = 8 }: Prop
       </div>
 
       {/* Saldo destacado */}
-      <div className="rounded-3xl bg-primary text-primary-foreground p-5 shadow-lg shadow-primary/20 android-stable-layer">
+      <div className="rounded-3xl bg-primary text-primary-foreground p-5 shadow-lg shadow-primary/20 ">
         <p className="text-[11px] uppercase tracking-widest opacity-90 font-bold">Saldo a receber (líquido)</p>
         <p className="text-3xl font-black mt-1">{fmtBRL(stats.net)}</p>
         <p className="text-[11px] opacity-90 mt-2">

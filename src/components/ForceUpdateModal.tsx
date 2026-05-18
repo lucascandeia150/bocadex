@@ -16,7 +16,7 @@ export default function ForceUpdateModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-background no-blur flex items-center justify-center p-6 android-stable-layer">
+    <div className="fixed inset-0 z-[100] bg-background no-blur flex items-center justify-center p-6 ">
       <div className="bg-card border border-border rounded-2xl shadow-2xl p-6 max-w-sm w-full text-center space-y-4">
         <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
           <Sparkles size={26} />

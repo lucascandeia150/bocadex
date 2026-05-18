@@ -400,7 +400,7 @@ export default function AdminOrderDetailPage() {
 
       {/* Refund modal */}
       {refundOpen && payment && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-end md:items-center justify-center p-4" onClick={() => !refunding && setRefundOpen(false)}>
+        <div className="fixed inset-0 z-50 bg-foreground/50 flex items-end md:items-center justify-center p-4" onClick={() => !refunding && setRefundOpen(false)}>
           <div className="bg-card rounded-2xl w-full max-w-md p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
             <div>
               <h3 className="text-lg font-black text-foreground">Reembolsar pagamento</h3>

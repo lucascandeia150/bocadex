@@ -55,7 +55,7 @@ export function InstallPrompt() {
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 max-w-lg mx-auto z-50 android-stable-layer">
+    <div className="fixed bottom-20 left-4 right-4 max-w-lg mx-auto z-50 ">
       <div className="bg-card border border-border rounded-2xl shadow-xl p-4 flex items-center gap-3">
         <div className="bg-primary/10 rounded-xl p-2.5 shrink-0">
           <Download className="text-primary" size={22} />

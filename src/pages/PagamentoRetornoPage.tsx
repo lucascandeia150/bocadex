@@ -272,7 +272,7 @@ export default function PagamentoRetornoPage() {
       </div>
 
       {/* CTA fixo */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background no-blur border-t border-border z-50 android-stable-layer">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background no-blur border-t border-border z-50 ">
         <div className="max-w-sm mx-auto space-y-2">
           {status === "approved" ? (
             <>
