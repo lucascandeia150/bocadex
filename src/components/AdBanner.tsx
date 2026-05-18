@@ -69,7 +69,7 @@ export function AdBanner({ placement, className = "" }: AdBannerProps) {
   // de display:none) para o adsense conseguir medir o slot. Só fica visível
   // quando o anúncio é preenchido.
   const wrapperStyle: React.CSSProperties = filled
-    ? {}
+    ? { pointerEvents: "auto" }
     : { visibility: "hidden", height: 0, overflow: "hidden", pointerEvents: "none" };
 
   if (placement === "bottom") {
@@ -77,7 +77,7 @@ export function AdBanner({ placement, className = "" }: AdBannerProps) {
       <div
         ref={wrapperRef}
         style={wrapperStyle}
-        className={`w-full bg-background border-t border-border py-1 px-2 pointer-events-auto ${className}`}
+          className={`w-full bg-background border-t border-border py-1 px-2 ${className}`}
       >
         <ins
           ref={adRef}
@@ -93,7 +93,7 @@ export function AdBanner({ placement, className = "" }: AdBannerProps) {
 
   if (placement === "recipe") {
     return (
-      <div ref={wrapperRef} style={wrapperStyle} className={`w-full rounded-xl overflow-hidden pointer-events-auto ${className}`}>
+      <div ref={wrapperRef} style={wrapperStyle} className={`w-full rounded-xl overflow-hidden ${className}`}>
         <ins
           ref={adRef}
           className="adsbygoogle"
@@ -108,7 +108,7 @@ export function AdBanner({ placement, className = "" }: AdBannerProps) {
 
   // inline
   return (
-    <div ref={wrapperRef} style={wrapperStyle} className={`w-full rounded-2xl overflow-hidden pointer-events-auto ${className}`}>
+    <div ref={wrapperRef} style={wrapperStyle} className={`w-full rounded-2xl overflow-hidden ${className}`}>
       <ins
         ref={adRef}
         className="adsbygoogle"
