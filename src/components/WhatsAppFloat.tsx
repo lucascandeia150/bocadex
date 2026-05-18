@@ -91,7 +91,7 @@ export function WhatsAppFloat() {
       {open && (
         <div
           aria-hidden
-          className="fixed inset-0 z-40 bg-black/40 no-blur"
+          className="fixed inset-0 z-40 bg-foreground/40 no-blur"
           onClick={() => setOpen(false)}
         />
       )}
@@ -99,7 +99,7 @@ export function WhatsAppFloat() {
       <div
         ref={ref}
         style={{ bottom: "calc(80px + env(safe-area-inset-bottom))" }}
-        className="fixed right-3 z-50 flex flex-col items-end gap-2 android-stable-layer"
+        className="fixed right-3 z-50 flex flex-col items-end gap-2"
       >
         {/* Action items */}
         {open &&
