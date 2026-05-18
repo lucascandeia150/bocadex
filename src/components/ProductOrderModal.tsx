@@ -34,8 +34,6 @@ export function ProductOrderModal({
   const [notes, setNotes] = useState("");
   const [conflict, setConflict] = useState(false);
   const [adding, setAdding] = useState(false);
-  const [dragY, setDragY] = useState(0);
-  const startY = useRef<number | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -43,7 +41,6 @@ export function ProductOrderModal({
       setNotes("");
       setConflict(false);
       setAdding(false);
-      setDragY(0);
     }
   }, [open]);
 
@@ -101,35 +98,18 @@ export function ProductOrderModal({
     onClose();
   };
 
-  // Swipe-to-close (mobile)
-  const onTouchStart = (e: React.TouchEvent) => { startY.current = e.touches[0].clientY; };
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (startY.current == null) return;
-    const dy = e.touches[0].clientY - startY.current;
-    if (dy > 0) setDragY(dy);
-  };
-  const onTouchEnd = () => {
-    if (dragY > 120) onClose();
-    setDragY(0);
-    startY.current = null;
-  };
-
   return createPortal(
     <div
-      className="fixed inset-0 z-[1000] isolate bg-black/60 no-blur flex items-end sm:items-center justify-center p-0 sm:p-4 android-stable-layer"
+      className="fixed inset-0 z-[1000] isolate bg-foreground/60 no-blur flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={onClose}
     >
       <div
-        style={{ transform: dragY > 0 ? `translateY(${dragY}px)` : undefined, transition: dragY === 0 ? "transform 0.2s ease" : "none" }}
-        className="w-full sm:max-w-sm bg-card rounded-t-3xl sm:rounded-3xl shadow-2xl border border-border flex flex-col max-h-[92dvh] sm:max-h-[88vh] animate-slide-up"
+        className="w-full sm:max-w-sm bg-card rounded-t-3xl sm:rounded-3xl shadow-2xl border border-border flex flex-col max-h-[92dvh] sm:max-h-[88vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle (mobile) */}
         <div
-          className="sm:hidden pt-2 pb-1 flex justify-center shrink-0 cursor-grab active:cursor-grabbing"
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
+          className="sm:hidden pt-2 pb-1 flex justify-center shrink-0"
         >
           <div className="w-10 h-1 rounded-full bg-muted" />
         </div>
