@@ -57,7 +57,6 @@ function StoreCard({ p, onClick }: { p: Partner; onClick: () => void }) {
     >
       <div
         className="w-14 h-14 rounded-xl bg-[hsl(142,50%,96%)] flex items-center justify-center overflow-hidden shrink-0"
-        style={{ contain: "paint" }}
       >
         {p.logo_url ? (
           <img
@@ -96,7 +95,6 @@ function ProductCard({ p, onAdd, onOpen, badge }: {
   return (
     <article
       className="bg-card rounded-2xl border border-border/60 shadow-sm overflow-hidden flex flex-col"
-      style={{ contain: "paint" }}
     >
       <button onClick={onOpen} className="relative aspect-[4/3] overflow-hidden bg-[hsl(142,50%,96%)]">
         {p.image_url ? (
