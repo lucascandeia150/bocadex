@@ -56,8 +56,6 @@
 @layer base {
   * {
     @apply border-border;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -83,14 +81,6 @@
   [role="button"] {
     pointer-events: auto !important;
     touch-action: manipulation;
-  }
-
-  button,
-  a,
-  input,
-  select,
-  textarea {
-    position: relative;
   }
 }
 
@@ -195,8 +185,8 @@
 
 .android-stable-layer,
 .gpu-safe {
-  transform: translateZ(0);
-  will-change: auto;
+  transform: none !important;
+  will-change: auto !important;
   isolation: isolate;
 }
 
@@ -204,8 +194,9 @@
 .sticky,
 [data-radix-popper-content-wrapper] {
   will-change: auto !important;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+  transform: none !important;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
 }
 
 [data-radix-popper-content-wrapper],
@@ -215,15 +206,6 @@
   z-index: 1000 !important;
 }
 
-.pointer-events-none button,
-.pointer-events-none a,
-.pointer-events-none input,
-.pointer-events-none select,
-.pointer-events-none textarea,
-.pointer-events-none [role="button"] {
-  pointer-events: auto !important;
-}
-
 @media (hover: none) and (pointer: coarse) {
   *,
   *::before,
@@ -231,5 +213,19 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
+  }
+
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transform: none !important;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    transform: none !important;
+    will-change: auto !important;
   }
 }
