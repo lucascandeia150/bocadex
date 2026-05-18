@@ -24,7 +24,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 bg-background no-blur border-t border-border android-stable-layer"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-background no-blur border-t border-border"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="max-w-lg mx-auto flex">
