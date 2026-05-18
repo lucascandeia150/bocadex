@@ -183,7 +183,11 @@
   -webkit-filter: none !important;
 }
 
-.android-stable-layer,
+.android-stable-layer {
+  will-change: auto !important;
+  isolation: isolate;
+}
+
 .gpu-safe {
   transform: none !important;
   will-change: auto !important;
@@ -194,7 +198,6 @@
 .sticky,
 [data-radix-popper-content-wrapper] {
   will-change: auto !important;
-  transform: none !important;
   backface-visibility: visible;
   -webkit-backface-visibility: visible;
 }
