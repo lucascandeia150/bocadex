@@ -1374,6 +1374,13 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_all_courier_pins_by_application: {
+        Args: never
+        Returns: {
+          access_pin: string
+          application_id: string
+        }[]
+      }
       admin_approve_courier: {
         Args: { _application_id: string }
         Returns: {
@@ -1435,6 +1442,13 @@ export type Database = {
         }
       }
       admin_courier_pin: { Args: { _courier_id: string }; Returns: string }
+      admin_courier_pins: {
+        Args: { _courier_ids: string[] }
+        Returns: {
+          access_pin: string
+          id: string
+        }[]
+      }
       admin_create_partner: {
         Args: {
           _address: string
