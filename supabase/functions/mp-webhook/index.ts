@@ -189,9 +189,8 @@ Deno.serve(async (req) => {
       try {
         await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-push`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-internal-secret": Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")! },
           body: JSON.stringify({
-            internal_secret: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
             title: "Loja ativada! 🎉",
             body: "Sua assinatura foi confirmada. Seu negócio já está visível no Bocadex Delivery's.",
             target: "all",
@@ -283,9 +282,8 @@ Deno.serve(async (req) => {
       if (userId) {
         await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-push`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-internal-secret": Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")! },
           body: JSON.stringify({
-            internal_secret: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
             title: "Pedido confirmado! 🛵",
             body: `${partner?.business_name ?? "A loja"} recebeu seu pedido e já está preparando.`,
             target: "user",
@@ -306,9 +304,8 @@ Deno.serve(async (req) => {
       if (partnerRow?.user_id) {
         await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-push`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-internal-secret": Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")! },
           body: JSON.stringify({
-            internal_secret: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
             title: "Novo pedido pago! 💰",
             body: `${payment.customer_name} fez um pedido de R$ ${Number(payment.amount).toFixed(2)}.`,
             target: "user",
@@ -329,9 +326,8 @@ Deno.serve(async (req) => {
         for (const uid of ids) {
           await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-push`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "x-internal-secret": Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")! },
             body: JSON.stringify({
-              internal_secret: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
               title: "Nova entrega disponível! 🛵",
               body: `${partner?.business_name ?? "Loja"} — R$ ${Number(fee).toFixed(2)} de taxa.`,
               target: "user",

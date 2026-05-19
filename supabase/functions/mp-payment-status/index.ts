@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
 
     // Only the owning user (or admin) may see payment details
     const ownerId = (payment as any)?.metadata?.user_id;
-    if (ownerId && ownerId !== userData.user.id) {
+    if (!ownerId || ownerId !== userData.user.id) {
       const { data: roles } = await supabase
         .from("user_roles").select("role").eq("user_id", userData.user.id).eq("role", "admin").maybeSingle();
       if (!roles) {

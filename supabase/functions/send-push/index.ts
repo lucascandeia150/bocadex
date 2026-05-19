@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-internal-secret',
 };
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -60,16 +60,17 @@ Deno.serve(async (req) => {
     const sa = JSON.parse(saRaw);
 
     const body = await req.json().catch(() => ({}));
-    const { title, body: msgBody, data = {}, target = 'all', user_id, tokens: explicitTokens, internal_secret } = body;
+    const { title, body: msgBody, data = {}, target = 'all', user_id, tokens: explicitTokens } = body;
     if (!title || !msgBody) {
       return new Response(JSON.stringify({ error: 'title e body são obrigatórios' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Authorize: either admin user, or internal call with service-role secret header.
+    // Authorize: either admin user, or internal call with service-role secret in dedicated header.
     const authHeader = req.headers.get('Authorization') ?? '';
-    const isInternal = internal_secret && internal_secret === SERVICE_ROLE;
+    const internalSecret = req.headers.get('x-internal-secret') ?? '';
+    const isInternal = internalSecret.length > 0 && internalSecret === SERVICE_ROLE;
     let createdBy: string | null = null;
     if (!isInternal) {
       const supaUser = createClient(SUPABASE_URL, ANON_KEY, {

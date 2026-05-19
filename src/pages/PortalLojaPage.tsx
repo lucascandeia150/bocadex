@@ -102,20 +102,15 @@ export default function PortalLojaPage() {
 
   // After auth login, find the partner linked to this user_id and reuse the existing PIN-based RPCs
   const resolvePinFromUser = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("partner_applications")
-      .select("access_pin")
-      .eq("user_id", userId)
-      .eq("status", "approved")
-      .eq("is_active", true)
-      .maybeSingle();
-    if (error || !data?.access_pin) {
+    const { data: pinValue, error } = await supabase.rpc("partner_self_pin");
+    const pin = (pinValue as string | null) || null;
+    if (error || !pin) {
       setNeedsLink(true);
       return;
     }
     setNeedsLink(false);
-    setPin(data.access_pin);
-    tryLogin(data.access_pin, true);
+    setPin(pin);
+    tryLogin(pin, true);
   };
 
   const signIn = async () => {

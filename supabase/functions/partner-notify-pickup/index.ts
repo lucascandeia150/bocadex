@@ -9,6 +9,25 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // Require authenticated caller
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const jwt = authHeader.replace("Bearer ", "");
+    if (!jwt) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+    );
+    const { data: userData, error: uErr } = await userClient.auth.getUser(jwt);
+    if (uErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { pin, delivery_id } = await req.json();
     if (!pin || !delivery_id) {
       return new Response(JSON.stringify({ error: "pin e delivery_id obrigatórios" }), {
@@ -53,9 +72,8 @@ Deno.serve(async (req) => {
 
     await fetch(`${URL_}/functions/v1/send-push`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-internal-secret": SR },
       body: JSON.stringify({
-        internal_secret: SR,
         title: "Seu pedido está pronto para retirada 🎉",
         body: `${partner.business_name} já preparou seu pedido. Pode buscar!`,
         target: "user",

@@ -583,11 +583,14 @@ function DemoStoreCard({ onReset }: { onReset: () => void }) {
   useEffect(() => {
     supabase
       .from("partner_applications")
-      .select("id, access_pin")
+      .select("id")
       .eq("is_demo", true)
       .maybeSingle()
-      .then(({ data }) => {
-        if (data) { setDemoId(data.id); setPin(data.access_pin || ""); }
+      .then(async ({ data }) => {
+        if (!data) return;
+        setDemoId(data.id);
+        const { data: p } = await supabase.rpc("admin_partner_pin", { _partner_id: data.id });
+        setPin((p as string) || "");
       });
   }, []);
 

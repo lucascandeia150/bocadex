@@ -17,11 +17,19 @@ export default function AdminCouriersManageTab() {
     setLoading(true);
     const { data, error } = await supabase
       .from("couriers")
-      .select("id,name,phone,vehicle,is_active,is_online,last_seen_at,access_pin")
+      .select("id,name,phone,vehicle,is_active,is_online,last_seen_at")
       .order("created_at", { ascending: false });
     setLoading(false);
     if (error) { toast.error(error.message); return; }
-    setItems((data as Courier[]) || []);
+    const base = (data as Omit<Courier, "access_pin">[]) || [];
+    if (base.length === 0) { setItems([]); return; }
+    const { data: pins } = await supabase.rpc("admin_courier_pins", {
+      _courier_ids: base.map((c) => c.id),
+    });
+    const pinMap = new Map<string, string>(
+      ((pins as { id: string; access_pin: string | null }[]) || []).map((p) => [p.id, p.access_pin || ""])
+    );
+    setItems(base.map((c) => ({ ...c, access_pin: pinMap.get(c.id) || null })));
   };
 
   useEffect(() => { load(); }, []);

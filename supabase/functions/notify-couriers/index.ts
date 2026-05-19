@@ -37,15 +37,34 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
+    const uid = (claims.claims.sub as string) || "";
+
     // Confirma que o pedido existe e ainda está disponível
     const { data: delivery } = await admin
       .from('deliveries')
-      .select('id, status, courier_id, partner_name, delivery_address')
+      .select('id, status, courier_id, partner_name, delivery_address, partner_id')
       .eq('id', delivery_id)
       .maybeSingle();
     if (!delivery || delivery.status !== 'disponivel' || delivery.courier_id) {
       return new Response(JSON.stringify({ ok: true, skipped: true }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Autorização: somente admin ou parceiro dono do pedido pode disparar
+    const { data: adminRole } = await admin
+      .from('user_roles').select('role').eq('user_id', uid).eq('role', 'admin').maybeSingle();
+    const isAdmin = !!adminRole;
+    let isOwnerPartner = false;
+    if (!isAdmin && delivery.partner_id) {
+      const { data: ownPartner } = await admin
+        .from('partner_applications')
+        .select('id').eq('id', delivery.partner_id).eq('user_id', uid).maybeSingle();
+      isOwnerPartner = !!ownPartner;
+    }
+    if (!isAdmin && !isOwnerPartner) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
@@ -89,13 +108,16 @@ Deno.serve(async (req) => {
     // Reaproveita o sender principal via secret de service role
     const resp = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: ANON_KEY,
+        'x-internal-secret': SERVICE_ROLE,
+      },
       body: JSON.stringify({
         title: '🛵 Novo pedido disponível',
         body: `${partner_name ?? delivery.partner_name} — toque para aceitar`,
         data: { click_url: '/portal-entregador', delivery_id, type: 'new_delivery' },
         tokens,
-        internal_secret: SERVICE_ROLE,
       }),
     });
     const json = await resp.json().catch(() => ({}));
