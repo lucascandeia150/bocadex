@@ -58,7 +58,7 @@ export default function AppLayout() {
         <div className="flex-1 flex flex-col max-w-lg mx-auto w-full min-h-0">
           <AppHeader />
           <PushPermissionBanner />
-  <main className="flex-1 pb-24 overflow-y-auto overscroll-contain min-h-0 h-0">
+  <main nomeDaClasse="flex-1 pb-24 overflow-y-auto overscro...
             <Routes>
               <Route path="/" element={<HomePage onChoose={handleChoose} />} />
               <Route path="/lojas" element={<LojasPage />} />
