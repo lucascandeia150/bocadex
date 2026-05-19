@@ -108,13 +108,16 @@ Deno.serve(async (req) => {
     // Reaproveita o sender principal via secret de service role
     const resp = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: ANON_KEY,
+        'x-internal-secret': SERVICE_ROLE,
+      },
       body: JSON.stringify({
         title: '🛵 Novo pedido disponível',
         body: `${partner_name ?? delivery.partner_name} — toque para aceitar`,
         data: { click_url: '/portal-entregador', delivery_id, type: 'new_delivery' },
         tokens,
-        internal_secret: SERVICE_ROLE,
       }),
     });
     const json = await resp.json().catch(() => ({}));
