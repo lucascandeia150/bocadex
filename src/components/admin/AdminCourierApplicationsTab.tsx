@@ -40,10 +40,11 @@ export default function AdminCourierApplicationsTab() {
       .order("created_at", { ascending: false });
     if (error) toast.error("Erro ao carregar");
     else setItems((data as CourierApp[]) || []);
-    // Carrega PINs dos couriers aprovados
-    const { data: cs } = await supabase.from("couriers").select("application_id, access_pin").not("application_id", "is", null);
+    // Carrega PINs dos couriers aprovados (via função segura para admins)
+    const { data: cs } = await supabase.rpc("admin_all_courier_pins_by_application");
     const map: Record<string, string> = {};
-    (cs || []).forEach((c: any) => { if (c.application_id && c.access_pin) map[c.application_id] = c.access_pin; });
+    (cs as { application_id: string; access_pin: string | null }[] | null || [])
+      .forEach((c) => { if (c.application_id && c.access_pin) map[c.application_id] = c.access_pin; });
     setPinByApp(map);
     setLoading(false);
   };
