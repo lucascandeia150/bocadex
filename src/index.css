@@ -71,18 +71,15 @@
     @apply bg-background text-foreground font-display antialiased;
     overflow-x: hidden !important;
     overflow-y: auto !important;
-    overscroll-behavior-y: none;
     touch-action: pan-y;
-    -webkit-overflow-scrolling: touch;
   }
 
   #root {
-    min-height: 100svh;
-    overflow-x: hidden !important;
-    overflow-y: visible !important;
-    touch-action: pan-y;
+  min-height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
   }
-
+    
   button,
   a,
   input,
@@ -347,10 +344,4 @@ body {
   will-change: auto !important;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-}
-/* Fix: garante que páginas do React Router crescem e rolam normalmente */
-[data-reactroot],
-#root > * {
-  min-height: 100svh;
-  overflow-y: visible;
 }
