@@ -221,6 +221,19 @@
 }
 
 @media (hover: none) and (pointer: coarse) {
+  html,
+  body {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  body:has([data-state="closed"]),
+  body:has([aria-hidden="true"]) {
+    overflow-y: auto !important;
+  }
+
   *,
   *::before,
   *::after {
