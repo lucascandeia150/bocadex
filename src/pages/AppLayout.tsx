@@ -47,16 +47,17 @@ export default function AppLayout() {
   const { history, addEntry, clearHistory } = useHistory();
   const handleChoose = (food: Food) => addEntry(food);
   const location = useLocation();
-  const hideAd = ["/carrinho", "/auth", "/pagamento/retorno"].some((p) => location.pathname.startsWith(p));
+  const hideAd = ["/carrinho", "/auth", "/pagamento/retorno"].some((p) =>
+    location.pathname.startsWith(p),
+  );
 
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full overflow-hidden">
         <AppSidebar />
-        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full">
+        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full min-h-0">
           <AppHeader />
           <PushPermissionBanner />
-
           <main className="flex-1 pb-24 overflow-y-auto overscroll-contain min-h-0">
             <Routes>
               <Route path="/" element={<HomePage onChoose={handleChoose} />} />
@@ -70,7 +71,6 @@ export default function AppLayout() {
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/privacidade" element={<PrivacidadePage />} />
               <Route path="/parceiro/:id" element={<ParceiroDetalhePage />} />
-              {/* Slug curto: /salgados-da-maria */}
               <Route path="/:slug" element={<ParceiroDetalhePage />} />
               <Route path="/descobrir-hub" element={<DescobrirHubPage />} />
               <Route path="/trabalhe" element={<TrabalhePage />} />
@@ -82,7 +82,6 @@ export default function AppLayout() {
               <Route path="/contato" element={<ContatoPage />} />
               <Route path="/avaliar" element={<AvaliarPage />} />
               <Route path="/sobre" element={<SobrePage />} />
-              {/* parceiros page removed - integrated into /lojas */}
               <Route path="/seja-parceiro" element={<SejaParceiroPage />} />
               <Route path="/seja-entregador" element={<SejaEntregadorPage />} />
               <Route path="/acesso-parceiro" element={<AcessoParceiroPage />} />
