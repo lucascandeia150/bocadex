@@ -74,7 +74,7 @@ export default function AdminDeliveriesTab() {
     setLoading(true);
     const [dRes, cRes, sRes, pRes] = await Promise.all([
       supabase.from("deliveries").select("*").order("created_at", { ascending: false }),
-      supabase.from("couriers").select("*").order("name"),
+      supabase.from("couriers").select("id,name,phone,vehicle,is_active,is_online,last_seen_at,user_id,application_id,email,created_at,updated_at").order("name"),
       supabase.from("delivery_settings").select("*").limit(1).maybeSingle(),
       supabase.from("partner_applications").select("id, business_name, address").eq("status", "approved").eq("is_active", true).order("business_name"),
     ]);
