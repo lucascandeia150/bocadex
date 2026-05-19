@@ -47,19 +47,17 @@ export default function AppLayout() {
   const { history, addEntry, clearHistory } = useHistory();
   const handleChoose = (food: Food) => addEntry(food);
   const location = useLocation();
-  const hideAd = ["/carrinho", "/auth", "/pagamento/retorno"].some((p) =>
-    location.pathname.startsWith(p),
-  );
+  const hideAd = ["/carrinho", "/auth", "/pagamento/retorno"].some((p) => location.pathname.startsWith(p));
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full overflow-hidden">
         <AppSidebar />
         <div className="flex-1 flex flex-col max-w-lg mx-auto w-full">
           <AppHeader />
           <PushPermissionBanner />
 
-          <main className="flex-1 pb-24">
+          <main className="flex-1 pb-24 overflow-y-auto overscroll-contain min-h-0">
             <Routes>
               <Route path="/" element={<HomePage onChoose={handleChoose} />} />
               <Route path="/lojas" element={<LojasPage />} />
