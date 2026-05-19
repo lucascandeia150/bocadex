@@ -72,7 +72,7 @@
     overflow-x: hidden !important;
     overflow-y: auto !important;
     overscroll-behavior-y: none;
-    touch-action: manipulation;
+    touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -218,6 +218,13 @@
 [role="menu"],
 [role="listbox"] {
   z-index: 1000 !important;
+}
+
+html,
+body {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (hover: none) and (pointer: coarse) {
