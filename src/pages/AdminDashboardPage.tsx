@@ -90,7 +90,12 @@ export default function AdminDashboardPage() {
     const [fbRes, evRes, ptRes, rcRes, vdRes, alRes] = await Promise.all([
       supabase.from("feedbacks").select("*").order("created_at", { ascending: false }).limit(100),
       supabase.from("analytics_events").select("*").order("created_at", { ascending: false }).limit(500),
-      supabase.from("partner_applications").select("*").order("created_at", { ascending: false }),
+      supabase
+        .from("partner_applications")
+        .select(
+          "id,business_name,business_type,owner_name,whatsapp,address,description,promotions,images,logo_url,banner_url,status,is_active,is_open,is_featured,is_demo,uses_app_courier,created_at,updated_at,store_status,plan,payment_status,subscription_active_until,last_payment_at,commission_percent,custom_delivery_fee,custom_courier_payout,user_id,slug,lat,lng,opening_hours,instagram_url,facebook_url,visibility,created_by"
+        )
+        .order("created_at", { ascending: false }),
       supabase.from("recipes").select("*").order("created_at", { ascending: false }),
       supabase.from("videos").select("*").order("created_at", { ascending: false }),
       supabase.from("affiliate_links").select("*").order("keyword"),
