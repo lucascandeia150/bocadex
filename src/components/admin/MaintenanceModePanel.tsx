@@ -44,14 +44,14 @@ export default function MaintenanceModePanel() {
 
   const save = async (next: MaintenanceConfig) => {
     setSaving(true);
-    const payload = {
-      key: "maintenance_config",
-      value: next,
-      description: "Configuração do modo manutenção global",
-    };
+    const valueJson = next as unknown as Record<string, any>;
     const q = id
-      ? supabase.from("app_settings").update({ value: next }).eq("id", id)
-      : supabase.from("app_settings").insert(payload);
+      ? supabase.from("app_settings").update({ value: valueJson }).eq("id", id)
+      : supabase.from("app_settings").insert([{
+          key: "maintenance_config",
+          value: valueJson,
+          description: "Configuração do modo manutenção global",
+        }]);
     const { error } = await q;
     setSaving(false);
     if (error) { toast.error(error.message); return false; }
