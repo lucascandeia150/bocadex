@@ -345,7 +345,6 @@ body {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
-/* Fix: impede espaço vazio no final das páginas */
 main > div {
   min-height: auto !important;
 }
