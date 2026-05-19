@@ -72,9 +72,8 @@ Deno.serve(async (req) => {
 
     await fetch(`${URL_}/functions/v1/send-push`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-internal-secret": SR },
       body: JSON.stringify({
-        internal_secret: SR,
         title: "Seu pedido está pronto para retirada 🎉",
         body: `${partner.business_name} já preparou seu pedido. Pode buscar!`,
         target: "user",
