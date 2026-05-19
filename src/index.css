@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -48,8 +48,8 @@
     --gradient-primary: linear-gradient(135deg, hsl(142, 71%, 45%), hsl(142, 71%, 55%));
     --gradient-secondary: linear-gradient(135deg, hsl(24, 95%, 53%), hsl(24, 95%, 63%));
     --gradient-warm: linear-gradient(135deg, hsl(24, 95%, 53%), hsl(142, 71%, 45%));
-    
-    --font-display: 'Nunito', sans-serif;
+
+    --font-display: "Nunito", sans-serif;
   }
 }
 
@@ -109,50 +109,117 @@
 
 /* Home page animations */
 @keyframes float {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-20px) scale(1.05); }
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
 }
 @keyframes float-delayed {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-15px) scale(1.03); }
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.03);
+  }
 }
 @keyframes float-slow {
-  0%, 100% { transform: translateX(0) translateY(0); }
-  50% { transform: translateX(-10px) translateY(-10px); }
+  0%,
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-10px) translateY(-10px);
+  }
 }
 @keyframes logo-entrance {
-  0% { transform: scale(0) rotate(-15deg); opacity: 0; }
-  60% { transform: scale(1.1) rotate(3deg); opacity: 1; }
-  80% { transform: scale(0.95) rotate(-1deg); }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  0% {
+    transform: scale(0) rotate(-15deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1) rotate(3deg);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.95) rotate(-1deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
 }
 @keyframes logo-breathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.03); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
 }
 @keyframes text-reveal {
-  0% { opacity: 0; transform: translateY(15px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes button-pop {
-  0% { opacity: 0; transform: scale(0.8) translateY(10px); }
-  60% { transform: scale(1.05) translateY(-2px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+  }
+  60% {
+    transform: scale(1.05) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 @keyframes fade-in-late {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-.animate-float { animation: float 6s ease-in-out infinite; }
-.animate-float-delayed { animation: float-delayed 8s ease-in-out infinite 1s; }
-.animate-float-slow { animation: float-slow 10s ease-in-out infinite 2s; }
-.animate-logo-entrance { animation: logo-entrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-.animate-logo-breathe { animation: logo-breathe 3s ease-in-out infinite 1s; }
-.animate-text-reveal { animation: text-reveal 0.6s ease-out 0.4s both; }
-.animate-text-reveal-delayed { animation: text-reveal 0.6s ease-out 0.6s both; }
-.animate-button-pop { animation: button-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s both; }
-.animate-fade-in-late { animation: fade-in-late 0.5s ease-out 1.2s both; }
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite 1s;
+}
+.animate-float-slow {
+  animation: float-slow 10s ease-in-out infinite 2s;
+}
+.animate-logo-entrance {
+  animation: logo-entrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.animate-logo-breathe {
+  animation: logo-breathe 3s ease-in-out infinite 1s;
+}
+.animate-text-reveal {
+  animation: text-reveal 0.6s ease-out 0.4s both;
+}
+.animate-text-reveal-delayed {
+  animation: text-reveal 0.6s ease-out 0.6s both;
+}
+.animate-button-pop {
+  animation: button-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s both;
+}
+.animate-fade-in-late {
+  animation: fade-in-late 0.5s ease-out 1.2s both;
+}
 
 /* Compatibilidade global Android/WebView/Capacitor: remove blur real,
    glassmorphism, blend modes e filtros que causam listras/glitches em
@@ -262,4 +329,22 @@ body {
     transform: none !important;
     will-change: auto !important;
   }
+}
+/* Fix: glitch de GPU no Sheet/Drawer Radix em WebView Android */
+[data-radix-dialog-content],
+[vaul-drawer],
+[vaul-drawer-content] {
+  transform: none !important;
+  -webkit-transform: none !important;
+  will-change: auto !important;
+  isolation: isolate;
+  -webkit-isolation: isolate;
+}
+
+/* Fix: overflow hidden dentro de painel animado causa listras */
+[data-radix-dialog-content] *,
+[vaul-drawer-content] * {
+  will-change: auto !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
