@@ -55,19 +55,39 @@ export default function AdminStoresPage() {
     const to = from + PAGE_SIZE - 1;
     let q = supabase
       .from("partner_applications")
-      .select("*", { count: "exact" })
+      .select(
+        "id,business_name,business_type,owner_name,whatsapp,address,status,is_active,is_open,is_featured,uses_app_courier,logo_url,created_at,store_status,commission_percent",
+        { count: "exact" }
+      )
       .order("created_at", { ascending: false })
       .range(from, to);
     if (status !== "all") q = q.eq("status", status);
     if (search.trim()) q = q.or(`business_name.ilike.%${search}%,owner_name.ilike.%${search}%,whatsapp.ilike.%${search}%`);
     const { data, count } = await q;
-    setRows((data as Partner[]) || []);
+    const baseRows = (data as Partner[]) || [];
+    if (baseRows.length > 0) {
+      const { data: pinRows } = await supabase.rpc("admin_partner_pins", {
+        _partner_ids: baseRows.map((r) => r.id),
+      });
+      const pinMap = new Map<string, string>(
+        ((pinRows as { id: string; access_pin: string | null }[]) || [])
+          .map((p) => [p.id, p.access_pin || ""])
+      );
+      setRows(baseRows.map((r) => ({ ...r, access_pin: pinMap.get(r.id) || null })));
+    } else {
+      setRows([]);
+    }
     setTotal(count || 0);
     setLoading(false);
   };
 
   const loadLegacy = async () => {
-    const { data } = await supabase.from("partner_applications").select("*").order("created_at", { ascending: false });
+    const { data } = await supabase
+      .from("partner_applications")
+      .select(
+        "id,business_name,business_type,owner_name,whatsapp,address,status,is_active,is_open,is_featured,uses_app_courier,logo_url,created_at,store_status,commission_percent"
+      )
+      .order("created_at", { ascending: false });
     setLegacyPartners(data || []);
   };
 
