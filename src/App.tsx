@@ -23,6 +23,7 @@ import AdminCouriersPage from "./pages/admin/AdminCouriersPage";
 import AdminPushPage from "./pages/admin/AdminPushPage";
 import AdminCouponsPage from "./pages/admin/AdminCouponsPage";
 import AdminZonesPage from "./pages/admin/AdminZonesPage";
+import MaintenanceGate from "./components/MaintenanceGate";
 
 const queryClient = new QueryClient({});
 
@@ -34,6 +35,7 @@ const App = () => (
       <AuthProvider>
         <CartProvider>
           <BrowserRouter>
+          <MaintenanceGate>
           <Routes>
             <Route path="/admin" element={<AdminLoginPage />} />
             <Route path="/admin/dashboard" element={<AdminLayout />}>
@@ -54,6 +56,7 @@ const App = () => (
             </Route>
             <Route path="/*" element={<AppLayout />} />
           </Routes>
+          </MaintenanceGate>
           </BrowserRouter>
         </CartProvider>
       </AuthProvider>
