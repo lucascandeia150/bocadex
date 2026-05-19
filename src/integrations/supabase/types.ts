@@ -1434,6 +1434,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_courier_pin: { Args: { _courier_id: string }; Returns: string }
       admin_create_partner: {
         Args: {
           _address: string
@@ -1504,6 +1505,14 @@ export type Database = {
           name: string
           phone: string
           vehicle: string
+        }[]
+      }
+      admin_partner_pin: { Args: { _partner_id: string }; Returns: string }
+      admin_partner_pins: {
+        Args: { _partner_ids: string[] }
+        Returns: {
+          access_pin: string
+          id: string
         }[]
       }
       admin_reject_courier: {
@@ -2661,6 +2670,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      partner_self_pin: { Args: never; Returns: string }
       partner_send_message: {
         Args: { _chat_id: string; _content: string; _pin: string }
         Returns: {
