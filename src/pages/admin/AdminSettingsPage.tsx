@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import AdminFeesTab from "@/components/admin/AdminFeesTab";
+import MaintenanceModePanel from "@/components/admin/MaintenanceModePanel";
 import { ToggleLeft, ToggleRight, DollarSign, Settings as SettingsIcon } from "lucide-react";
 
 interface Setting { id: string; key: string; value: any; description: string; }
@@ -20,7 +21,7 @@ export default function AdminSettingsPage() {
   const load = async () => {
     setLoading(true);
     const { data } = await supabase.from("app_settings").select("*").order("key");
-    setSettings((data as Setting[]) || []);
+    setSettings(((data as Setting[]) || []).filter((s) => s.key !== "maintenance_config"));
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
@@ -66,6 +67,7 @@ export default function AdminSettingsPage() {
           </div>
         )}
       </section>
+      <MaintenanceModePanel />
       <section className="bg-card border border-border rounded-2xl p-4">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-8 h-8 rounded-lg bg-green-500/10 text-green-600 flex items-center justify-center"><DollarSign size={14} /></div>
