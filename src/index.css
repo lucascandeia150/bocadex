@@ -348,3 +348,9 @@ body {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
+/* Fix: garante que páginas do React Router crescem e rolam normalmente */
+[data-reactroot],
+#root > * {
+  min-height: 100svh;
+  overflow-y: visible;
+}
