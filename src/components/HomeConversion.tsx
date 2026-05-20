@@ -143,26 +143,54 @@ export function HomeConversion() {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [products, setProducts] = useState<ProductWithPartner[]>([]);
   const [order, setOrder] = useState<ProductWithPartner | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
     (async () => {
-      const { data: pData } = await supabase
+      setLoading(true);
+      setErrorMsg(null);
+
+      const { data: pData, error: pErr } = await supabase
         .from("partner_applications")
         .select("id,slug,business_name,business_type,description,logo_url,whatsapp,promotions,uses_app_courier,is_featured")
         .eq("status", "approved")
         .eq("is_active", true)
+        .eq("is_demo", false)
         .order("is_featured", { ascending: false })
         .limit(20);
 
-      const { data: prodData } = await supabase
+      if (pErr) {
+        console.error("[HomeConversion] Erro ao buscar parceiros:", pErr);
+      }
+      if (!pData) {
+        console.warn("[HomeConversion] partner_applications retornou null");
+      }
+
+      const { data: prodData, error: prodErr } = await supabase
         .from("products")
         .select("id,name,description,image_url,price_min,price_max,partner_id")
         .eq("is_active", true)
+        .eq("is_demo", false)
         .order("created_at", { ascending: false })
         .limit(30);
 
+      if (prodErr) {
+        console.error("[HomeConversion] Erro ao buscar produtos:", prodErr);
+      }
+      if (!prodData) {
+        console.warn("[HomeConversion] products retornou null");
+      }
+
       if (!active) return;
+
+      if (pErr || prodErr) {
+        setErrorMsg("Não foi possível carregar as lojas agora. Tente novamente em instantes.");
+        setLoading(false);
+        return;
+      }
+
       const seenIds = new Set<string>();
       const seenNames = new Set<string>();
       const partnersList = ((pData as Partner[]) || []).filter((p) => {
@@ -183,6 +211,7 @@ export function HomeConversion() {
           return true;
         });
       setProducts(enriched);
+      setLoading(false);
     })();
     return () => { active = false; };
   }, []);
@@ -199,7 +228,51 @@ export function HomeConversion() {
   const featuredIds = new Set(featured.map((p) => p.id));
   const open = partners.filter((p) => !featuredIds.has(p.id)).slice(0, 6);
 
-  if (partners.length === 0 && products.length === 0) return null;
+  if (loading) {
+    return (
+      <div className="w-full max-w-md space-y-4 mb-8 relative z-10" aria-busy="true">
+        <div className="h-24 rounded-2xl bg-muted animate-pulse" />
+        <div className="grid grid-cols-2 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="aspect-[4/3] rounded-2xl bg-muted animate-pulse" />
+          ))}
+        </div>
+        <div className="space-y-2.5">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-20 rounded-2xl bg-muted animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (errorMsg) {
+    return (
+      <div className="w-full max-w-md mb-8 relative z-10">
+        <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-center">
+          <p className="text-sm font-bold text-destructive">{errorMsg}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-3 inline-flex items-center text-xs font-black text-primary"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (partners.length === 0 && products.length === 0) {
+    return (
+      <div className="w-full max-w-md mb-8 relative z-10">
+        <div className="rounded-2xl border border-border/60 bg-card p-6 text-center">
+          <p className="text-2xl mb-2">🍽️</p>
+          <p className="text-sm font-bold text-foreground">Nenhuma loja disponível no momento.</p>
+          <p className="text-xs text-muted-foreground mt-1">Volte mais tarde — novos parceiros estão chegando.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md space-y-7 mb-8 relative z-10">
