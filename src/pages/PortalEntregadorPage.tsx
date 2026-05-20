@@ -58,7 +58,7 @@ export default function PortalEntregadorPage() {
         await loadFromAuth();
         return;
       }
-      const saved = localStorage.getItem(PIN_KEY);
+      const saved = sessionStorage.getItem(PIN_KEY);
       if (saved) { setPin(saved); tryLogin(saved, true); }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,12 +70,12 @@ export default function PortalEntregadorPage() {
     setLoading(false);
     if (error || !data || data.length === 0) {
       if (!silent) toast.error("PIN inválido");
-      localStorage.removeItem(PIN_KEY);
+      sessionStorage.removeItem(PIN_KEY);
       setCourier(null);
       return;
     }
     setCourier(data[0] as Courier);
-    localStorage.setItem(PIN_KEY, code);
+    sessionStorage.setItem(PIN_KEY, code);
     loadDeliveries(code, true);
   };
 
@@ -97,7 +97,7 @@ export default function PortalEntregadorPage() {
     const c = data[0];
     setCourier({ id: c.id, name: c.name, phone: c.phone, vehicle: c.vehicle });
     setPin(c.access_pin);
-    localStorage.setItem(PIN_KEY, c.access_pin);
+    sessionStorage.setItem(PIN_KEY, c.access_pin);
     setPendingStatus(null);
     setEmailLoading(false);
     loadDeliveries(c.access_pin, true);
@@ -195,7 +195,7 @@ export default function PortalEntregadorPage() {
   const logout = async () => {
     if (pin) { try { await supabase.rpc("courier_set_online", { _pin: pin, _online: false }); } catch {} }
     await supabase.auth.signOut();
-    localStorage.removeItem(PIN_KEY);
+    sessionStorage.removeItem(PIN_KEY);
     setCourier(null);
     setPin("");
     setDeliveries([]);
