@@ -79,7 +79,7 @@ export default function PortalLojaPage() {
   const [orderValue, setOrderValue] = useState<number>(0);
 
   useEffect(() => {
-    const saved = localStorage.getItem(PIN_KEY);
+    const saved = sessionStorage.getItem(PIN_KEY);
     if (saved) {
       setPin(saved);
       tryLogin(saved, true);
@@ -156,7 +156,7 @@ export default function PortalLojaPage() {
     setLoading(false);
     if (error || !data || data.length === 0) {
       if (!silent) toast.error("PIN inválido");
-      localStorage.removeItem(PIN_KEY);
+      sessionStorage.removeItem(PIN_KEY);
       setPartner(null);
       return;
     }
@@ -173,7 +173,7 @@ export default function PortalLojaPage() {
     };
     setPartner(merged);
     setAddress(p.address);
-    localStorage.setItem(PIN_KEY, code);
+    sessionStorage.setItem(PIN_KEY, code);
     loadDeliveries(code);
   };
 
@@ -310,7 +310,7 @@ export default function PortalLojaPage() {
   };
 
   const logout = async () => {
-    localStorage.removeItem(PIN_KEY);
+    sessionStorage.removeItem(PIN_KEY);
     setPartner(null);
     setPin("");
     setDeliveries([]);
