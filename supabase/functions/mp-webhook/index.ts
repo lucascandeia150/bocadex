@@ -87,12 +87,17 @@ Deno.serve(async (req) => {
 
     const ok = await verifySignature(req, String(payment_id));
     if (!ok) {
-      // Assinatura inválida: NÃO confiamos no payload do webhook,
-      // mas como vamos reconsultar o pagamento direto na API do MP
-      // (autenticados com nosso access token), o dado retornado é
-      // a fonte da verdade. Logamos e seguimos para evitar pedidos
-      // presos em "em análise" por falha de validação.
-      console.warn("Assinatura inválida — seguirá com verificação server-to-server via MP API", { payment_id });
+      // Permite chamadas internas (mp-sync-pending) com header secreto,
+      // caso contrário rejeita para evitar abuso externo.
+      const internalSecret = req.headers.get("x-internal-secret") ?? "";
+      const expected = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+      if (!expected || internalSecret !== expected) {
+        console.warn("Webhook MP rejeitado — assinatura inválida", { payment_id });
+        return new Response(JSON.stringify({ error: "invalid signature" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     const token = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
