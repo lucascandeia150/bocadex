@@ -348,3 +348,53 @@ body {
 main > div {
   min-height: auto !important;
 }
+
+/* Fallback visual Android/WebView: elimina listras e color glitches
+   sem alterar layout, scroll ou funcionalidades. */
+* {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.no-blur {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+@supports (-webkit-touch-callout: none) or (not (translate: none)) {
+  [class*="backdrop-blur"],
+  [class*="bg-gradient"],
+  [class*="mix-blend"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    mix-blend-mode: normal !important;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  [class*="backdrop-blur"],
+  [class*="backdrop-filter"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  [class*="bg-clip-text"] {
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  .fixed,
+  .sticky,
+  [data-radix-popper-content-wrapper],
+  [role="dialog"],
+  [role="menu"],
+  [role="listbox"] {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    isolation: isolate;
+  }
+}
