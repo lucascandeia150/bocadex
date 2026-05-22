@@ -68,14 +68,18 @@
   }
 
   body {
-    @apply bg-background text-foreground font-display antialiased;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    touch-action: pan-y;
+  @apply bg-background text-foreground font-display antialiased;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  touch-action: pan-y;
+  position: relative;
+  height: auto;
+  min-height: 100vh;
   }
 
   #root {
-  min-height: 100svh;
+  min-height: 100vh;
+  height: auto;
   overflow-x: hidden;
   overflow-y: auto;
   }
@@ -269,26 +273,11 @@
   isolation: isolate;
 }
 
-.fixed,
-.sticky,
-[data-radix-popper-content-wrapper] {
-  will-change: auto !important;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
-}
-
 [data-radix-popper-content-wrapper],
 [role="dialog"],
 [role="menu"],
 [role="listbox"] {
   z-index: 1000 !important;
-}
-
-html,
-body {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  -webkit-overflow-scrolling: touch;
 }
 
 @media (hover: none) and (pointer: coarse) {
@@ -303,14 +292,6 @@ body {
   body:has([data-state="closed"]),
   body:has([aria-hidden="true"]) {
     overflow-y: auto !important;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
   }
 
   button:active,
@@ -345,19 +326,10 @@ body {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
-main > div {
-  min-height: auto !important;
-}
 
 /* Fallback visual Android/WebView: elimina listras e color glitches
    sem alterar layout, scroll ou funcionalidades. */
-* {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
+*
 .no-blur {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -372,7 +344,6 @@ main > div {
     mix-blend-mode: normal !important;
   }
 }
-
 @media (hover: none) and (pointer: coarse) {
   [class*="backdrop-blur"],
   [class*="backdrop-filter"] {
