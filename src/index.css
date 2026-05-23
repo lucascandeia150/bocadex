@@ -256,8 +256,7 @@
   mix-blend-mode: normal !important;
 }
 
-[class*="blur-"]:not([class*="backdrop-blur"]),
-[style*="filter:"] {
+[class*="blur-"]:not([class*="backdrop-blur"]) {
   filter: none !important;
   -webkit-filter: none !important;
 }
@@ -355,3 +354,13 @@
     background-clip: text;
   }
 }
+/* Android GPU fix sem afetar scroll */
+img,
+video,
+canvas,
+svg {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  }
