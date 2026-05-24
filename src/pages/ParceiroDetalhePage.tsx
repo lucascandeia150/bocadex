@@ -51,11 +51,14 @@ export default function ParceiroDetalhePage() {
   const [activeSection, setActiveSection] = useState<string>("");
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const navRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLElement | null>(null);
   const { totalItems, totalValue, partnerId: cartPartnerId } = useCart();
   const cartHasThisStore = cartPartnerId === partner?.id && totalItems > 0;
   const isProductModalOpen = !!orderProduct;
 
-  useEffect(() => {
+    useEffect(() => {
+  scrollContainerRef.current = document.querySelector("main");
+}, []);
     if (!key) { setLoading(false); return; }
     setLoading(true);
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(key);
@@ -113,22 +116,23 @@ export default function ParceiroDetalhePage() {
 
   // IntersectionObserver to track active section
   useEffect(() => {
-    if (!sections.length) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter(e => e.isIntersecting)
-          .sort((a, b) => (a.target.getBoundingClientRect().top - b.target.getBoundingClientRect().top));
-        if (visible[0]) setActiveSection(visible[0].target.id);
-      },
-      { rootMargin: "-180px 0px -60% 0px", threshold: 0 }
-    );
-    sections.forEach(s => {
-      const el = sectionRefs.current[s.id];
-      if (el) obs.observe(el);
-    });
-    return () => obs.disconnect();
-  }, [sections]);
-
+  useEffect(() => {
+  if (!sections.length) return;
+  const container = scrollContainerRef.current;
+  const obs = new IntersectionObserver(
+    (entries) => {
+      const visible = entries.filter(e => e.isIntersecting)
+        .sort((a, b) => a.target.getBoundingClientRect().top - b.target.getBoundingClientRect().top);
+      if (visible[0]) setActiveSection(visible[0].target.id);
+    },
+    { root: container, rootMargin: "-120px 0px -60% 0px", threshold: 0 }
+  );
+  sections.forEach(s => {
+    const el = sectionRefs.current[s.id];
+    if (el) obs.observe(el);
+  });
+  return () => obs.disconnect();
+}, [sections]);
   // Auto-scroll active chip into view
   useEffect(() => {
     if (!activeSection || !navRef.current) return;
@@ -137,11 +141,14 @@ export default function ParceiroDetalhePage() {
   }, [activeSection]);
 
   const scrollTo = (id: string) => {
-    const el = sectionRefs.current[id];
-    if (!el) return;
-    const y = el.getBoundingClientRect().top + window.scrollY - 120;
-    window.scrollTo({ top: y, behavior: "smooth" });
-  };
+  const el = sectionRefs.current[id];
+  const container = scrollContainerRef.current;
+  if (!el || !container) return;
+  const containerTop = container.getBoundingClientRect().top;
+  const elTop = el.getBoundingClientRect().top;
+  const offset = elTop - containerTop + container.scrollTop - 120;
+  container.scrollTo({ top: offset, behavior: "smooth" });
+};
 
   const shareUrl = partner ? `${window.location.origin}/${partner.slug || partner.id}` : "";
   const copyLink = async () => {
